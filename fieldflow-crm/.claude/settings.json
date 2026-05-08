@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|Bash",
+        "command": "C:\\Users\\ammad\\AppData\\Local\\Python\\pythoncore-3.14-64\\Scripts\\code-review-graph.exe update --skip-flows",
+        "timeout": 5000
+      }
+    ],
+    "SessionStart": [
+      {
+        "command": "C:\\Users\\ammad\\AppData\\Local\\Python\\pythoncore-3.14-64\\Scripts\\code-review-graph.exe status",
+        "timeout": 3000
+      }
+    ],
+    "PreCommit": [
+      {
+        "command": "C:\\Users\\ammad\\AppData\\Local\\Python\\pythoncore-3.14-64\\Scripts\\code-review-graph.exe detect-changes --brief",
+        "timeout": 10000
+      }
+    ]
+  }
+}

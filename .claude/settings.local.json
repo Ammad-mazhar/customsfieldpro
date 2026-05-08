@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(grep:*)",
+      "Bash(python:*)",
+      "Bash(/c/Users/ammad/AppData/Local/Python/pythoncore-3.14-64/Scripts/code-review-graph.exe status:*)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}
