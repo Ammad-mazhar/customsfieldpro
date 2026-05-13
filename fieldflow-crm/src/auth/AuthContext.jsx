@@ -7,40 +7,14 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 const AuthContext = createContext(null)
 
 // ── Demo users ────────────────────────────────────────────────────────────────
-const DEMO_USERS = [
-  {
-    id: 'user-admin-1',
-    name: 'Admin User',
-    email: 'admin@fieldflow.com',
-    password: 'admin123',
-    role: 'admin',
-    technicianId: null,
-  },
-  {
-    id: 'user-staff-1',
-    name: 'D. Moore',
-    email: 'moore@fieldflow.com',
-    password: 'staff123',
-    role: 'technician',
-    technicianId: 'moore',
-  },
-  {
-    id: 'user-staff-2',
-    name: 'A. Torres',
-    email: 'torres@fieldflow.com',
-    password: 'staff123',
-    role: 'technician',
-    technicianId: 'torres',
-  },
-  {
-    id: 'user-staff-3',
-    name: 'R. Singh',
-    email: 'singh@fieldflow.com',
-    password: 'staff123',
-    role: 'technician',
-    technicianId: 'singh',
-  },
-]
+const DEMO_EMAILS = ['admin@fieldflow.com', 'moore@fieldflow.com', 'torres@fieldflow.com', 'singh@fieldflow.com']
+
+async function changePassword(currentPassword, newPassword) {
+  if (DEMO_EMAILS.includes(currentUser?.email)) {
+    return { success: false, error: 'Demo account passwords cannot be changed.' }
+  }
+  // ... rest of change password logic
+}
 
 const SESSION_KEY = 'fieldflow_session'
 
@@ -75,21 +49,45 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function login(email, password) {
+    // Hardcoded demo accounts — always work
+    const DEMO_ACCOUNTS = [
+      { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', fullName: 'Admin User', role: 'admin', tenantId: 'demo-tenant' },
+      { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', fullName: 'D. Moore', role: 'staff', technicianId: 'tech-1', tenantId: 'demo-tenant' },
+      { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', fullName: 'A. Torres', role: 'staff', technicianId: 'tech-2', tenantId: 'demo-tenant' },
+      { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', fullName: 'R. Singh', role: 'staff', technicianId: 'tech-3', tenantId: 'demo-tenant' }
+    ]
+
+    const normalizedEmail = email.toLowerCase().trim()
+
+    // Check demo accounts first — these always override localStorage
+    const demoUser = DEMO_ACCOUNTS.find(
+      u => u.email === normalizedEmail && u.password === password
+    )
+
+    if (demoUser) {
+      const { password: _, ...userWithoutPassword } = demoUser
+      setCurrentUser(userWithoutPassword)
+      localStorage.setItem('fieldflow_current_user', JSON.stringify(userWithoutPassword))
+      return { success: true }
+    }
+
+    // Then check localStorage users
+    const users = JSON.parse(localStorage.getItem('fieldflow_users') || '[]')
+    const user = users.find(u => u.email === normalizedEmail)
+
+    if (!user || user.password !== password) {
+      return { success: false, error: 'Invalid email or password' }
+    }
+
+    const { password: _, ...userWithoutPassword } = user
+    setCurrentUser(userWithoutPassword)
+    localStorage.setItem('fieldflow_current_user', JSON.stringify(userWithoutPassword))
+    return { success: true }
+  }
+
+  async function login(email, password) {
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-        credentials: 'include',
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setAccessToken(data.access_token)
-        const safeUser = data.user
-        saveSession(safeUser)
-        setUser(safeUser)
-        return null
-      }
+
       // Backend reachable but credentials wrong — try demo fallback first
     } catch {
       // Backend unreachable — fall through to demo
@@ -141,7 +139,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{
       user,
-      role:    user?.role    ?? null,
+      role: user?.role ?? null,
       isAdmin: user?.role === 'admin',
       isStaff: user?.role === 'staff',
       login, logout, updateProfile, changePassword, hasPermission,
