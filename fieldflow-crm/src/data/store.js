@@ -105,6 +105,14 @@ function seedAll() {
   if (!localStorage.getItem(KEYS.invoices)) persist(KEYS.invoices, SAMPLE_INVOICES)
   if (!localStorage.getItem(KEYS.quotes))   persist(KEYS.quotes,   SAMPLE_QUOTES)
   if (!localStorage.getItem(KEYS.requests)) persist(KEYS.requests, SAMPLE_REQUESTS)
+  if (!localStorage.getItem('fieldflow_users')) {
+    persist('fieldflow_users', [
+      { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', name: 'Admin User', role: 'admin', technicianId: null, status: 'active' },
+      { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1', status: 'active' },
+      { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2', status: 'active' },
+      { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3', status: 'active' },
+    ])
+  }
   // Initialize sequential number counters (only sets if missing)
   initCounters()
 }

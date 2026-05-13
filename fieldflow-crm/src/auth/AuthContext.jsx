@@ -1,20 +1,20 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { readPermissions } from '../data/permissions'
-import { setAccessToken, clearAccessToken } from '../utils/apiClient'
+import { clearAccessToken } from '../utils/apiClient'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const AuthContext = createContext(null)
 
 // ── Demo users ────────────────────────────────────────────────────────────────
-const DEMO_EMAILS = ['admin@fieldflow.com', 'moore@fieldflow.com', 'torres@fieldflow.com', 'singh@fieldflow.com']
+const DEMO_USERS = [
+  { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', name: 'Admin User', role: 'admin', tenantId: 'demo-tenant' },
+  { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1', tenantId: 'demo-tenant' },
+  { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2', tenantId: 'demo-tenant' },
+  { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3', tenantId: 'demo-tenant' },
+]
 
-async function changePassword(currentPassword, newPassword) {
-  if (DEMO_EMAILS.includes(currentUser?.email)) {
-    return { success: false, error: 'Demo account passwords cannot be changed.' }
-  }
-  // ... rest of change password logic
-}
+const DEMO_EMAILS = new Set(DEMO_USERS.map(u => u.email))
 
 const SESSION_KEY = 'fieldflow_session'
 
@@ -49,59 +49,40 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function login(email, password) {
-    // Hardcoded demo accounts — always work
-    const DEMO_ACCOUNTS = [
-      { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', fullName: 'Admin User', role: 'admin', tenantId: 'demo-tenant' },
-      { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', fullName: 'D. Moore', role: 'staff', technicianId: 'tech-1', tenantId: 'demo-tenant' },
-      { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', fullName: 'A. Torres', role: 'staff', technicianId: 'tech-2', tenantId: 'demo-tenant' },
-      { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', fullName: 'R. Singh', role: 'staff', technicianId: 'tech-3', tenantId: 'demo-tenant' }
-    ]
-
-    const normalizedEmail = email.toLowerCase().trim()
-
-    // Check demo accounts first — these always override localStorage
-    const demoUser = DEMO_ACCOUNTS.find(
-      u => u.email === normalizedEmail && u.password === password
-    )
-
-    if (demoUser) {
-      const { password: _, ...userWithoutPassword } = demoUser
-      setCurrentUser(userWithoutPassword)
-      localStorage.setItem('fieldflow_current_user', JSON.stringify(userWithoutPassword))
-      return { success: true }
-    }
-
-    // Then check localStorage users
-    const users = JSON.parse(localStorage.getItem('fieldflow_users') || '[]')
-    const user = users.find(u => u.email === normalizedEmail)
-
-    if (!user || user.password !== password) {
-      return { success: false, error: 'Invalid email or password' }
-    }
-
-    const { password: _, ...userWithoutPassword } = user
-    setCurrentUser(userWithoutPassword)
-    localStorage.setItem('fieldflow_current_user', JSON.stringify(userWithoutPassword))
-    return { success: true }
-  }
-
-  async function login(email, password) {
     try {
+      const normalizedEmail = email.toLowerCase().trim()
 
-      // Backend reachable but credentials wrong — try demo fallback first
+      // Demo accounts always take priority
+      const demoUser = DEMO_USERS.find(
+        u => u.email === normalizedEmail && u.password === password
+      )
+      if (demoUser) {
+        const { password: _, ...safeUser } = demoUser
+        saveSession(safeUser)
+        setUser(safeUser)
+        return null
+      }
+
+      // Check localStorage users
+      let storedUsers = []
+      try {
+        const raw = localStorage.getItem('fieldflow_users')
+        const parsed = raw ? JSON.parse(raw) : []
+        storedUsers = Array.isArray(parsed) ? parsed : []
+      } catch { storedUsers = [] }
+
+      const found = storedUsers.find(
+        u => u.email?.toLowerCase() === normalizedEmail && u.password === password
+      )
+      if (!found) return 'Invalid email or password.'
+
+      const { password: _, ...safeUser } = found
+      saveSession(safeUser)
+      setUser(safeUser)
+      return null
     } catch {
-      // Backend unreachable — fall through to demo
+      return 'An unexpected error occurred. Please try again.'
     }
-
-    // Demo fallback
-    const found = DEMO_USERS.find(
-      u => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
-    )
-    if (!found) return 'Invalid email or password.'
-    const { password: _, ...safeUser } = found
-    saveSession(safeUser)
-    setUser(safeUser)
-    return null
   }
 
   async function logout() {
@@ -122,9 +103,11 @@ export function AuthProvider({ children }) {
   }
 
   function changePassword(currentPassword, newPassword) {
+    if (DEMO_EMAILS.has(user?.email)) {
+      return 'Demo account passwords cannot be changed.'
+    }
     const found = DEMO_USERS.find(u => u.id === user?.id)
-    if (!found || found.password !== currentPassword) return 'Current password is incorrect.'
-    // In demo mode passwords are in-memory only; just confirm success
+    if (found && found.password !== currentPassword) return 'Current password is incorrect.'
     return null
   }
 
