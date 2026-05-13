@@ -55,6 +55,7 @@ import PrivacyPage from './pages/public/PrivacyPage'
 import TermsPage from './pages/public/TermsPage'
 import ComparePage from './pages/public/ComparePage'
 import SuperAdmin from './pages/superadmin/SuperAdmin'
+import ResetDemo from './pages/ResetDemo'
 import InstallPWA from './components/InstallPWA'
 import OfflineNotice from './components/OfflineNotice'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -158,6 +159,7 @@ export default function App() {
               <Route path="/compare/:competitor" element={<ComparePage />} />
               <Route path="/superadmin"       element={<SuperAdmin />} />
               <Route path="/superadmin/*"     element={<SuperAdmin />} />
+              <Route path="/reset"            element={<ResetDemo />} />
               <Route path="*"                 element={<ProtectedRoute />} />
             </Routes>
           </ErrorBoundary>
