@@ -5,7 +5,8 @@
 // - Access token is stored in memory via module-level variable — NOT localStorage.
 // - Refresh token is in an httpOnly cookie sent automatically by the browser.
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+console.log('API URL:', import.meta.env.VITE_API_URL)
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 console.log('[apiClient] API_URL =', API_URL)
 
 export class AuthorizationError extends Error {
