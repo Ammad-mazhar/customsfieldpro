@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getRequests, saveRequests, saveRequest, saveJob, saveQuote, getClients, getSettings } from '../data/store'
+import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { useAuth } from '../auth/AuthContext'
 import AddressAutocomplete from '../components/AddressAutocomplete'
 import { getNextNumber, formatJobNumber, formatQuoteNumber } from '../utils/numberGenerator'
@@ -65,6 +66,12 @@ export default function Requests() {
   const [editNote,setEditNote]   = useState(false)
   const [banner,setBanner]       = useState('')
 
+  useEffect(() => {
+    apiGet('/api/requests').then(data => {
+      if (Array.isArray(data)) { setRequests(data); saveRequests(data) }
+    }).catch(() => {})
+  }, [])
+
   const sel = requests.find(r=>r.id===selId)
   const openCount = requests.filter(r=>r.status==='Open').length
 
@@ -78,15 +85,20 @@ export default function Requests() {
   function flash(msg) { setBanner(msg); setTimeout(()=>setBanner(''),3000) }
 
   function markConverted(id, note) {
-    const newArr = requests.map(r=>r.id===id?{...r,status:'Converted',internalNotes:note||r.internalNotes}:r)
+    const req = requests.find(r => r.id === id)
+    const updatedReq = { ...req, status: 'Converted', internalNotes: note || req?.internalNotes }
+    const newArr = requests.map(r=>r.id===id ? updatedReq : r)
     setRequests(newArr)
     saveRequests(newArr)
+    apiPut(`/api/requests/${id}`, updatedReq).catch(() => {})
   }
 
   function saveNote() {
-    const newArr = requests.map(r=>r.id===sel.id?{...r,internalNotes:noteDraft}:r)
+    const updatedReq = { ...sel, internalNotes: noteDraft }
+    const newArr = requests.map(r=>r.id===sel.id ? updatedReq : r)
     setRequests(newArr)
     saveRequests(newArr)
+    apiPut(`/api/requests/${sel.id}`, updatedReq).catch(() => {})
     setEditNote(false)
   }
 
@@ -173,6 +185,7 @@ export default function Requests() {
     }
     const updated = saveRequest(n)
     setRequests(updated)
+    apiPost('/api/requests', n).catch(() => {})
     logActivity(ACTIONS.REQUEST_CREATED, 'Requests', n.id, `${n.id} – ${n.clientName}`, `New service request: ${n.type}.`)
     notifyAdmins(NOTIF_TYPES.NEW_REQUEST, 'New Service Request', `New service request from ${n.clientName} — ${n.type}.`, 'Requests', n.id)
     if (settings.notifications?.emailOnNewRequest && c?.email) {

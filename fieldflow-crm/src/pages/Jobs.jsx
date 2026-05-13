@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getJobs, saveJobs, saveJob, getClients, saveInvoice, getInvoices, getSettings, saveQuote, getQuotes } from '../data/store'
+import { apiGet, apiPost, apiPut, apiDelete } from '../utils/apiClient'
 import { getNextNumber, peekNextNumber, formatJobNumber, formatInvoiceNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { useAuth } from '../auth/AuthContext'
 import { logActivity, ACTIONS } from '../utils/activityLog'
@@ -230,6 +231,12 @@ export default function Jobs() {
   const [overrideStatus, setOverrideStatus] = useState('')
   const [overrideReason, setOverrideReason] = useState('')
 
+  useEffect(() => {
+    apiGet('/api/jobs').then(data => {
+      if (Array.isArray(data)) { setAllJobs(data); saveJobs(data) }
+    }).catch(() => {})
+  }, [])
+
   const sel = jobs.find(j => j.id === selId)
 
   const tabs = [
@@ -384,6 +391,7 @@ export default function Jobs() {
     }
     const updated = saveJob(newJob)
     setJobs(updated); setForm(blankForm()); setErrs({}); setErrList([]); setTab('all')
+    apiPost('/api/jobs', newJob).catch(() => {})
     logActivity(ACTIONS.JOB_CREATED, 'Jobs', newJob.id, `${newJob.id} – ${newJob.clientName}`, `Job created: ${newJob.title}.`)
     // Notify the assigned technician/staff
     if (newJob.technicianId) {
@@ -403,8 +411,10 @@ export default function Jobs() {
 
   function updateStatus() {
     const prevStatus = sel.status
-    const newArr = jobs.map(j => j.id === sel.id ? { ...j, status: pendingStatus, priority: pendingPriority } : j)
+    const updatedJob = { ...sel, status: pendingStatus, priority: pendingPriority }
+    const newArr = jobs.map(j => j.id === sel.id ? updatedJob : j)
     updateJobs(newArr)
+    apiPut(`/api/jobs/${sel.id}`, updatedJob).catch(() => {})
     if (prevStatus !== pendingStatus) {
       logActivity(ACTIONS.JOB_STATUS_UPDATED, 'Jobs', sel.id, `${sel.id} – ${sel.clientName}`, `Status changed from ${prevStatus} to ${pendingStatus}.`)
       if (pendingStatus === 'Completed') {
@@ -420,6 +430,7 @@ export default function Jobs() {
     const updatedJob = { ...sel, ...completionData }
     const newArr = jobs.map(j => j.id === sel.id ? updatedJob : j)
     updateJobs(newArr)
+    apiPut(`/api/jobs/${sel.id}`, updatedJob).catch(() => {})
     setPendingStatus('Completed')
     logActivity(ACTIONS.JOB_STATUS_UPDATED, 'Jobs', sel.id, `${sel.id} – ${sel.clientName}`, `Job completed via completion workflow.`)
     notifyAdmins(NOTIF_TYPES.JOB_COMPLETED, 'Job Completed', `${sel.id} completed by ${sel.techName} — ${sel.clientName}.`, 'Jobs', sel.id)

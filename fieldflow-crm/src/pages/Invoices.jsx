@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getInvoices, saveInvoices, saveInvoice, getClients, getJobs, getSettings } from '../data/store'
+import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { getNextNumber, formatInvoiceNumber } from '../utils/numberGenerator'
 import { generateInvoicePDF, printInvoicePDF } from '../utils/generateInvoicePDF'
 import { useAuth } from '../auth/AuthContext'
@@ -82,6 +83,9 @@ export default function Invoices() {
   function open(id) { setSelId(id); setTab('detail') }
 
   useEffect(() => {
+    apiGet('/api/invoices').then(data => {
+      if (Array.isArray(data)) { setInvoices(data); saveInvoices(data) }
+    }).catch(() => {})
     const flag = sessionStorage.getItem('fieldflow_open_new')
     if (flag === 'invoice') { sessionStorage.removeItem('fieldflow_open_new'); setForm(BLANK_FORM); setLines([BLANK_LINE()]); setErrs({}); setTab('create') }
     function onEscape() { setPayModal(null) }
@@ -108,6 +112,7 @@ export default function Invoices() {
     const newArr = invoices.map(i => i.id === sendModal.id ? updatedInv : i)
     setInvoices(newArr)
     saveInvoices(newArr)
+    apiPut(`/api/invoices/${sendModal.id}`, updatedInv).catch(() => {})
     logActivity(ACTIONS.INVOICE_SENT, 'Invoices', sendModal.id, `${sendModal.id} – ${sendModal.clientName}`, `Invoice sent to ${sendForm.to}.`)
     notifyAdmins(NOTIF_TYPES.QUOTE_APPROVED, 'Invoice Sent', `Invoice ${sendModal.id} sent to ${sendModal.clientName} (${sendForm.to}).`, 'Invoices', sendModal.id)
     // Send real email if toggle is on
@@ -128,9 +133,11 @@ export default function Invoices() {
 
   function handleSendPayLink() {
     if (!payModal) return
-    const newArr = invoices.map(i => i.id === payModal.id ? { ...i, status: 'Payment Link Sent', paymentLink: payLink } : i)
+    const updatedInv = { ...payModal, status: 'Payment Link Sent', paymentLink: payLink }
+    const newArr = invoices.map(i => i.id === payModal.id ? updatedInv : i)
     setInvoices(newArr)
     saveInvoices(newArr)
+    apiPut(`/api/invoices/${payModal.id}`, updatedInv).catch(() => {})
     logActivity(ACTIONS.INVOICE_SENT, 'Invoices', payModal.id, `${payModal.id} – ${payModal.clientName}`, `Payment link sent for ${payModal.id}.`)
     setPayLinkSent(true)
     setTimeout(() => { setPayModal(null); flash(`Payment link sent for ${payModal.id}.`) }, 1600)
@@ -142,9 +149,11 @@ export default function Invoices() {
 
   function updateStatus(id, status) {
     const inv = invoices.find(i => i.id === id)
-    const newArr = invoices.map(i=>i.id===id?{...i,status}:i)
+    const updatedInv = { ...inv, status }
+    const newArr = invoices.map(i=>i.id===id ? updatedInv : i)
     setInvoices(newArr)
     saveInvoices(newArr)
+    apiPut(`/api/invoices/${id}`, updatedInv).catch(() => {})
     const action = status === 'Paid' ? ACTIONS.INVOICE_PAID : status === 'Sent' ? ACTIONS.INVOICE_SENT : ACTIONS.INVOICE_CREATED
     logActivity(action, 'Invoices', id, `${id} – ${inv?.clientName || ''}`, `Invoice status set to ${status}.`)
   }
@@ -193,6 +202,7 @@ export default function Invoices() {
     }
     const updated = saveInvoice(n)
     setInvoices(updated)
+    apiPost('/api/invoices', n).catch(() => {})
     logActivity(ACTIONS.INVOICE_CREATED, 'Invoices', n.id, `${n.id} – ${n.clientName}`, `Invoice created as Draft.`)
     setForm(BLANK_FORM);setLines([BLANK_LINE()]);setErrs({});setTab('all')
     flash(`${n.id} created as Draft.`)

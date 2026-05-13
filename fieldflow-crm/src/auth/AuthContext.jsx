@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { readPermissions } from '../data/permissions'
+import { setAccessToken, clearAccessToken } from '../utils/apiClient'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const AuthContext = createContext(null)
 
@@ -71,7 +74,28 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('storage', onStorage)
   }, [])
 
-  function login(email, password) {
+  async function login(email, password) {
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+        credentials: 'include',
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setAccessToken(data.access_token)
+        const safeUser = data.user
+        saveSession(safeUser)
+        setUser(safeUser)
+        return null
+      }
+      // Backend reachable but credentials wrong — try demo fallback first
+    } catch {
+      // Backend unreachable — fall through to demo
+    }
+
+    // Demo fallback
     const found = DEMO_USERS.find(
       u => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
     )
@@ -79,10 +103,14 @@ export function AuthProvider({ children }) {
     const { password: _, ...safeUser } = found
     saveSession(safeUser)
     setUser(safeUser)
-    return null  // null = success
+    return null
   }
 
-  function logout() {
+  async function logout() {
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' })
+    } catch { /* ignore */ }
+    clearAccessToken()
     clearSession()
     setUser(null)
   }

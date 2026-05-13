@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getQuotes, saveQuotes, saveQuote, saveJob, getClients, getSettings } from '../data/store'
+import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { getNextNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { generateQuotePDF, printQuotePDF } from '../utils/generateQuotePDF'
 import { useAuth } from '../auth/AuthContext'
@@ -64,6 +65,12 @@ export default function Quotes() {
   const [banner,setBanner] = useState('')
   const [showAI,setShowAI] = useState(false)
 
+  useEffect(() => {
+    apiGet('/api/quotes').then(data => {
+      if (Array.isArray(data)) { setQuotes(data); saveQuotes(data) }
+    }).catch(() => {})
+  }, [])
+
   if (!isAdmin && !hasPermission('view_quotes')) return <AccessDenied />
 
   const sel = quotes.find(q=>q.id===selId)
@@ -79,9 +86,11 @@ export default function Quotes() {
 
   function setStatus(id,status) {
     const q = quotes.find(x => x.id === id)
-    const newArr = quotes.map(x=>x.id===id?{...x,status}:x)
+    const updatedQ = { ...q, status }
+    const newArr = quotes.map(x=>x.id===id ? updatedQ : x)
     setQuotes(newArr)
     saveQuotes(newArr)
+    apiPut(`/api/quotes/${id}`, updatedQ).catch(() => {})
     const action = status === 'Approved' ? ACTIONS.QUOTE_APPROVED : status === 'Sent' ? ACTIONS.QUOTE_SENT : ACTIONS.QUOTE_CREATED
     logActivity(action, 'Quotes', id, `${id} – ${q?.clientName || ''}`, `Quote status set to ${status}.`)
     if (status === 'Approved') {
@@ -144,6 +153,7 @@ export default function Quotes() {
     }
     const updated = saveQuote(n)
     setQuotes(updated)
+    apiPost('/api/quotes', n).catch(() => {})
     logActivity(ACTIONS.QUOTE_CREATED, 'Quotes', n.id, `${n.id} – ${n.clientName}`, `Quote created: ${n.type}.`)
     // Send quote email to client if toggle is on
     if (settings.notifications?.emailOnQuoteSent && c?.email) {

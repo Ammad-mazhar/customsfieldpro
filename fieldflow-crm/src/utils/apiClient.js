@@ -6,6 +6,7 @@
 // - Refresh token is in an httpOnly cookie sent automatically by the browser.
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+console.log('[apiClient] API_URL =', API_URL)
 
 export class AuthorizationError extends Error {
   constructor(msg = 'Access denied') {
@@ -71,6 +72,7 @@ async function refreshAccessToken() {
 }
 
 export async function apiCall(endpoint, options = {}) {
+  console.log('[apiClient] API call to:', API_URL + endpoint)
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,

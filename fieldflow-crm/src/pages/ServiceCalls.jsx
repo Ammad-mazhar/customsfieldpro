@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { getServiceCalls, saveServiceCall, saveServiceCalls } from '../data/store'
+import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { getTechColor } from '../utils/techColors'
 import { getNextNumber } from '../utils/numberGenerator'
 import { useAuth } from '../auth/AuthContext'
@@ -502,6 +503,12 @@ export default function ServiceCallMaster() {
   const [showCreate, setShowCreate]   = useState(false)
   const [toast, setToast]             = useState(null)
 
+  useEffect(() => {
+    apiGet('/api/service-calls').then(data => {
+      if (Array.isArray(data)) { setCalls(data); saveServiceCalls(data) }
+    }).catch(() => {})
+  }, [])
+
   function reload() { setCalls(getServiceCalls()) }
   function flash(msg) { setToast(msg); setTimeout(() => setToast(null), 2500) }
   function callKey(c) { return c.callId || c.id }
@@ -552,6 +559,7 @@ export default function ServiceCallMaster() {
       communicationLog: [...(call.communicationLog || []), entry],
     }
     saveServiceCall(updated)
+    apiPut(`/api/service-calls/${callKey(call)}`, updated).catch(() => {})
     reload()
     setStatusModal(null)
     if (detailCall && callKey(detailCall) === callKey(call)) setDetailCall(updated)
@@ -570,6 +578,7 @@ export default function ServiceCallMaster() {
 
   function handleCreate(record) {
     saveServiceCall(record)
+    apiPost('/api/service-calls', record).catch(() => {})
     reload()
     setShowCreate(false)
     flash(`Call #${record.callId} created.`)

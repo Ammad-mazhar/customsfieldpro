@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getClients, saveClients, deleteClient as storeDeleteClient, generateClientId, getSettings } from '../data/store'
 import { useAuth } from '../auth/AuthContext'
+import { apiGet, apiPost, apiPut, apiDelete } from '../utils/apiClient'
 import { logActivity, ACTIONS } from '../utils/activityLog'
 import AddressAutocomplete from '../components/AddressAutocomplete'
 import FilterDropdown from '../components/FilterDropdown'
@@ -67,6 +68,12 @@ export default function Clients() {
   const [tagInput,        setTagInput]        = useState('')
   const [addlContacts,    setAddlContacts]    = useState([])
 
+  useEffect(() => {
+    apiGet('/api/clients').then(data => {
+      if (Array.isArray(data)) { setClients(data); saveClients(data) }
+    }).catch(() => {})
+  }, [])
+
   const sel = clients.find(c => c.id === selId)
 
   const tabs = [
@@ -123,7 +130,14 @@ export default function Clients() {
       jobs: [],
       invoices: [],
     }
-    update([...clients, newClient])
+    const newArr = [...clients, newClient]
+    setClients(newArr); saveClients(newArr)
+    apiPost('/api/clients', newClient).then(saved => {
+      if (saved?.id && saved.id !== newClient.id) {
+        const synced = newArr.map(c => c.id === newClient.id ? { ...c, id: saved.id } : c)
+        setClients(synced); saveClients(synced)
+      }
+    }).catch(() => {})
     logActivity(ACTIONS.CLIENT_CREATED, 'Clients', String(newClient.id), newClient.name, `New client added: ${newClient.name}.`)
     flash(`Client ${displayName} created`)
     if (andCreateAnother) {
@@ -144,8 +158,10 @@ export default function Clients() {
   }
 
   function saveNotes() {
-    const newArr = clients.map(c => c.id===sel.id ? {...c, notes:noteDraft} : c)
-    update(newArr)
+    const updated = { ...sel, notes: noteDraft }
+    const newArr = clients.map(c => c.id===sel.id ? updated : c)
+    setClients(newArr); saveClients(newArr)
+    apiPut(`/api/clients/${sel.id}`, updated).catch(() => {})
     logActivity(ACTIONS.CLIENT_UPDATED, 'Clients', String(sel.id), sel.name, 'Client notes updated.')
     setEditNote(false)
   }
@@ -155,6 +171,7 @@ export default function Clients() {
     logActivity(ACTIONS.CLIENT_DELETED, 'Clients', String(sel.id), sel.name, `Client "${sel.name}" deleted.`)
     const newArr = storeDeleteClient(sel.id)
     setClients(newArr)
+    apiDelete(`/api/clients/${sel.id}`).catch(() => {})
     setSelId(null)
     setTab('all')
     flash('Client deleted.')
