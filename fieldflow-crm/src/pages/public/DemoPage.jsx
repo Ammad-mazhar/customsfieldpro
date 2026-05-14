@@ -58,9 +58,9 @@ export default function DemoPage() {
   const [loading, setLoading] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
 
-  function handleTryDemo() {
+  async function handleTryDemo() {
     setLoading(true)
-    const err = login('admin@fieldflow.com', 'admin123')
+    const err = await login('admin@fieldflow.com', 'admin123')
     if (!err) {
       navigate('/dashboard')
     } else {

@@ -208,7 +208,7 @@ export default function Login() {
     if (!password)     { setError('Password is required.'); return }
     setLoading(true)
     await new Promise(r => setTimeout(r, 280))
-    const err = login(email, password)
+    const err = await login(email, password)
     setLoading(false)
     if (err) { setError(err); return }
     navigate('/dashboard', { replace: true })
