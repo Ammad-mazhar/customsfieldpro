@@ -60,18 +60,9 @@ app.use(helmet({
 }))
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-const cors = require('cors');
-
-// BEFORE (too restrictive):
-app.use(cors({
-  origin: 'https://fieldflow-crm-sandy.vercel.app',
-  credentials: true
-}));
-
-// AFTER (allows all your Vercel deployments):
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
+    // Allow requests with no origin (mobile apps, Postman)
     if (!origin) return callback(null, true);
 
     // Allow localhost for development
@@ -79,7 +70,7 @@ app.use(cors({
       return callback(null, true);
     }
 
-    // Allow all Vercel preview deployments
+    // Allow all Vercel deployments
     if (origin.includes('vercel.app')) {
       return callback(null, true);
     }
