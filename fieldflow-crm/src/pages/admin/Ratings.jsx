@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { getJobs, getSettings, getClients } from '../../data/store'
+import { getJobs, getSettings, getClients, clientDisplayName } from '../../data/store'
 import { getReviewRequests, getReviewStats, triggerReviewRequest, checkRecentReviewRequest } from '../../utils/reviewRequests'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -541,7 +541,7 @@ export default function Ratings() {
                   <select value={sendClient} onChange={e => { setSendClient(e.target.value); setSendJob('') }}
                     style={{ width: '100%', height: 38, border: '1px solid #e8e9ec', borderRadius: 7, padding: '0 10px', fontSize: 13.5, background: '#fff' }}>
                     <option value="">Select client…</option>
-                    {allClients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {allClients.map(c => <option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                   </select>
                 </div>
                 <div style={{ marginBottom: 20 }}>

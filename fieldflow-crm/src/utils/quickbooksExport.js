@@ -1,4 +1,4 @@
-import { getInvoices, getClients, getJobs } from '../data/store'
+import { getInvoices, getClients, getJobs, clientDisplayName } from '../data/store'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -94,12 +94,10 @@ export function exportClientsToQuickBooks() {
   ]
 
   clients.forEach(c => {
-    const name = (c.name || '').replace(/\t/g, ' ')
-    // Split name into first/last heuristically (last word = last name)
-    const parts = name.split(' ')
-    const lastName = parts.length > 1 ? parts[parts.length - 1] : ''
-    const firstName = parts.length > 1 ? parts.slice(0, -1).join(' ') : name
-    const company = c.type === 'Business' ? name : ''
+    const name = clientDisplayName(c).replace(/\t/g, ' ')
+    const firstName = (c.first_name || '').replace(/\t/g, ' ')
+    const lastName = (c.last_name || '').replace(/\t/g, ' ')
+    const company = (c.company_name || (c.client_type === 'Commercial' || c.type === 'Commercial' || c.type === 'Business' ? name : '')).replace(/\t/g, ' ')
 
     const addr1 = (c.address || c.street || '').replace(/\t/g, ' ')
     const addr2 = [c.city, c.state].filter(Boolean).join(', ').replace(/\t/g, ' ')

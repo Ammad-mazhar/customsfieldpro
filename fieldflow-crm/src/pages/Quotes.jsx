@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getQuotes, saveQuotes, saveQuote, saveJob, getClients, getSettings } from '../data/store'
+import { getQuotes, saveQuotes, saveQuote, saveJob, getClients, getSettings, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { getNextNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { generateQuotePDF, printQuotePDF } from '../utils/generateQuotePDF'
@@ -145,7 +145,7 @@ export default function Quotes() {
     const c=clients.find(x=>x.id===form.clientId)
     const n={
       id: formatQuoteNumber(getNextNumber('quotes')),
-      clientId:form.clientId,clientName:c?.name||'',clientPhone:c?.phone||'',clientEmail:c?.email||'',
+      clientId:form.clientId,clientName:c ? clientDisplayName(c) : '',clientPhone:c?.phone||'',clientEmail:c?.email||'',
       type:form.type,description:form.description,
       created:new Date().toISOString().split('T')[0],expires:form.expires,status:'Sent',
       linkedJobId:null,linkedJobNumber:null,linkedInvoiceId:null,linkedInvoiceNumber:null,
@@ -333,7 +333,7 @@ export default function Quotes() {
                     <select value={form.clientId} onChange={e=>{setForm(p=>({...p,clientId:e.target.value}));setErrs(p=>({...p,clientId:undefined}))}}
                       style={{width:'100%',height:38,border:`1px solid ${errs.clientId?'#dc2626':'#e8e9ec'}`,borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
                       <option value="">— Select client —</option>
-                      {clients.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+                      {clients.map(c=><option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                     </select>
                     {errs.clientId&&<p style={ET}>Required</p>}
                   </div>

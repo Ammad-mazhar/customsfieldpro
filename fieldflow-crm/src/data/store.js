@@ -148,6 +148,14 @@ export function generateClientId() {
   return `CLT-${String(max + 1).padStart(4, '0')}`
 }
 
+// Returns a display-ready full name, handling both API shape (first_name/last_name)
+// and the legacy localStorage shape (name).
+export function clientDisplayName(c) {
+  if (!c) return ''
+  const full = `${c.first_name || ''} ${c.last_name || ''}`.trim()
+  return full || c.company_name || c.name || 'Unnamed Client'
+}
+
 export function deleteClient(id) {
   const updated = getClients().filter(c => c.id !== id)
   persist(KEYS.clients, updated)

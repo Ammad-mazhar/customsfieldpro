@@ -6,17 +6,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const AuthContext = createContext(null)
 
-// ── Demo users ────────────────────────────────────────────────────────────────
-const DEMO_USERS = [
-  { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', name: 'Admin User', role: 'admin', tenantId: 'demo-tenant' },
-  { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1', tenantId: 'demo-tenant' },
-  { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2', tenantId: 'demo-tenant' },
-  { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3', tenantId: 'demo-tenant' },
-]
-
-const DEMO_EMAILS = new Set(DEMO_USERS.map(u => u.email))
-
 const SESSION_KEY = 'fieldflow_session'
+const TOKEN_KEY = 'token'
 
 function loadSession() {
   try {
@@ -25,17 +16,23 @@ function loadSession() {
   } catch { return null }
 }
 
-function saveSession(user) {
+function saveSession(user, token) {
   localStorage.setItem(SESSION_KEY, JSON.stringify(user))
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token)
+  }
 }
 
 function clearSession() {
   localStorage.removeItem(SESSION_KEY)
+  localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem('user') // Clean up old key if exists
 }
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => loadSession())
+  const [loading, setLoading] = useState(false)
 
   // Keep session in sync across tabs
   useEffect(() => {
@@ -50,45 +47,60 @@ export function AuthProvider({ children }) {
 
   async function login(email, password) {
     try {
+      setLoading(true)
       const normalizedEmail = email.toLowerCase().trim()
 
-      // Demo accounts always take priority
-      const demoUser = DEMO_USERS.find(
-        u => u.email === normalizedEmail && u.password === password
-      )
-      if (demoUser) {
-        const { password: _, ...safeUser } = demoUser
-        saveSession(safeUser)
-        setUser(safeUser)
+      // Call backend API for authentication
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: normalizedEmail, password })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        return data.error || 'Invalid email or password.'
+      }
+
+      if (data.success && data.token && data.user) {
+        // Map backend user structure to frontend structure
+        const mappedUser = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name || data.user.full_name,
+          role: data.user.role,
+          tenantId: data.user.tenant_id || 'demo-tenant',
+          technicianId: data.user.technician_id
+        }
+
+        saveSession(mappedUser, data.token)
+        setUser(mappedUser)
         return null
       }
 
-      // Check localStorage users
-      let storedUsers = []
-      try {
-        const raw = localStorage.getItem('fieldflow_users')
-        const parsed = raw ? JSON.parse(raw) : []
-        storedUsers = Array.isArray(parsed) ? parsed : []
-      } catch { storedUsers = [] }
-
-      const found = storedUsers.find(
-        u => u.email?.toLowerCase() === normalizedEmail && u.password === password
-      )
-      if (!found) return 'Invalid email or password.'
-
-      const { password: _, ...safeUser } = found
-      saveSession(safeUser)
-      setUser(safeUser)
-      return null
-    } catch {
-      return 'An unexpected error occurred. Please try again.'
+      return 'Login failed. Please try again.'
+    } catch (error) {
+      console.error('Login error:', error)
+      return 'Network error. Please check your connection and try again.'
+    } finally {
+      setLoading(false)
     }
   }
 
   async function logout() {
     try {
-      await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' })
-    } catch { /* ignore */ }
+      await fetch(`${API_URL}/api/auth/logout`, { 
+        method: 'POST', 
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
+        }
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
     clearAccessToken()
     clearSession()
     setUser(null)
@@ -97,18 +109,14 @@ export function AuthProvider({ children }) {
   function updateProfile(updates) {
     if (!user) return 'Not logged in.'
     const updated = { ...user, ...updates }
-    saveSession(updated)
+    saveSession(updated, localStorage.getItem(TOKEN_KEY))
     setUser(updated)
     return null
   }
 
   function changePassword(currentPassword, newPassword) {
-    if (DEMO_EMAILS.has(user?.email)) {
-      return 'Demo account passwords cannot be changed.'
-    }
-    const found = DEMO_USERS.find(u => u.id === user?.id)
-    if (found && found.password !== currentPassword) return 'Current password is incorrect.'
-    return null
+    // TODO: Implement backend password change
+    return 'Password change not yet implemented.'
   }
 
   function hasPermission(key) {
@@ -125,7 +133,12 @@ export function AuthProvider({ children }) {
       role: user?.role ?? null,
       isAdmin: user?.role === 'admin',
       isStaff: user?.role === 'staff',
-      login, logout, updateProfile, changePassword, hasPermission,
+      loading,
+      login, 
+      logout, 
+      updateProfile, 
+      changePassword, 
+      hasPermission,
     }}>
       {children}
     </AuthContext.Provider>

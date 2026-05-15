@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getRequests, saveRequests, saveRequest, saveJob, saveQuote, getClients, getSettings } from '../data/store'
+import { getRequests, saveRequests, saveRequest, saveJob, saveQuote, getClients, getSettings, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { useAuth } from '../auth/AuthContext'
 import AddressAutocomplete from '../components/AddressAutocomplete'
@@ -157,7 +157,7 @@ export default function Requests() {
     const n = {
       id:`REQ-${Date.now()}`,
       clientId: c?.id||0,
-      clientName: c?.name||form.newClientName,
+      clientName: c ? clientDisplayName(c) : form.newClientName,
       clientPhone: c?.phone||form.phone,
       type: form.type||'Service Request',
       description: form.issueSymptoms||form.scopeFromOffice||'',
@@ -390,7 +390,7 @@ export default function Requests() {
                           setErrs(p=>({...p,clientId:undefined}))
                         }} style={{width:'100%',height:38,border:`1px solid ${errs.clientId?'#dc2626':'#e5e7eb'}`,borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
                           <option value="">— Select client —</option>
-                          {clients.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+                          {clients.map(c=><option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                         </select>
                         {errs.clientId&&<p style={ET}>{errs.clientId}</p>}
                       </>

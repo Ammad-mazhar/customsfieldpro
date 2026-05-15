@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import {
   getMaintenancePlans, saveMaintenancePlan, deleteMaintenancePlan,
-  getClients, getSettings, saveJobs, getJobs, saveJob,
+  getClients, getSettings, saveJobs, getJobs, saveJob, clientDisplayName,
 } from '../data/store'
 import { logActivity, ACTIONS } from '../utils/activityLog'
 import { generateCompletionReport } from '../utils/generateCompletionReport'
@@ -301,7 +301,7 @@ export default function Maintenance() {
 
   function handleClientChange(clientId) {
     const c = clients.find(x => String(x.id) === clientId)
-    setForm(p => ({ ...p, clientId, clientName: c?.name || '' }))
+    setForm(p => ({ ...p, clientId, clientName: c ? clientDisplayName(c) : '' }))
     setErrs(p => ({ ...p, clientId: undefined }))
   }
 
@@ -611,7 +611,7 @@ export default function Maintenance() {
                     <LabeledField label="Client" required error={errs.clientId}>
                       <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} style={sel(errs.clientId)}>
                         <option value="">— Select client —</option>
-                        {clients.map(c => <option key={c.id} value={String(c.id)}>{c.name}</option>)}
+                        {clients.map(c => <option key={c.id} value={String(c.id)}>{clientDisplayName(c)}</option>)}
                       </select>
                     </LabeledField>
 

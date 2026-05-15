@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getClients, getJobs, getInvoices } from '../data/store'
+import { getClients, getJobs, getInvoices, clientDisplayName } from '../data/store'
 
 export default function GlobalSearch() {
   const [open,    setOpen]    = useState(false)
@@ -33,8 +33,9 @@ export default function GlobalSearch() {
     const q = query.toLowerCase()
     const hits = []
     getClients().forEach(c => {
-      if (c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.phone?.includes(q)) {
-        hits.push({ type: 'client', icon: '👤', label: c.name, sub: c.email || c.phone || '', path: '/clients', id: c.id })
+      const cName = clientDisplayName(c)
+      if (cName.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.phone?.includes(q)) {
+        hits.push({ type: 'client', icon: '👤', label: cName, sub: c.email || c.phone || '', path: '/clients', id: c.id })
       }
     })
     getJobs().forEach(j => {

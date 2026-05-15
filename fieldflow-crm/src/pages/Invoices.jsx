@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getInvoices, saveInvoices, saveInvoice, getClients, getJobs, getSettings } from '../data/store'
+import { getInvoices, saveInvoices, saveInvoice, getClients, getJobs, getSettings, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { getNextNumber, formatInvoiceNumber } from '../utils/numberGenerator'
 import { generateInvoicePDF, printInvoicePDF } from '../utils/generateInvoicePDF'
@@ -192,7 +192,7 @@ export default function Invoices() {
     const {sub,tax,grand}=calcTotals()
     const n={
       id: formatInvoiceNumber(getNextNumber('invoices')),
-      clientId:form.clientId,clientName:c?.name||'',clientPhone:c?.phone||'',
+      clientId:form.clientId,clientName:c ? clientDisplayName(c) : '',clientPhone:c?.phone||'',
       clientEmail:c?.email||'',clientAddress:c?`${c.address}, ${c.city}, ${c.state}`:'',
       jobRef:form.jobRef,linkedJobId:form.jobRef||null,
       linkedQuoteNumber:null,linkedQuoteId:null,
@@ -411,7 +411,7 @@ export default function Invoices() {
                       <select value={form.clientId} onChange={e=>{setForm(p=>({...p,clientId:e.target.value,jobRef:''}));setErrs(p=>({...p,clientId:undefined}))}}
                         style={{width:'100%',height:38,border:`1px solid ${errs.clientId?'#dc2626':'#e8e9ec'}`,borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
                         <option value="">— Select client —</option>
-                        {clients.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+                        {clients.map(c=><option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                       </select>
                       {errs.clientId&&<p style={ET}>Required</p>}
                     </div>

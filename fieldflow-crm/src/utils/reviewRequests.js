@@ -1,4 +1,4 @@
-import { getSettings } from '../data/store'
+import { getSettings, clientDisplayName } from '../data/store'
 import { logActivity, ACTIONS } from './activityLog'
 import { addInboxMessage } from '../data/store'
 import { replacePlaceholders } from './reviewEmailTemplate'
@@ -171,7 +171,7 @@ async function sendReviewRequest(job, client, technician, reviewSettings, fullSe
     try {
       addInboxMessage({
         clientId:     client.id || client.clientId || job.clientId,
-        clientName:   client.name || job.clientName,
+        clientName:   clientDisplayName(client) || job.clientName,
         direction:    'outgoing',
         channel:      'sms',
         body:         smsBody,
@@ -196,7 +196,7 @@ async function sendReviewRequest(job, client, technician, reviewSettings, fullSe
     try {
       addInboxMessage({
         clientId:     client.id || client.clientId || job.clientId,
-        clientName:   client.name || job.clientName,
+        clientName:   clientDisplayName(client) || job.clientName,
         direction:    'outgoing',
         channel:      'email',
         subject:      emailSubject,

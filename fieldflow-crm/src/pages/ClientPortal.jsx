@@ -8,6 +8,7 @@ import {
   saveRequest,
   saveQuote,
   getSettings,
+  clientDisplayName,
 } from '../data/store'
 import { generateInvoicePDF } from '../utils/generateInvoicePDF'
 import { generateQuotePDF } from '../utils/generateQuotePDF'
@@ -319,7 +320,7 @@ export default function ClientPortal() {
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <p style={{ fontSize: 13, color: '#93c5fd', margin: '0 0 4px', fontWeight: 500 }}>Welcome back</p>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.5px' }}>
-            {client.name}
+            {clientDisplayName(client)}
           </h1>
           <p style={{ fontSize: 13, color: '#bfdbfe', margin: 0 }}>
             {client.address}, {client.city}, {client.state} {client.zip}
@@ -539,7 +540,7 @@ export default function ClientPortal() {
             </p>
             <RequestForm
               clientId={client.id}
-              clientName={client.name}
+              clientName={clientDisplayName(client)}
               clientPhone={client.phone}
             />
           </Section>

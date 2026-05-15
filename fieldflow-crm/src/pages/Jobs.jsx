@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getJobs, saveJobs, saveJob, getClients, saveInvoice, getInvoices, getSettings, saveQuote, getQuotes } from '../data/store'
+import { getJobs, saveJobs, saveJob, getClients, saveInvoice, getInvoices, getSettings, saveQuote, getQuotes, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut, apiDelete } from '../utils/apiClient'
 import { getNextNumber, peekNextNumber, formatJobNumber, formatInvoiceNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { useAuth } from '../auth/AuthContext'
@@ -375,7 +375,7 @@ export default function Jobs() {
     const jobId = formatJobNumber(getNextNumber('jobs'))
     const newJob = {
       id: jobId,
-      clientId: form.clientId, clientName: c?.name || '',
+      clientId: form.clientId, clientName: c ? clientDisplayName(c) : '',
       clientPhone: form.clientPhone, clientEmail: c?.email || '', clientAddress: form.clientAddress,
       type: form.type, title: form.title, description: form.description,
       internalNotes: form.internalNotes, notes: form.internalNotes, claimNumber: form.claimNumber,
@@ -1117,7 +1117,7 @@ export default function Jobs() {
                     <label style={LB}>Client<Req /></label>
                     <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} style={selStyle('clientId')}>
                       <option value="">— Select client —</option>
-                      {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                      {clients.map(c => <option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                     </select>
                     {errs.clientId && <p style={ET}>Required</p>}
                   </div>

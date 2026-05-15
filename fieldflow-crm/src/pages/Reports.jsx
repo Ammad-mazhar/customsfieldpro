@@ -3,7 +3,7 @@ import {
   ResponsiveContainer, LineChart, Line, BarChart, Bar,
   PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts'
-import { getInvoices, getJobs, getClients, getQuotes, getRequests } from '../data/store'
+import { getInvoices, getJobs, getClients, getQuotes, getRequests, clientDisplayName } from '../data/store'
 import { exportInvoicesToQuickBooks, exportClientsToQuickBooks, exportPaymentsToQuickBooks } from '../utils/quickbooksExport'
 
 // ─── Colour palette ───────────────────────────────────────────────────────────
@@ -702,7 +702,7 @@ function ExportTab() {
   function exportClients() {
     const data = getClients()
     downloadFile(
-      toCSV(data.map(c => ({ id: c.id, name: c.name, phone: c.phone, email: c.email, type: c.type, since: c.since, balance: c.balance, city: c.city, state: c.state })),
+      toCSV(data.map(c => ({ id: c.id, name: clientDisplayName(c), phone: c.phone, email: c.email, type: c.type, since: c.since, balance: c.balance, city: c.city, state: c.state })),
         ['id','name','phone','email','type','since','balance','city','state']),
       'clients-export.csv'
     )
