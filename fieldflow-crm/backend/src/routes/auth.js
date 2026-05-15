@@ -1,106 +1,106 @@
-const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
-const { createClient } = require('@supabase/supabase-js');
+const express  = require('express')
+const router   = express.Router()
+const jwt      = require('jsonwebtoken')
+const supabase = require('../utils/supabase')
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+const JWT_SECRET  = process.env.JWT_SECRET || 'your-secret-key-change-this'
+const JWT_EXPIRES = '7d'
 
-// Login route
+// POST /api/auth/login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+    return res.status(400).json({ error: 'Email and password are required' })
   }
 
   try {
-    console.log(`🔐 Login attempt for: ${email}`);
-
-    // Call PostgreSQL function to verify password
+    // Verify password via PostgreSQL crypt() function
     const { data, error } = await supabase
-      .rpc('authenticate_user', { 
-        user_email: email, 
-        user_password: password 
-      });
+      .rpc('authenticate_user', { user_email: email, user_password: password })
 
-    if (error) {
-      console.error('Supabase RPC error:', error);
-      return res.status(401).json({ error: 'Invalid email or password' });
+    if (error || !data || data.length === 0) {
+      return res.status(401).json({ error: 'Invalid email or password' })
     }
 
-    if (!data || data.length === 0) {
-      console.log('❌ No user found or invalid password');
-      return res.status(401).json({ error: 'Invalid email or password' });
+    const user = data[0]
+
+    // Fetch tenant_id separately — include it in the token so all routes can scope queries
+    const { data: fullUser } = await supabase
+      .from('users')
+      .select('tenant_id, is_active, full_name')
+      .eq('id', user.id)
+      .single()
+
+    if (fullUser?.is_active === false) {
+      return res.status(401).json({ error: 'Account is inactive' })
     }
 
-    const user = data[0];
-    console.log('✅ User authenticated:', user.email);
-
-    // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'your-secret-key-change-this',
-      { expiresIn: '7d' }
-    );
+      {
+        id:        user.id,
+        email:     user.email,
+        role:      user.role,
+        tenant_id: fullUser?.tenant_id || null,
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES }
+    )
 
     res.json({
       success: true,
       token,
-      user: { 
-        id: user.id, 
-        email: user.email, 
-        role: user.role, 
-        name: user.full_name 
-      }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error' });
+      user: {
+        id:        user.id,
+        email:     user.email,
+        role:      user.role,
+        name:      fullUser?.full_name || user.full_name,
+        tenant_id: fullUser?.tenant_id || null,
+      },
+    })
+  } catch (err) {
+    console.error('Login error:', err)
+    res.status(500).json({ error: 'Server error' })
   }
-});
+})
 
-// Logout route
+// POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  res.json({ success: true, message: 'Logged out successfully' });
-});
+  res.json({ success: true, message: 'Logged out successfully' })
+})
 
-// Get current user
+// GET /api/auth/me — verify token and return current user
 router.get('/me', async (req, res) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
-  
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
+  const header = req.headers.authorization
+  if (!header?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token provided' })
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-this');
-    
+    const decoded = jwt.verify(header.slice(7), JWT_SECRET)
+
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, email, role, full_name')
+      .select('id, email, role, full_name, tenant_id, is_active')
       .eq('id', decoded.id)
-      .single();
+      .single()
 
-    if (error || !user) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+    if (error || !user) return res.status(401).json({ error: 'Invalid token' })
+    if (user.is_active === false) return res.status(401).json({ error: 'Account is inactive' })
 
     res.json({
       success: true,
       user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        name: user.full_name
-      }
-    });
-  } catch (error) {
-    console.error('Auth verification error:', error);
-    res.status(401).json({ error: 'Invalid token' });
+        id:        user.id,
+        email:     user.email,
+        role:      user.role,
+        name:      user.full_name,
+        tenant_id: user.tenant_id,
+      },
+    })
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' })
   }
-});
+})
 
-module.exports = router;
+module.exports = router
