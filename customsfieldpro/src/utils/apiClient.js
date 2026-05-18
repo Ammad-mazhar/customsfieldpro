@@ -32,11 +32,11 @@ let _accessToken = null
 let _onUnauthenticated = null   // called on 401 → redirect to login
 let _onPlanUpgrade = null       // called on 402 → show upgrade modal
 
-export function setAccessToken(token)           { _accessToken = token }
-export function getAccessToken()                { return _accessToken }
-export function clearAccessToken()              { _accessToken = null }
-export function setOnUnauthenticated(callback)  { _onUnauthenticated = callback }
-export function setOnPlanUpgrade(callback)      { _onPlanUpgrade = callback }
+export function setAccessToken(token) { _accessToken = token }
+export function getAccessToken() { return _accessToken }
+export function clearAccessToken() { _accessToken = null }
+export function setOnUnauthenticated(callback) { _onUnauthenticated = callback }
+export function setOnPlanUpgrade(callback) { _onPlanUpgrade = callback }
 
 export async function apiCall(endpoint, options = {}) {
   console.log('[apiClient] API call to:', API_URL + endpoint)
@@ -45,10 +45,11 @@ export async function apiCall(endpoint, options = {}) {
     ...options.headers,
   }
 
-  if (_accessToken) {
-    headers['Authorization'] = `Bearer ${_accessToken}`
+  // Check both memory and localStorage
+  const token = _accessToken || localStorage.getItem('token')
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
   }
-
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
@@ -95,8 +96,8 @@ export async function apiGet(endpoint, queryParams) {
 
 export async function apiPost(endpoint, body) {
   const res = await apiCall(endpoint, {
-    method:  'POST',
-    body:    body !== undefined ? JSON.stringify(body) : undefined,
+    method: 'POST',
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Request failed' }))
@@ -108,7 +109,7 @@ export async function apiPost(endpoint, body) {
 export async function apiPut(endpoint, body) {
   const res = await apiCall(endpoint, {
     method: 'PUT',
-    body:   JSON.stringify(body),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Request failed' }))
@@ -120,7 +121,7 @@ export async function apiPut(endpoint, body) {
 export async function apiPatch(endpoint, body) {
   const res = await apiCall(endpoint, {
     method: 'PATCH',
-    body:   JSON.stringify(body),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Request failed' }))

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { readPermissions } from '../data/permissions'
-import { clearAccessToken } from '../utils/apiClient'
+import { setAccessToken, clearAccessToken } from '../utils/apiClient'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
@@ -76,6 +76,7 @@ export function AuthProvider({ children }) {
         }
 
         saveSession(mappedUser, data.token)
+        setAccessToken(data.token)
         setUser(mappedUser)
         return null
       }
