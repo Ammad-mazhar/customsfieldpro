@@ -1,9 +1,7 @@
 // Centralized API client.
 // - Attaches Authorization header automatically.
-// - On 401: silently attempts token refresh, then retries once.
+// - On 401: clears token and throws AuthenticationError immediately.
 // - On 403: throws AuthorizationError (show Access Denied, do NOT redirect).
-// - Access token is stored in memory via module-level variable — NOT localStorage.
-// - Refresh token is in an httpOnly cookie sent automatically by the browser.
 
 console.log('API URL:', import.meta.env.VITE_API_URL)
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
@@ -30,47 +28,15 @@ export class PlanUpgradeError extends Error {
   }
 }
 
-// Access token lives in memory only — refreshed via the httpOnly refresh token cookie.
-// This prevents XSS from reading the token out of localStorage.
 let _accessToken = null
-let _onUnauthenticated = null   // callback when all refresh attempts fail → redirect to login
-let _onPlanUpgrade = null       // callback when 402 received — show upgrade modal
+let _onUnauthenticated = null   // called on 401 → redirect to login
+let _onPlanUpgrade = null       // called on 402 → show upgrade modal
 
 export function setAccessToken(token)           { _accessToken = token }
 export function getAccessToken()                { return _accessToken }
 export function clearAccessToken()              { _accessToken = null }
 export function setOnUnauthenticated(callback)  { _onUnauthenticated = callback }
 export function setOnPlanUpgrade(callback)      { _onPlanUpgrade = callback }
-
-let _refreshPromise = null  // deduplicate concurrent refresh calls
-
-async function refreshAccessToken() {
-  if (_refreshPromise) return _refreshPromise
-
-  _refreshPromise = fetch(`${API_URL}/api/auth/refresh`, {
-    method:      'POST',
-    credentials: 'include',  // sends the httpOnly refresh token cookie
-    headers:     { 'Content-Type': 'application/json' },
-  })
-    .then(async res => {
-      if (!res.ok) {
-        clearAccessToken()
-        _refreshPromise = null
-        return null
-      }
-      const data = await res.json()
-      setAccessToken(data.access_token)
-      _refreshPromise = null
-      return data.access_token
-    })
-    .catch(() => {
-      clearAccessToken()
-      _refreshPromise = null
-      return null
-    })
-
-  return _refreshPromise
-}
 
 export async function apiCall(endpoint, options = {}) {
   console.log('[apiClient] API call to:', API_URL + endpoint)
@@ -92,16 +58,12 @@ export async function apiCall(endpoint, options = {}) {
   // Propagate X-Request-ID for error reporting
   const requestId = response.headers.get('X-Request-ID')
 
-  // Token expired — attempt refresh and retry once
   if (response.status === 401) {
-    const newToken = await refreshAccessToken()
-    if (!newToken) {
-      // Refresh failed — session is gone
-      if (_onUnauthenticated) _onUnauthenticated()
-      throw new AuthenticationError()
-    }
-    // Retry original request with new token
-    return apiCall(endpoint, options)
+    clearAccessToken()
+    localStorage.removeItem('token')
+    localStorage.removeItem('customsfieldpro_session')
+    if (_onUnauthenticated) _onUnauthenticated()
+    throw new AuthenticationError()
   }
 
   if (response.status === 402) {
