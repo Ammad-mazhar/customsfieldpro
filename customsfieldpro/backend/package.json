@@ -1,0 +1,37 @@
+{
+  "name": "customsfieldpro-backend",
+  "version": "1.0.0",
+  "description": "CustomsFieldPro — Node.js/Express API",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.1.5",
+    "express-slow-down": "^3.1.0",
+    "express-validator": "^7.3.2",
+    "helmet": "^7.1.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "nodemon": "^3.0.3",
+    "rotating-file-stream": "^3.2.9",
+    "uuid": "^9.0.0",
+    "winston": "^3.19.0",
+    "xss-clean": "^0.1.4"
+  }
+}
