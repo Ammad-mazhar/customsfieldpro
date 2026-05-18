@@ -100,7 +100,7 @@ function Logo({ light = false }) {
           <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      <span style={{ fontSize: 18, fontWeight: 800, color: light ? '#fff' : '#1a1d23', letterSpacing: '-0.4px' }}>FieldFlow</span>
+      <span style={{ fontSize: 18, fontWeight: 800, color: light ? '#fff' : '#1a1d23', letterSpacing: '-0.4px' }}>CustomsFieldPro</span>
     </Link>
   )
 }
@@ -303,7 +303,7 @@ export default function Landing() {
 
           <p style={{ textAlign: 'center', fontSize: 13, color: '#9ca3af', marginTop: 32 }}>
             All plans include SSL encryption, daily backups, and 99.9% uptime SLA.
-            <br />Need a custom plan? <a href="mailto:sales@fieldflow.app" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>Contact sales</a>
+            <br />Need a custom plan? <a href="mailto:sales@customsfieldpro.app" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>Contact sales</a>
           </p>
         </div>
       </section>
@@ -315,7 +315,7 @@ export default function Landing() {
             Ready to grow your business?
           </h2>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', margin: '0 0 32px', lineHeight: 1.6 }}>
-            Join hundreds of field service businesses that trust FieldFlow to manage their operations.
+            Join hundreds of field service businesses that trust CustomsFieldPro to manage their operations.
           </p>
           <Link to="/register"
             style={{ height: 52, padding: '0 36px', background: '#fff', color: '#2563eb', border: 'none', borderRadius: 12, fontSize: 15.5, fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', letterSpacing: '-0.2px' }}>
@@ -360,7 +360,7 @@ export default function Landing() {
             ))}
           </div>
           <div style={{ borderTop: '1px solid #1f2937', paddingTop: 24, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <p style={{ fontSize: 13, color: '#4b5563', margin: 0 }}>© {new Date().getFullYear()} FieldFlow CRM. All rights reserved.</p>
+            <p style={{ fontSize: 13, color: '#4b5563', margin: 0 }}>© {new Date().getFullYear()} CustomsFieldPro. All rights reserved.</p>
             <div style={{ display: 'flex', gap: 20 }}>
               {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(l => (
                 <a key={l} href="#" style={{ fontSize: 13, color: '#4b5563', textDecoration: 'none' }}>{l}</a>

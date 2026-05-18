@@ -71,7 +71,7 @@ function Navbar({ navigate }) {
     }}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 22 }}>🏠</span>
-        <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>FieldFlow</span>
+        <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>CustomsFieldPro</span>
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <Link to="/pricing" style={{ color: '#2563eb', textDecoration: 'none', fontSize: 15, fontWeight: 600 }}>Pricing</Link>
@@ -103,7 +103,7 @@ function Footer() {
         <a href="#" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14 }}>Privacy</a>
         <a href="#" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14 }}>Terms</a>
       </div>
-      <div style={{ fontSize: 13 }}>&copy; {new Date().getFullYear()} FieldFlow CRM. All rights reserved.</div>
+      <div style={{ fontSize: 13 }}>&copy; {new Date().getFullYear()} CustomsFieldPro. All rights reserved.</div>
     </footer>
   )
 }
@@ -322,7 +322,7 @@ export default function PricingPage() {
           Ready to get started?
         </h2>
         <p style={{ color: '#bfdbfe', fontSize: 17, margin: '0 0 28px' }}>
-          Try FieldFlow free for 14 days. No credit card needed.
+          Try CustomsFieldPro free for 14 days. No credit card needed.
         </p>
         <button
           onClick={() => navigate('/register')}

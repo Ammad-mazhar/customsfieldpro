@@ -61,7 +61,7 @@ export default function SignatureDocument({ job, clientName, clientSignature, cl
           <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, fontFamily: 'system-ui, sans-serif' }}>
             Document generated: {new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}
           </p>
-          <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, fontFamily: 'system-ui, sans-serif' }}>FieldFlow CRM</p>
+          <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, fontFamily: 'system-ui, sans-serif' }}>CustomsFieldPro</p>
         </div>
       </div>
     </div>

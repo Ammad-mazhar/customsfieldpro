@@ -51,7 +51,7 @@ export function generateCompletionReport(job, completionData = {}) {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(20)
   doc.setTextColor(255, 255, 255)
-  doc.text('FieldFlow CRM', margin, 34)
+  doc.text('CustomsFieldPro', margin, 34)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
@@ -254,7 +254,7 @@ export function generateCompletionReport(job, completionData = {}) {
   doc.setFontSize(8)
   doc.setTextColor(255, 255, 255)
   const footerLeft = [co.name, co.address, co.phone].filter(Boolean).join('  ·  ')
-  doc.text(footerLeft || 'FieldFlow CRM', margin, footerY + 16)
+  doc.text(footerLeft || 'CustomsFieldPro', margin, footerY + 16)
   doc.text(`Generated: ${new Date().toLocaleString()}`, W - margin, footerY + 16, { align: 'right' })
   doc.text('COMPLETION REPORT — CONFIDENTIAL', W / 2, footerY + 27, { align: 'center' })
 

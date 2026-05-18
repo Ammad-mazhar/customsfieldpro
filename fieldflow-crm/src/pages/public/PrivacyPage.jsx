@@ -9,7 +9,7 @@ function Logo({ onClick }) {
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>FieldFlow</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>CustomsFieldPro</span>
     </div>
   )
 }
@@ -22,14 +22,14 @@ const SECTIONS = [
 • Account information: name, email address, company name, phone number, and password.
 • Business data: client records, job details, invoices, schedules, and technician information you enter into the platform.
 • Payment information: billing address and payment method details (processed securely via Stripe — we never store raw card numbers).
-• Usage data: how you interact with FieldFlow, features used, pages visited, and session duration.
+• Usage data: how you interact with CustomsFieldPro, features used, pages visited, and session duration.
 • Device data: IP address, browser type, operating system, and device identifiers.`,
   },
   {
     title: '2. How We Use Your Information',
     body: `We use the information we collect to:
 
-• Provide, operate, and improve the FieldFlow platform and services.
+• Provide, operate, and improve the CustomsFieldPro platform and services.
 • Process transactions and send related information including purchase confirmations and invoices.
 • Send technical notices, updates, security alerts, and support messages.
 • Respond to comments and questions and provide customer service.
@@ -44,7 +44,7 @@ We do not sell your personal information to third parties.`,
     body: `We may share your information with:
 
 • Service providers: third-party vendors who perform services on our behalf (hosting, analytics, email delivery, payment processing). These providers are contractually obligated to keep your data confidential.
-• Business transfers: if FieldFlow is acquired or merges with another company, your information may be transferred as part of that transaction.
+• Business transfers: if CustomsFieldPro is acquired or merges with another company, your information may be transferred as part of that transaction.
 • Legal requirements: we may disclose your information if required by law, court order, or governmental authority.
 • With your consent: we may share your information for any other purpose with your explicit consent.
 
@@ -71,7 +71,7 @@ No method of transmission over the internet is 100% secure. We strive to protect
 • After 30 days, all your data is permanently deleted from our systems.
 • Some information may be retained for longer periods where required by law or for legitimate business purposes such as fraud prevention.
 
-You can request deletion of your data at any time by contacting support@fieldflowcrm.com.`,
+You can request deletion of your data at any time by contacting support@customsfieldprocrm.com.`,
   },
   {
     title: '6. Cookies',
@@ -93,24 +93,24 @@ You can control cookie settings through your browser. Disabling cookies may affe
 • Portability: receive your data in a structured, machine-readable format.
 • Objection: object to processing of your data for certain purposes.
 
-To exercise any of these rights, contact us at privacy@fieldflowcrm.com. We will respond within 30 days.`,
+To exercise any of these rights, contact us at privacy@customsfieldprocrm.com. We will respond within 30 days.`,
   },
   {
     title: '8. Changes to This Policy',
     body: `We may update this Privacy Policy from time to time. We will notify you of any material changes by:
 
 • Sending an email to the address associated with your account.
-• Displaying a notice within the FieldFlow platform.
+• Displaying a notice within the CustomsFieldPro platform.
 
-Your continued use of FieldFlow after the effective date of a revised policy constitutes your acceptance of the changes.`,
+Your continued use of CustomsFieldPro after the effective date of a revised policy constitutes your acceptance of the changes.`,
   },
   {
     title: '9. Contact Us',
     body: `If you have questions about this Privacy Policy or our data practices, contact us at:
 
-FieldFlow CRM
-Email: privacy@fieldflowcrm.com
-Support: support@fieldflowcrm.com
+CustomsFieldPro
+Email: privacy@customsfieldprocrm.com
+Support: support@customsfieldprocrm.com
 
 We take privacy concerns seriously and will respond within 2 business days.`,
   },
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
 
         <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 10, padding: '16px 20px', marginBottom: 40 }}>
           <p style={{ fontSize: 14, color: '#166534', lineHeight: 1.65 }}>
-            <strong>Summary:</strong> We collect only what we need to run your account. We never sell your data. You can export or delete everything at any time. If you have questions, email <a href="mailto:privacy@fieldflowcrm.com" style={{ color: '#16A34A' }}>privacy@fieldflowcrm.com</a>.
+            <strong>Summary:</strong> We collect only what we need to run your account. We never sell your data. You can export or delete everything at any time. If you have questions, email <a href="mailto:privacy@customsfieldprocrm.com" style={{ color: '#16A34A' }}>privacy@customsfieldprocrm.com</a>.
           </p>
         </div>
 

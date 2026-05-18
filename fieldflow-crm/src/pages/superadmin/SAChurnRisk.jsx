@@ -39,9 +39,9 @@ const RISK_SIGNALS = [
 ]
 
 const ACTION_TEMPLATES = {
-  critical: "Hi {name}, we noticed you haven't been active recently. We'd love to understand any challenges — book a free call with our success team and we'll help you get the most out of FieldFlow.",
+  critical: "Hi {name}, we noticed you haven't been active recently. We'd love to understand any challenges — book a free call with our success team and we'll help you get the most out of CustomsFieldPro.",
   high:     "Hi {name}, as a valued customer, your success matters to us. We have some tips and features that could make a big difference for your team. Can we schedule a quick check-in?",
-  medium:   "Hi {name}, here are some FieldFlow tips based on your usage that might save your team hours each week...",
+  medium:   "Hi {name}, here are some CustomsFieldPro tips based on your usage that might save your team hours each week...",
 }
 
 export default function SAChurnRisk() {

@@ -7,7 +7,7 @@ export function generateReviewEmailHTML(vars) {
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
       <!-- Header -->
       <div style="background: #185FA5; padding: 30px; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 24px;">${vars.company_name || 'FieldFlow CRM'}</h1>
+        <h1 style="color: white; margin: 0; font-size: 24px;">${vars.company_name || 'CustomsFieldPro'}</h1>
         <p style="color: #B3D4F5; margin: 5px 0 0;">${vars.company_tagline || 'HVAC · Plumbing · Electrical'}</p>
       </div>
       <!-- Body -->
@@ -38,7 +38,7 @@ export function generateReviewEmailHTML(vars) {
       <!-- Footer -->
       <div style="background: #f5f5f5; padding: 20px 30px; text-align: center;">
         <p style="color: #888; font-size: 12px; margin: 0;">
-          ${vars.company_name || 'FieldFlow CRM'} · ${vars.company_address || ''}
+          ${vars.company_name || 'CustomsFieldPro'} · ${vars.company_address || ''}
           <br/>
           <a href="#unsubscribe" style="color: #888;">Unsubscribe from review requests</a>
         </p>

@@ -1,5 +1,5 @@
 -- ============================================================
--- FieldFlow CRM — Multi-tenant Database Schema
+-- CustomsFieldPro — Multi-tenant Database Schema
 -- Run in Supabase SQL Editor
 -- ============================================================
 

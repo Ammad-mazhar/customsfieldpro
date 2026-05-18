@@ -7,7 +7,7 @@ import { logActivity, ACTIONS } from '../utils/activityLog'
 const SAMPLE_USERS = [
   {
     id: 'user-1',
-    email: 'admin@fieldflow.com',
+    email: 'admin@customsfieldpro.com',
     password: 'admin123',
     name: 'Admin User',
     role: 'admin',
@@ -15,7 +15,7 @@ const SAMPLE_USERS = [
   },
   {
     id: 'user-2',
-    email: 'moore@fieldflow.com',
+    email: 'moore@customsfieldpro.com',
     password: 'staff123',
     name: 'D. Moore',
     role: 'staff',
@@ -24,7 +24,7 @@ const SAMPLE_USERS = [
   },
   {
     id: 'user-3',
-    email: 'torres@fieldflow.com',
+    email: 'torres@customsfieldpro.com',
     password: 'staff123',
     name: 'A. Torres',
     role: 'staff',
@@ -33,7 +33,7 @@ const SAMPLE_USERS = [
   },
   {
     id: 'user-4',
-    email: 'singh@fieldflow.com',
+    email: 'singh@customsfieldpro.com',
     password: 'staff123',
     name: 'R. Singh',
     role: 'staff',
@@ -42,8 +42,8 @@ const SAMPLE_USERS = [
   },
 ]
 
-const USERS_KEY   = 'fieldflow_users'
-const SESSION_KEY = 'fieldflow_user'
+const USERS_KEY   = 'customsfieldpro_users'
+const SESSION_KEY = 'customsfieldpro_user'
 
 function seedUsers() {
   if (!localStorage.getItem(USERS_KEY)) {

@@ -156,8 +156,8 @@ export function Toggle({ value, onChange }) {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const SA_KEY = 'fieldflow_sa_session_v2'
-const SA_EMAIL    = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPER_ADMIN_EMAIL)    || 'superadmin@fieldflow.com'
+const SA_KEY = 'customsfieldpro_sa_session_v2'
+const SA_EMAIL    = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPER_ADMIN_EMAIL)    || 'superadmin@customsfieldpro.com'
 const SA_PASSWORD = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPER_ADMIN_PASSWORD) || 'super123'
 const SESSION_TIMEOUT_MS = 2 * 60 * 60 * 1000 // 2 hours
 
@@ -273,7 +273,7 @@ function SALoginPage({ onLogin }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 22, color: '#fff', fontWeight: 900,
             }}>F</div>
-            <span style={{ color: '#f8fafc', fontSize: 22, fontWeight: 800 }}>FieldFlow</span>
+            <span style={{ color: '#f8fafc', fontSize: 22, fontWeight: 800 }}>CustomsFieldPro</span>
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
             <span style={{ background: '#dc2626', color: '#fff', fontSize: 10, fontWeight: 800, padding: '2px 10px', borderRadius: 99, letterSpacing: '0.12em' }}>
@@ -366,7 +366,7 @@ function Sidebar({ active, onChange, onSignOut, email }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 16, color: '#fff', fontWeight: 900, flexShrink: 0,
           }}>F</div>
-          <span style={{ color: '#f9fafb', fontSize: 16, fontWeight: 800 }}>FieldFlow</span>
+          <span style={{ color: '#f9fafb', fontSize: 16, fontWeight: 800 }}>CustomsFieldPro</span>
         </div>
         <span style={{
           background: '#dc2626', color: '#fff', fontSize: 9, fontWeight: 800,

@@ -52,8 +52,8 @@ export const NOTE_TYPES = [
 ]
 
 // ── Storage helpers ───────────────────────────────────────────────────────────
-const NOTES_KEY = 'fieldflow_job_notes'
-const READ_KEY  = uid => `fieldflow_notes_read_${uid}`
+const NOTES_KEY = 'customsfieldpro_job_notes'
+const READ_KEY  = uid => `customsfieldpro_notes_read_${uid}`
 
 function loadAllNotes() {
   try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') } catch { return {} }

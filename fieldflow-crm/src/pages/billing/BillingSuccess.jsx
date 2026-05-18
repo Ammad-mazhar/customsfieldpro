@@ -56,7 +56,7 @@ export default function BillingSuccess() {
       <div style={{ textAlign: 'center', maxWidth: 480, padding: '0 20px' }}>
         <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
         <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1a1d23', marginBottom: 8 }}>
-          Welcome to FieldFlow {planName}!
+          Welcome to CustomsFieldPro {planName}!
         </h1>
         <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.6, marginBottom: 24 }}>
           Your subscription is now active. All {planName} features are unlocked and ready to use.

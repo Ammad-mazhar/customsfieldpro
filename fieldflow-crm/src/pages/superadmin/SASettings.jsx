@@ -17,26 +17,26 @@ const DEFAULT_PLANS = [
 ]
 
 const EMAIL_TEMPLATES = [
-  { id: 'trial_expiry',   label: 'Trial Expiry Warning',       subject: 'Your FieldFlow trial ends in {days} days' },
-  { id: 'welcome',        label: 'Welcome / Onboarding',       subject: 'Welcome to FieldFlow, {name}!' },
-  { id: 'payment_failed', label: 'Payment Failed',             subject: 'Action required: Payment failed for your FieldFlow account' },
-  { id: 'invoice',        label: 'Monthly Invoice',            subject: 'Your FieldFlow invoice for {month}' },
+  { id: 'trial_expiry',   label: 'Trial Expiry Warning',       subject: 'Your CustomsFieldPro trial ends in {days} days' },
+  { id: 'welcome',        label: 'Welcome / Onboarding',       subject: 'Welcome to CustomsFieldPro, {name}!' },
+  { id: 'payment_failed', label: 'Payment Failed',             subject: 'Action required: Payment failed for your CustomsFieldPro account' },
+  { id: 'invoice',        label: 'Monthly Invoice',            subject: 'Your CustomsFieldPro invoice for {month}' },
   { id: 'maintenance',    label: 'Maintenance Notification',   subject: 'Scheduled maintenance: {date}' },
-  { id: 'password_reset', label: 'Password Reset',             subject: 'Reset your FieldFlow password' },
+  { id: 'password_reset', label: 'Password Reset',             subject: 'Reset your CustomsFieldPro password' },
 ]
 
 const DEFAULT_BODIES = {
-  trial_expiry:   'Hi {name},\n\nYour FieldFlow trial expires in {days} days. Upgrade now to keep all your data, clients, and jobs.\n\nUse code WELCOME20 for 20% off your first 3 months.\n\nUpgrade here: {upgrade_url}\n\nBest,\nFieldFlow Team',
-  welcome:        'Hi {name},\n\nWelcome to FieldFlow! We\'re excited to have you on board.\n\nGet started by:\n1. Adding your first client\n2. Creating a job\n3. Inviting your team\n\nNeed help? Reply to this email anytime.\n\nBest,\nFieldFlow Team',
-  payment_failed: 'Hi {name},\n\nWe couldn\'t process your payment of ${amount} for your FieldFlow subscription.\n\nPlease update your payment method to avoid service interruption: {billing_url}\n\nBest,\nFieldFlow Team',
-  invoice:        'Hi {name},\n\nPlease find your invoice for {month} attached.\n\nAmount: ${amount}\nPlan: {plan}\n\nView invoice: {invoice_url}\n\nThank you,\nFieldFlow Team',
-  maintenance:    'Hi {name},\n\nWe\'ll be performing scheduled maintenance on {date} from {start} to {end} UTC.\n\nDuring this time, FieldFlow will be unavailable. We apologize for any inconvenience.\n\nFieldFlow Team',
-  password_reset: 'Hi {name},\n\nClick the link below to reset your password. This link expires in 1 hour.\n\n{reset_url}\n\nIf you didn\'t request this, ignore this email.\n\nFieldFlow Team',
+  trial_expiry:   'Hi {name},\n\nYour CustomsFieldPro trial expires in {days} days. Upgrade now to keep all your data, clients, and jobs.\n\nUse code WELCOME20 for 20% off your first 3 months.\n\nUpgrade here: {upgrade_url}\n\nBest,\nCustomsFieldPro Team',
+  welcome:        'Hi {name},\n\nWelcome to CustomsFieldPro! We\'re excited to have you on board.\n\nGet started by:\n1. Adding your first client\n2. Creating a job\n3. Inviting your team\n\nNeed help? Reply to this email anytime.\n\nBest,\nCustomsFieldPro Team',
+  payment_failed: 'Hi {name},\n\nWe couldn\'t process your payment of ${amount} for your CustomsFieldPro subscription.\n\nPlease update your payment method to avoid service interruption: {billing_url}\n\nBest,\nCustomsFieldPro Team',
+  invoice:        'Hi {name},\n\nPlease find your invoice for {month} attached.\n\nAmount: ${amount}\nPlan: {plan}\n\nView invoice: {invoice_url}\n\nThank you,\nCustomsFieldPro Team',
+  maintenance:    'Hi {name},\n\nWe\'ll be performing scheduled maintenance on {date} from {start} to {end} UTC.\n\nDuring this time, CustomsFieldPro will be unavailable. We apologize for any inconvenience.\n\nCustomsFieldPro Team',
+  password_reset: 'Hi {name},\n\nClick the link below to reset your password. This link expires in 1 hour.\n\n{reset_url}\n\nIf you didn\'t request this, ignore this email.\n\nCustomsFieldPro Team',
 }
 
 const ADMIN_ACCOUNTS = [
-  { id: 1, email: 'superadmin@fieldflow.com', name: 'Super Admin', role: 'superadmin', lastLogin: '2026-05-07 14:22', mfa: true },
-  { id: 2, email: 'ops@fieldflow.com',        name: 'Ops Team',    role: 'support',    lastLogin: '2026-05-06 09:14', mfa: false },
+  { id: 1, email: 'superadmin@customsfieldpro.com', name: 'Super Admin', role: 'superadmin', lastLogin: '2026-05-07 14:22', mfa: true },
+  { id: 2, email: 'ops@customsfieldpro.com',        name: 'Ops Team',    role: 'support',    lastLogin: '2026-05-06 09:14', mfa: false },
 ]
 
 function Field({ label, sub, children }) {
@@ -63,7 +63,7 @@ export default function SASettings() {
   })
   const [activeTemplate, setActiveTemplate] = useState('trial_expiry')
   const [webhooks, setWebhooks] = useState([
-    { id: 1, url: 'https://hooks.example.com/fieldflow', events: ['tenant.created', 'payment.failed'], active: true, secret: 'whsec_abc123' },
+    { id: 1, url: 'https://hooks.example.com/customsfieldpro', events: ['tenant.created', 'payment.failed'], active: true, secret: 'whsec_abc123' },
   ])
   const [newWebhookUrl, setNewWebhookUrl] = useState('')
   const [saved, setSaved] = useState('')
@@ -73,9 +73,9 @@ export default function SASettings() {
   const [inviteRole, setInviteRole] = useState('support')
 
   // General settings
-  const [siteName, setSiteName] = useState('FieldFlow CRM')
-  const [supportEmail, setSupportEmail] = useState('support@fieldflow.com')
-  const [fromEmail, setFromEmail] = useState('noreply@fieldflow.com')
+  const [siteName, setSiteName] = useState('CustomsFieldPro')
+  const [supportEmail, setSupportEmail] = useState('support@customsfieldpro.com')
+  const [fromEmail, setFromEmail] = useState('noreply@customsfieldpro.com')
   const [trialDefault, setTrialDefault] = useState(14)
   const [maintenanceMsg, setMaintenanceMsg] = useState('We are currently performing scheduled maintenance.')
   const [signupEnabled, setSignupEnabled] = useState(true)
@@ -264,7 +264,7 @@ export default function SASettings() {
               <div style={{ padding: '0 20px 20px', display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end', borderBottom: '1px solid #f3f4f6' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Email</label>
-                  <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="admin@fieldflow.com" style={INPUT} />
+                  <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="admin@customsfieldpro.com" style={INPUT} />
                 </div>
                 <div>
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Role</label>

@@ -3,7 +3,7 @@
 // Log entries are pruned after 90 days.
 
 const LOG_KEY    = 'ff_activity_log'
-const SESSION_KEY = 'fieldflow_user'
+const SESSION_KEY = 'customsfieldpro_user'
 const MAX_AGE_MS  = 90 * 24 * 60 * 60 * 1000   // 90 days
 
 // ── Action type constants (export for use across the app) ─────────────────────

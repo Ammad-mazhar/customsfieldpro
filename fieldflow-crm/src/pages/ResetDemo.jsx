@@ -1,19 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const SECRET = 'fieldflow2026'
+const SECRET = 'customsfieldpro2026'
 
 const DEFAULT_USERS = [
-  { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', name: 'Admin User', role: 'admin', technicianId: null },
-  { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1' },
-  { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2' },
-  { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3' },
+  { id: 'user-1', email: 'admin@customsfieldpro.com', password: 'admin123', name: 'Admin User', role: 'admin', technicianId: null },
+  { id: 'user-2', email: 'moore@customsfieldpro.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1' },
+  { id: 'user-3', email: 'torres@customsfieldpro.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2' },
+  { id: 'user-4', email: 'singh@customsfieldpro.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3' },
 ]
 
 const AUTH_KEYS = [
-  'fieldflow_session',
-  'fieldflow_users',
-  'fieldflow_permissions',
+  'customsfieldpro_session',
+  'customsfieldpro_users',
+  'customsfieldpro_permissions',
 ]
 
 export default function ResetDemo() {
@@ -33,7 +33,7 @@ export default function ResetDemo() {
     AUTH_KEYS.forEach(k => localStorage.removeItem(k))
 
     // Write default users
-    localStorage.setItem('fieldflow_users', JSON.stringify(DEFAULT_USERS))
+    localStorage.setItem('customsfieldpro_users', JSON.stringify(DEFAULT_USERS))
 
     setSuccess(true)
   }
@@ -140,8 +140,8 @@ export default function ResetDemo() {
                 Default credentials:
               </p>
               {[
-                { label: 'Admin', email: 'admin@fieldflow.com', password: 'admin123' },
-                { label: 'Staff', email: 'moore@fieldflow.com', password: 'staff123' },
+                { label: 'Admin', email: 'admin@customsfieldpro.com', password: 'admin123' },
+                { label: 'Staff', email: 'moore@customsfieldpro.com', password: 'staff123' },
               ].map(({ label, email, password }) => (
                 <div key={label} style={{
                   background: '#f8f9fb', border: '1px solid #e8e9ec', borderRadius: 8,

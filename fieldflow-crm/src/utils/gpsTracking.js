@@ -69,7 +69,7 @@ export async function geocodeAddress(address) {
   const res  = await fetch(url, {
     headers: {
       'Accept-Language': 'en',
-      'User-Agent':      'FieldFlow-CRM/1.0',
+      'User-Agent':      'CustomsFieldPro-CRM/1.0',
     },
   })
   if (!res.ok) throw new Error('Geocoding service unavailable')

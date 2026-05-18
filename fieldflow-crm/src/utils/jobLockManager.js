@@ -1,4 +1,4 @@
-// FieldFlow CRM — Job lock management
+// CustomsFieldPro — Job lock management
 // A technician cannot access the next job until current job is fully submitted.
 import { getJobs } from '../data/store'
 import { getFieldRules } from './techValidation'

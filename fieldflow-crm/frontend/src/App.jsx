@@ -30,17 +30,17 @@ function KeyboardShortcuts() {
 
       if (ctrl && e.key === 'k') {
         e.preventDefault()
-        window.dispatchEvent(new CustomEvent('fieldflow:search'))
+        window.dispatchEvent(new CustomEvent('customsfieldpro:search'))
       } else if (ctrl && e.key === 'n') {
         e.preventDefault()
-        sessionStorage.setItem('fieldflow_open_new', 'job')
+        sessionStorage.setItem('customsfieldpro_open_new', 'job')
         navigate('/jobs')
       } else if (ctrl && e.key === 'i') {
         e.preventDefault()
-        sessionStorage.setItem('fieldflow_open_new', 'invoice')
+        sessionStorage.setItem('customsfieldpro_open_new', 'invoice')
         navigate('/invoices')
       } else if (e.key === 'Escape') {
-        window.dispatchEvent(new CustomEvent('fieldflow:escape'))
+        window.dispatchEvent(new CustomEvent('customsfieldpro:escape'))
       }
     }
     window.addEventListener('keydown', handler)

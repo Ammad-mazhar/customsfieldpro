@@ -13,7 +13,7 @@ export const TECH_NOTE_CATS = [
 ]
 
 // ── Storage ───────────────────────────────────────────────────────────────────
-const KEY = 'fieldflow_tech_profile_notes'
+const KEY = 'customsfieldpro_tech_profile_notes'
 
 function loadAll() {
   try { return JSON.parse(localStorage.getItem(KEY) || '{}') } catch { return {} }

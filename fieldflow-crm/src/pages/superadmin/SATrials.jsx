@@ -33,7 +33,7 @@ export default function SATrials({ setImpersonating }) {
   const activeTrials = trials.filter(t => t.daysLeft !== null && t.daysLeft > 0).length
 
   const CONVERSION_EMAIL = (name, days) =>
-    `Hi ${name} team,\n\nYour FieldFlow trial ends in ${days} day${days !== 1 ? 's' : ''}. Upgrade now to keep all your data, clients, and jobs.\n\nUse code WELCOME20 for 20% off your first 3 months.\n\nUpgrade here: https://fieldflowcrm.com/pricing\n\nBest,\nFieldFlow Team`
+    `Hi ${name} team,\n\nYour CustomsFieldPro trial ends in ${days} day${days !== 1 ? 's' : ''}. Upgrade now to keep all your data, clients, and jobs.\n\nUse code WELCOME20 for 20% off your first 3 months.\n\nUpgrade here: https://customsfieldprocrm.com/pricing\n\nBest,\nCustomsFieldPro Team`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

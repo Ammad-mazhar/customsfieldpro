@@ -80,7 +80,7 @@ export function exportInvoicesToQuickBooks() {
   })
 
   const content = buildIIF([lines.join('\n')])
-  downloadIIF(content, 'fieldflow-invoices.iif')
+  downloadIIF(content, 'customsfieldpro-invoices.iif')
 }
 
 // ─── Export Clients (IIF) ─────────────────────────────────────────────────────
@@ -113,7 +113,7 @@ export function exportClientsToQuickBooks() {
   })
 
   const content = buildIIF([lines.join('\n')])
-  downloadIIF(content, 'fieldflow-clients.iif')
+  downloadIIF(content, 'customsfieldpro-clients.iif')
 }
 
 // ─── Export Payments (IIF) ────────────────────────────────────────────────────
@@ -141,5 +141,5 @@ export function exportPaymentsToQuickBooks() {
   })
 
   const content = buildIIF([lines.join('\n')])
-  downloadIIF(content, 'fieldflow-payments.iif')
+  downloadIIF(content, 'customsfieldpro-payments.iif')
 }

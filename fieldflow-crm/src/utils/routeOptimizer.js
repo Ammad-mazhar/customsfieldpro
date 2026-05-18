@@ -114,11 +114,11 @@ export function findClosestTechnician(targetLocation, techLocations) {
 }
 
 /**
- * getTechLocations — reads fieldflow_tech_locations from localStorage.
+ * getTechLocations — reads customsfieldpro_tech_locations from localStorage.
  */
 export function getTechLocations() {
   try {
-    return JSON.parse(localStorage.getItem('fieldflow_tech_locations')) || {}
+    return JSON.parse(localStorage.getItem('customsfieldpro_tech_locations')) || {}
   } catch { return {} }
 }
 

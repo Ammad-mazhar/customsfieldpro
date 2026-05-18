@@ -1,4 +1,4 @@
-const KEY = 'fieldflow_dark_mode'
+const KEY = 'customsfieldpro_dark_mode'
 
 export function getDarkMode() {
   return localStorage.getItem(KEY) === 'true'

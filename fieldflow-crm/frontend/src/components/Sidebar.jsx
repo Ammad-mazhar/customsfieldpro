@@ -90,11 +90,11 @@ export default function Sidebar({ isOpen, onClose }) {
               <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span style={styles.brandName}>FieldFlow</span>
+          <span style={styles.brandName}>CustomsFieldPro</span>
         </div>
 
         {/* Global search shortcut button */}
-        <button onClick={() => window.dispatchEvent(new CustomEvent('fieldflow:search'))}
+        <button onClick={() => window.dispatchEvent(new CustomEvent('customsfieldpro:search'))}
           style={{ margin: '6px 12px 2px', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 11px', background: '#f3f4f6', border: '1px solid #e8e9ec', borderRadius: 8, cursor: 'pointer', width: 'calc(100% - 24px)', color: '#9ca3af', fontSize: 12.5 }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <span style={{ flex: 1, textAlign: 'left' }}>Search…</span>

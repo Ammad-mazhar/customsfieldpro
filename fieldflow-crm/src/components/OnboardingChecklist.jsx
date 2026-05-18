@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const STORAGE_KEY = 'fieldflow_onboarding'
-const DISMISS_KEY = 'fieldflow_checklist_dismiss'
-const DONE_KEY = 'fieldflow_checklist_done'
+const STORAGE_KEY = 'customsfieldpro_onboarding'
+const DISMISS_KEY = 'customsfieldpro_checklist_dismiss'
+const DONE_KEY = 'customsfieldpro_checklist_done'
 
 const TASKS = [
   { id: 'account', label: 'Create your account', path: null, autoComplete: true },
@@ -88,7 +88,7 @@ export default function OnboardingChecklist() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary, #111827)' }}>
-          🚀 Get Started with FieldFlow
+          🚀 Get Started with CustomsFieldPro
         </h3>
         <span style={{ fontSize: 13, fontWeight: 600, color: pct === 100 ? '#16a34a' : '#2563eb' }}>
           {pct}% done

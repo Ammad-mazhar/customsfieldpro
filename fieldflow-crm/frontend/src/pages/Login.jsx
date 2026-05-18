@@ -36,7 +36,7 @@ export default function Login() {
               <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <span style={S.logoName}>FieldFlow CRM</span>
+          <span style={S.logoName}>CustomsFieldPro</span>
         </div>
 
         <h1 style={S.heading}>Sign in to your account</h1>
@@ -59,7 +59,7 @@ export default function Login() {
               autoComplete="email"
               value={email}
               onChange={e => { setEmail(e.target.value); setError('') }}
-              placeholder="you@fieldflow.com"
+              placeholder="you@customsfieldpro.com"
               style={{ ...S.input, borderColor: error ? '#fca5a5' : '#e8e9ec' }}
             />
           </div>
@@ -92,8 +92,8 @@ export default function Login() {
         <div style={S.hint}>
           <p style={S.hintTitle}>Demo credentials</p>
           {[
-            ['Admin', 'admin@fieldflow.com', 'admin123'],
-            ['Staff', 'moore@fieldflow.com', 'staff123'],
+            ['Admin', 'admin@customsfieldpro.com', 'admin123'],
+            ['Staff', 'moore@customsfieldpro.com', 'staff123'],
           ].map(([role, email, pwd]) => (
             <button key={role} onClick={() => { setEmail(email); setPassword(pwd); setError('') }} style={S.hintBtn}>
               <strong>{role}</strong> — {email}

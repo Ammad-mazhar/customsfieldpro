@@ -86,19 +86,19 @@ export default function Invoices() {
     apiGet('/api/invoices').then(data => {
       if (Array.isArray(data)) { setInvoices(data); saveInvoices(data) }
     }).catch(() => {})
-    const flag = sessionStorage.getItem('fieldflow_open_new')
-    if (flag === 'invoice') { sessionStorage.removeItem('fieldflow_open_new'); setForm(BLANK_FORM); setLines([BLANK_LINE()]); setErrs({}); setTab('create') }
+    const flag = sessionStorage.getItem('customsfieldpro_open_new')
+    if (flag === 'invoice') { sessionStorage.removeItem('customsfieldpro_open_new'); setForm(BLANK_FORM); setLines([BLANK_LINE()]); setErrs({}); setTab('create') }
     function onEscape() { setPayModal(null) }
-    window.addEventListener('fieldflow:escape', onEscape)
-    return () => window.removeEventListener('fieldflow:escape', onEscape)
+    window.addEventListener('customsfieldpro:escape', onEscape)
+    return () => window.removeEventListener('customsfieldpro:escape', onEscape)
   }, [])
   function flash(msg) { setBanner(msg); setTimeout(()=>setBanner(''),3000) }
 
   function openSendModal(inv) {
     setSendForm({
       to: inv.clientEmail || '',
-      subject: `Invoice ${inv.id} from FieldFlow CRM`,
-      message: `Hi ${inv.clientName},\n\nPlease find attached Invoice ${inv.id} for the services provided.\n\nAmount Due: $${inv.total.toLocaleString()}\nDue Date: ${inv.due || 'Upon receipt'}\n\nThank you for your business. Please don't hesitate to reach out if you have any questions.\n\nBest regards,\nFieldFlow CRM`,
+      subject: `Invoice ${inv.id} from CustomsFieldPro`,
+      message: `Hi ${inv.clientName},\n\nPlease find attached Invoice ${inv.id} for the services provided.\n\nAmount Due: $${inv.total.toLocaleString()}\nDue Date: ${inv.due || 'Upon receipt'}\n\nThank you for your business. Please don't hesitate to reach out if you have any questions.\n\nBest regards,\nCustomsFieldPro`,
       attachPdf: true,
     })
     setSendSuccess(false)

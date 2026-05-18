@@ -74,7 +74,7 @@ export function simulateIncomingReply({ clientId, clientName, channel = 'sms', b
   return addInboxMessage({
     clientId, clientName, channel,
     direction: 'incoming',
-    subject: channel === 'email' ? `Re: FieldFlow message` : '',
+    subject: channel === 'email' ? `Re: CustomsFieldPro message` : '',
     body, attachments: [],
     linkedJobId: null, linkedJobNumber: null,
     sentBy: null, sentByName: null,
@@ -116,17 +116,17 @@ export const EMAIL_TEMPLATES = [
   {
     id: 'etpl-1', label: 'Quote Follow-up',
     subject: 'Following up on your quote',
-    body: 'Hi {{client_name}},\n\nI wanted to follow up on the quote we sent over. Do you have any questions or would you like to move forward?\n\nPlease feel free to reply or call us anytime.\n\nBest regards,\nFieldFlow CRM Team',
+    body: 'Hi {{client_name}},\n\nI wanted to follow up on the quote we sent over. Do you have any questions or would you like to move forward?\n\nPlease feel free to reply or call us anytime.\n\nBest regards,\nCustomsFieldPro Team',
   },
   {
     id: 'etpl-2', label: 'Invoice Reminder',
     subject: 'Invoice {{invoice_number}} — Payment Reminder',
-    body: 'Hi {{client_name}},\n\nThis is a friendly reminder that invoice {{invoice_number}} for ${{amount}} is due for payment.\n\nPlease let us know if you have any questions.\n\nThank you,\nFieldFlow CRM Team',
+    body: 'Hi {{client_name}},\n\nThis is a friendly reminder that invoice {{invoice_number}} for ${{amount}} is due for payment.\n\nPlease let us know if you have any questions.\n\nThank you,\nCustomsFieldPro Team',
   },
   {
     id: 'etpl-3', label: 'Job Scheduled Confirmation',
     subject: 'Your appointment is confirmed',
-    body: 'Hi {{client_name}},\n\nYour service appointment is confirmed for {{date}} at {{time}}. Your technician will be {{tech_name}}.\n\nIf you need to reschedule, please contact us at least 24 hours in advance.\n\nThank you,\nFieldFlow CRM Team',
+    body: 'Hi {{client_name}},\n\nYour service appointment is confirmed for {{date}} at {{time}}. Your technician will be {{tech_name}}.\n\nIf you need to reschedule, please contact us at least 24 hours in advance.\n\nThank you,\nCustomsFieldPro Team',
   },
 ]
 

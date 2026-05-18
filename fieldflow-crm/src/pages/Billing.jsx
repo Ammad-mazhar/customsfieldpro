@@ -119,7 +119,7 @@ function MockCheckoutModal({ plan, billing, cycle, onConfirm, onClose }) {
           <div>
             <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stripe Checkout</div>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1a1d23', margin: '4px 0 0' }}>
-              FieldFlow {plan.name}
+              CustomsFieldPro {plan.name}
             </h2>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 20 }}>×</button>
@@ -127,7 +127,7 @@ function MockCheckoutModal({ plan, billing, cycle, onConfirm, onClose }) {
 
         <div style={{ background: '#f9fafb', borderRadius: 8, padding: '14px 16px', marginBottom: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 6 }}>
-            <span style={{ color: '#374151' }}>FieldFlow {plan.name} — {cycle === 'yearly' ? 'Annual' : 'Monthly'}</span>
+            <span style={{ color: '#374151' }}>CustomsFieldPro {plan.name} — {cycle === 'yearly' ? 'Annual' : 'Monthly'}</span>
             <span style={{ fontWeight: 700 }}>{centsToDisplay(price)}</span>
           </div>
           {cycle === 'yearly' && (

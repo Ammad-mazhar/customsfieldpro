@@ -1,4 +1,4 @@
-# FieldFlow CRM — Security Audit Report
+# CustomsFieldPro — Security Audit Report
 Generated: 2026-04-25
 
 ---
@@ -87,7 +87,7 @@ if (req.user.role === 'staff') return res.status(403).json({ error: 'Forbidden' 
 
 ### HIGH-08 · Stripe publishable key stored in localStorage
 **File:** `src/utils/stripePayments.js` line 7
-**Issue:** `localStorage.getItem('fieldflow_stripe')` stores Stripe config. While a publishable key is technically public, storing any payment config in localStorage is poor practice and the admin might accidentally store a secret key.
+**Issue:** `localStorage.getItem('customsfieldpro_stripe')` stores Stripe config. While a publishable key is technically public, storing any payment config in localStorage is poor practice and the admin might accidentally store a secret key.
 **Fix:** Move payment config to backend environment variables. Frontend only gets the publishable key from the backend `/api/config` endpoint.
 
 ---

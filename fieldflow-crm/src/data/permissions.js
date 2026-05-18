@@ -1,7 +1,7 @@
-// FieldFlow CRM — Role Permission Definitions
+// CustomsFieldPro — Role Permission Definitions
 // Single source of truth for all permission keys, labels, descriptions, and defaults.
 
-export const PERMISSIONS_KEY = 'fieldflow_permissions'
+export const PERMISSIONS_KEY = 'customsfieldpro_permissions'
 
 // ─── Staff permissions ────────────────────────────────────────────────────────
 export const STAFF_PERMS = [

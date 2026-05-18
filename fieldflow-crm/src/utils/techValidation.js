@@ -1,4 +1,4 @@
-// FieldFlow CRM — Central technician submission validation rules
+// CustomsFieldPro — Central technician submission validation rules
 import { getSettings } from '../data/store'
 
 export const DEFAULT_FIELD_RULES = {

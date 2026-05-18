@@ -138,11 +138,11 @@ export default function Jobs() {
 
   // Keyboard shortcut: Ctrl+N opens create form; Escape closes modals
   useEffect(() => {
-    const flag = sessionStorage.getItem('fieldflow_open_new')
-    if (flag === 'job') { sessionStorage.removeItem('fieldflow_open_new'); openCreate() }
+    const flag = sessionStorage.getItem('customsfieldpro_open_new')
+    if (flag === 'job') { sessionStorage.removeItem('customsfieldpro_open_new'); openCreate() }
     function onEscape() { setShowAIEstimator(false); setShowCompletion(false) }
-    window.addEventListener('fieldflow:escape', onEscape)
-    return () => window.removeEventListener('fieldflow:escape', onEscape)
+    window.addEventListener('customsfieldpro:escape', onEscape)
+    return () => window.removeEventListener('customsfieldpro:escape', onEscape)
   }, [])
 
   function open(id) {
@@ -284,7 +284,7 @@ export default function Jobs() {
     logActivity(ACTIONS.JOB_CREATED, 'Jobs', newJob.id, `${newJob.id} – ${newJob.clientName}`, `Job created: ${newJob.title}.`)
     // Notify the assigned technician/staff
     if (newJob.technicianId) {
-      const users = (() => { try { return JSON.parse(localStorage.getItem('fieldflow_users') || '[]') } catch { return [] } })()
+      const users = (() => { try { return JSON.parse(localStorage.getItem('customsfieldpro_users') || '[]') } catch { return [] } })()
       const tech  = users.find(u => u.technicianId === newJob.technicianId || u.name === newJob.techName)
       if (tech) {
         createNotification(NOTIF_TYPES.JOB_ASSIGNED, 'New Job Assigned', `You have been assigned ${newJob.id} — ${newJob.clientName} (${newJob.type}).`, tech.id, 'Jobs', newJob.id)

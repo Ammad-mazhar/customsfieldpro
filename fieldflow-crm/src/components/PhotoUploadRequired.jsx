@@ -1,4 +1,4 @@
-// FieldFlow CRM — Reusable photo upload with mandatory validation UI
+// CustomsFieldPro — Reusable photo upload with mandatory validation UI
 import { useRef, useState } from 'react'
 
 /**

@@ -31,11 +31,11 @@ function ImpersonationBanner() {
   const { logout } = useAuth()
 
   let imp = null
-  try { imp = JSON.parse(localStorage.getItem('fieldflow_impersonation')) } catch { /* ignore */ }
+  try { imp = JSON.parse(localStorage.getItem('customsfieldpro_impersonation')) } catch { /* ignore */ }
   if (!imp?.active) return null
 
   function handleExit() {
-    localStorage.removeItem('fieldflow_impersonation')
+    localStorage.removeItem('customsfieldpro_impersonation')
     logout()
     navigate('/superadmin', { replace: true })
   }

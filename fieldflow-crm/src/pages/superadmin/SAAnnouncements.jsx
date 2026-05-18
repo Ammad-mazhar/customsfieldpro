@@ -16,7 +16,7 @@ const PAST_ANNOUNCEMENTS = [
 
 export default function SAAnnouncements() {
   const [announcements, setAnnouncements] = useState(PAST_ANNOUNCEMENTS)
-  const [maintenance, setMaintenance] = useState(() => localStorage.getItem('fieldflow_maintenance_mode') === 'true')
+  const [maintenance, setMaintenance] = useState(() => localStorage.getItem('customsfieldpro_maintenance_mode') === 'true')
   const [maintenanceMsg, setMaintenanceMsg] = useState('We are currently performing scheduled maintenance. We will be back shortly.')
   const [maintenanceEta, setMaintenanceEta] = useState('')
 
@@ -56,7 +56,7 @@ export default function SAAnnouncements() {
   function toggleMaintenance() {
     const next = !maintenance
     setMaintenance(next)
-    localStorage.setItem('fieldflow_maintenance_mode', String(next))
+    localStorage.setItem('customsfieldpro_maintenance_mode', String(next))
   }
 
   return (

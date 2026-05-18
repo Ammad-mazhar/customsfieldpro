@@ -1,13 +1,13 @@
-// FieldFlow CRM — Sequential Number Generator
+// CustomsFieldPro — Sequential Number Generator
 // Each module has its own independent counter stored in localStorage.
 // Counters never reset or reuse numbers even if records are deleted.
 
 const KEYS = {
-  jobs:          'fieldflow_counter_jobs',
-  quotes:        'fieldflow_counter_quotes',
-  invoices:      'fieldflow_counter_invoices',
-  service_calls: 'fieldflow_counter_service_calls',
-  po:            'fieldflow_counter_po',
+  jobs:          'customsfieldpro_counter_jobs',
+  quotes:        'customsfieldpro_counter_quotes',
+  invoices:      'customsfieldpro_counter_invoices',
+  service_calls: 'customsfieldpro_counter_service_calls',
+  po:            'customsfieldpro_counter_po',
 }
 
 /**
@@ -15,7 +15,7 @@ const KEYS = {
  * Use this when CREATING a new record.
  */
 export function getNextNumber(module) {
-  const key     = KEYS[module] || `fieldflow_counter_${module}`
+  const key     = KEYS[module] || `customsfieldpro_counter_${module}`
   const current = parseInt(localStorage.getItem(key) || '0', 10)
   const next    = current + 1
   localStorage.setItem(key, String(next))
@@ -27,7 +27,7 @@ export function getNextNumber(module) {
  * Use this to show a "preview" number in a form before the user saves.
  */
 export function peekNextNumber(module) {
-  const key = KEYS[module] || `fieldflow_counter_${module}`
+  const key = KEYS[module] || `customsfieldpro_counter_${module}`
   return parseInt(localStorage.getItem(key) || '0', 10) + 1
 }
 
@@ -68,7 +68,7 @@ export function initCounters(defaults = {}) {
     ...defaults,
   }
   Object.entries(merged).forEach(([module, value]) => {
-    const key = KEYS[module] || `fieldflow_counter_${module}`
+    const key = KEYS[module] || `customsfieldpro_counter_${module}`
     if (!localStorage.getItem(key)) {
       localStorage.setItem(key, String(value))
     }

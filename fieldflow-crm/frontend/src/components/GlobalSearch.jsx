@@ -21,8 +21,8 @@ export default function GlobalSearch() {
   // Listen for Ctrl+K event dispatched by App.jsx
   useEffect(() => {
     function handler() { setOpen(o => !o) }
-    window.addEventListener('fieldflow:search', handler)
-    return () => window.removeEventListener('fieldflow:search', handler)
+    window.addEventListener('customsfieldpro:search', handler)
+    return () => window.removeEventListener('customsfieldpro:search', handler)
   }, [])
 
   useEffect(() => {
@@ -33,8 +33,8 @@ export default function GlobalSearch() {
   // Escape to close
   useEffect(() => {
     function handler() { setOpen(false) }
-    window.addEventListener('fieldflow:escape', handler)
-    return () => window.removeEventListener('fieldflow:escape', handler)
+    window.addEventListener('customsfieldpro:escape', handler)
+    return () => window.removeEventListener('customsfieldpro:escape', handler)
   }, [])
 
   useEffect(() => {

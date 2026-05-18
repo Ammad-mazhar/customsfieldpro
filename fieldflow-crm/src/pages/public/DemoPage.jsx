@@ -11,7 +11,7 @@ function Navbar({ navigate }) {
     }}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 22 }}>🏠</span>
-        <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>FieldFlow</span>
+        <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>CustomsFieldPro</span>
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <Link to="/pricing" style={{ color: '#374151', textDecoration: 'none', fontSize: 15 }}>Pricing</Link>
@@ -40,7 +40,7 @@ function Footer() {
         <Link to="/pricing" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
         <Link to="/contact" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14 }}>Contact</Link>
       </div>
-      <div style={{ fontSize: 13 }}>&copy; {new Date().getFullYear()} FieldFlow CRM. All rights reserved.</div>
+      <div style={{ fontSize: 13 }}>&copy; {new Date().getFullYear()} CustomsFieldPro. All rights reserved.</div>
     </footer>
   )
 }
@@ -49,7 +49,7 @@ const DEMO_FAQS = [
   { q: 'Is this a real account?', a: 'No. The demo environment uses pre-loaded sample data for a fictional HVAC company. None of the data is real.' },
   { q: 'Can I use it freely?', a: 'Yes, you can explore all features for up to 30 minutes. The demo resets automatically every 24 hours.' },
   { q: 'Will my changes be saved?', a: 'Demo changes are saved in your browser\'s localStorage but will be cleared on the next demo reset.' },
-  { q: 'What are the demo login credentials?', a: 'Email: admin@fieldflow.com — Password: admin123. There\'s also a technician account: moore@fieldflow.com / staff123' },
+  { q: 'What are the demo login credentials?', a: 'Email: admin@customsfieldpro.com — Password: admin123. There\'s also a technician account: moore@customsfieldpro.com / staff123' },
 ]
 
 export default function DemoPage() {
@@ -60,7 +60,7 @@ export default function DemoPage() {
 
   async function handleTryDemo() {
     setLoading(true)
-    const err = await login('admin@fieldflow.com', 'admin123')
+    const err = await login('admin@customsfieldpro.com', 'admin123')
     if (!err) {
       navigate('/dashboard')
     } else {
@@ -82,10 +82,10 @@ export default function DemoPage() {
             Live Demo — No signup required
           </span>
           <h1 style={{ fontSize: 48, fontWeight: 800, color: '#111827', lineHeight: 1.15, margin: '0 0 16px' }}>
-            See FieldFlow in Action
+            See CustomsFieldPro in Action
           </h1>
           <p style={{ fontSize: 18, color: '#6b7280', margin: '0 0 40px', lineHeight: 1.6 }}>
-            Explore the full FieldFlow CRM with sample data. Schedule jobs, send invoices, optimize routes, and more — all without creating an account.
+            Explore the full CustomsFieldPro with sample data. Schedule jobs, send invoices, optimize routes, and more — all without creating an account.
           </p>
           <button
             onClick={handleTryDemo}
@@ -196,7 +196,7 @@ export default function DemoPage() {
           Ready to start your own account?
         </h2>
         <p style={{ color: '#9ca3af', fontSize: 16, margin: '0 0 28px' }}>
-          Get your own FieldFlow account with 14 days free. No credit card required.
+          Get your own CustomsFieldPro account with 14 days free. No credit card required.
         </p>
         <button
           onClick={() => navigate('/register')}

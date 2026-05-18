@@ -1141,7 +1141,7 @@ function ReviewsTab({ settings, onSave }) {
 
   const smsPreview = replacePlaceholders(rev.smsTemplate, {
     client_name:   'Martha',
-    company_name:  settings.company?.name || 'FieldFlow Services',
+    company_name:  settings.company?.name || 'CustomsFieldPro Services',
     tech_name:     'D. Moore',
     review_link:   rev.googleReviewUrl || 'https://g.page/r/your-review-link',
     job_number:    'JOB-0042',
@@ -2040,7 +2040,7 @@ function CstIntegrationsTab({ config, persist }) {
     { key: 'stripe',         name: 'Stripe Payments', icon: '💳', desc: 'Accept credit card payments via Stripe.', fields: [{ k: 'publishableKey', label: 'Publishable Key', placeholder: 'pk_live_…' }] },
     { key: 'twilio',         name: 'Twilio SMS',      icon: '💬', desc: 'Send SMS notifications to clients and technicians.', fields: [{ k: 'accountSid', label: 'Account SID', placeholder: 'ACxxxxxxx' }, { k: 'authToken', label: 'Auth Token', placeholder: '••••••••' }, { k: 'fromNumber', label: 'From Number', placeholder: '+15551234567' }] },
     { key: 'sendgrid',       name: 'SendGrid Email',  icon: '📧', desc: 'Send transactional emails via SendGrid.', fields: [{ k: 'apiKey', label: 'API Key', placeholder: 'SG.…' }, { k: 'fromEmail', label: 'From Email', placeholder: 'noreply@yourdomain.com' }] },
-    { key: 'zapier',         name: 'Zapier',          icon: '⚡', desc: 'Connect FieldFlow to 5,000+ apps via Zapier webhook.', fields: [{ k: 'webhookUrl', label: 'Webhook URL', placeholder: 'https://hooks.zapier.com/…' }] },
+    { key: 'zapier',         name: 'Zapier',          icon: '⚡', desc: 'Connect CustomsFieldPro to 5,000+ apps via Zapier webhook.', fields: [{ k: 'webhookUrl', label: 'Webhook URL', placeholder: 'https://hooks.zapier.com/…' }] },
   ]
 
   return (

@@ -9,7 +9,7 @@ function Logo({ onClick }) {
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>FieldFlow</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>CustomsFieldPro</span>
     </div>
   )
 }
@@ -37,8 +37,8 @@ function Amber({ label }) {
 const COMPETITOR_DATA = {
   jobber: {
     name: 'Jobber',
-    tagline: 'How FieldFlow compares to Jobber',
-    heroText: "Jobber is a solid tool, but it charges extra for features FieldFlow includes in every plan — and it doesn't have AI Receptionist at any price.",
+    tagline: 'How CustomsFieldPro compares to Jobber',
+    heroText: "Jobber is a solid tool, but it charges extra for features CustomsFieldPro includes in every plan — and it doesn't have AI Receptionist at any price.",
     theirPrice: 'From $69/mo',
     theirUrl: 'https://getjobber.com',
     rows: [
@@ -64,7 +64,7 @@ const COMPETITOR_DATA = {
   },
   servicetitan: {
     name: 'ServiceTitan',
-    tagline: 'How FieldFlow compares to ServiceTitan',
+    tagline: 'How CustomsFieldPro compares to ServiceTitan',
     heroText: "ServiceTitan is built for large enterprises. At $250+ per user per month, most small and mid-size field service businesses pay far more than they need to.",
     theirPrice: '$250+/user/mo',
     theirUrl: 'https://servicetitan.com',
@@ -90,8 +90,8 @@ const COMPETITOR_DATA = {
   },
   'housecall-pro': {
     name: 'Housecall Pro',
-    tagline: 'How FieldFlow compares to Housecall Pro',
-    heroText: "Housecall Pro is a capable platform but charges for add-ons that FieldFlow includes by default, and lacks AI-powered features.",
+    tagline: 'How CustomsFieldPro compares to Housecall Pro',
+    heroText: "Housecall Pro is a capable platform but charges for add-ons that CustomsFieldPro includes by default, and lacks AI-powered features.",
     theirPrice: 'From $79/mo',
     theirUrl: 'https://housecallpro.com',
     rows: [
@@ -115,7 +115,7 @@ const COMPETITOR_DATA = {
   },
   workiz: {
     name: 'Workiz',
-    tagline: 'How FieldFlow compares to Workiz',
+    tagline: 'How CustomsFieldPro compares to Workiz',
     heroText: "Workiz is a newer platform with solid basics, but it lacks the AI-powered features and depth that growing field service businesses need.",
     theirPrice: 'From $65/mo',
     theirUrl: 'https://workiz.com',
@@ -195,7 +195,7 @@ export default function ComparePage() {
         {/* Price comparison pills */}
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 48, flexWrap: 'wrap' }}>
           <div style={{ background: '#F0FDF4', border: '2px solid #16A34A', borderRadius: 12, padding: '20px 32px', textAlign: 'center', minWidth: 160 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#16A34A', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>FieldFlow</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#16A34A', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>CustomsFieldPro</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px' }}>$49<span style={{ fontSize: 14, fontWeight: 400, color: '#94A3B8' }}>/mo</span></div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', fontSize: 20, color: '#CBD5E1', fontWeight: 300 }}>vs</div>
@@ -209,7 +209,7 @@ export default function ComparePage() {
         <div style={{ border: '1.5px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', marginBottom: 48 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0' }}>
             <div style={{ padding: '12px 20px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 1 }}>Feature</div>
-            <div style={{ padding: '12px 20px', fontSize: 12, fontWeight: 700, color: '#16A34A', textTransform: 'uppercase', letterSpacing: 1, borderLeft: '1px solid #E2E8F0' }}>FieldFlow</div>
+            <div style={{ padding: '12px 20px', fontSize: 12, fontWeight: 700, color: '#16A34A', textTransform: 'uppercase', letterSpacing: 1, borderLeft: '1px solid #E2E8F0' }}>CustomsFieldPro</div>
             <div style={{ padding: '12px 20px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 1, borderLeft: '1px solid #E2E8F0' }}>{data.name}</div>
           </div>
 
@@ -232,7 +232,7 @@ export default function ComparePage() {
 
         {/* Why switch */}
         <div style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0', borderRadius: 14, padding: '28px 32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 16 }}>Why teams switch from {data.name} to FieldFlow</h2>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 16 }}>Why teams switch from {data.name} to CustomsFieldPro</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {data.switchReasons.map((r, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
@@ -274,7 +274,7 @@ export default function ComparePage() {
                   padding: '7px 14px', fontSize: 13, fontWeight: 600, color: '#475569',
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}>
-                  FieldFlow vs {c.name}
+                  CustomsFieldPro vs {c.name}
                 </button>
               ))}
           </div>

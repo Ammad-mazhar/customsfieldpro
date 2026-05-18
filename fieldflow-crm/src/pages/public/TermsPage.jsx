@@ -9,7 +9,7 @@ function Logo({ onClick }) {
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>FieldFlow</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>CustomsFieldPro</span>
     </div>
   )
 }
@@ -17,13 +17,13 @@ function Logo({ onClick }) {
 const SECTIONS = [
   {
     title: '1. Acceptance of Terms',
-    body: `By accessing or using FieldFlow CRM ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Service.
+    body: `By accessing or using CustomsFieldPro ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Service.
 
 These Terms apply to all users of the Service, including businesses and their employees, contractors, and agents who access the Service on behalf of a business.`,
   },
   {
     title: '2. Description of Service',
-    body: `FieldFlow CRM is a field service management platform that helps businesses manage jobs, schedules, clients, invoices, and team communications. Features include but are not limited to:
+    body: `CustomsFieldPro is a field service management platform that helps businesses manage jobs, schedules, clients, invoices, and team communications. Features include but are not limited to:
 
 • Job scheduling and dispatch
 • Client and equipment management
@@ -37,19 +37,19 @@ We reserve the right to modify, suspend, or discontinue any part of the Service 
   },
   {
     title: '3. Account Registration',
-    body: `To use FieldFlow, you must create an account. You agree to:
+    body: `To use CustomsFieldPro, you must create an account. You agree to:
 
 • Provide accurate, current, and complete information during registration.
 • Maintain and promptly update your account information.
 • Keep your password confidential and not share it with unauthorized parties.
-• Notify us immediately at support@fieldflowcrm.com if you suspect unauthorized access to your account.
+• Notify us immediately at support@customsfieldprocrm.com if you suspect unauthorized access to your account.
 • Be responsible for all activity that occurs under your account.
 
 You must be at least 18 years old to create an account. By registering, you represent that you have the authority to bind your business to these Terms.`,
   },
   {
     title: '4. Subscription and Billing',
-    body: `FieldFlow offers subscription plans billed monthly or annually. By subscribing, you agree to:
+    body: `CustomsFieldPro offers subscription plans billed monthly or annually. By subscribing, you agree to:
 
 • Pay all fees associated with your chosen plan.
 • Provide valid payment information and keep it current.
@@ -63,7 +63,7 @@ Price Changes: We may change our pricing with 30 days notice. Continued use afte
   },
   {
     title: '5. Acceptable Use',
-    body: `You agree not to use FieldFlow to:
+    body: `You agree not to use CustomsFieldPro to:
 
 • Violate any applicable laws or regulations.
 • Transmit spam, unsolicited communications, or malicious code.
@@ -77,7 +77,7 @@ We reserve the right to suspend or terminate accounts that violate these terms.`
   },
   {
     title: '6. Your Data',
-    body: `You retain ownership of all data you input into FieldFlow ("Customer Data"). By using the Service, you grant FieldFlow a limited license to process your Customer Data solely to provide and improve the Service.
+    body: `You retain ownership of all data you input into CustomsFieldPro ("Customer Data"). By using the Service, you grant CustomsFieldPro a limited license to process your Customer Data solely to provide and improve the Service.
 
 We will:
 • Keep your Customer Data confidential.
@@ -89,13 +89,13 @@ You are responsible for the accuracy and legality of your Customer Data.`,
   },
   {
     title: '7. Intellectual Property',
-    body: `FieldFlow and its licensors own all intellectual property rights in the Service, including software, design, trademarks, and content. These Terms do not grant you any rights to use FieldFlow trademarks, logos, or brand elements without written permission.
+    body: `CustomsFieldPro and its licensors own all intellectual property rights in the Service, including software, design, trademarks, and content. These Terms do not grant you any rights to use CustomsFieldPro trademarks, logos, or brand elements without written permission.
 
-You retain ownership of any content you create using the Service. You grant FieldFlow permission to use anonymized, aggregated data about usage patterns to improve the Service.`,
+You retain ownership of any content you create using the Service. You grant CustomsFieldPro permission to use anonymized, aggregated data about usage patterns to improve the Service.`,
   },
   {
     title: '8. Disclaimers',
-    body: `THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. FIELDFLOW DOES NOT WARRANT THAT THE SERVICE WILL BE ERROR-FREE, UNINTERRUPTED, OR MEET YOUR SPECIFIC REQUIREMENTS.
+    body: `THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. CUSTOMSFIELDPRO DOES NOT WARRANT THAT THE SERVICE WILL BE ERROR-FREE, UNINTERRUPTED, OR MEET YOUR SPECIFIC REQUIREMENTS.
 
 We do not warrant that:
 • The Service will be available at all times (we aim for 99.9% uptime but do not guarantee it).
@@ -104,7 +104,7 @@ We do not warrant that:
   },
   {
     title: '9. Limitation of Liability',
-    body: `TO THE MAXIMUM EXTENT PERMITTED BY LAW, FIELDFLOW SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFITS, DATA LOSS, OR BUSINESS INTERRUPTION, ARISING FROM YOUR USE OF THE SERVICE.
+    body: `TO THE MAXIMUM EXTENT PERMITTED BY LAW, CUSTOMSFIELDPRO SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFITS, DATA LOSS, OR BUSINESS INTERRUPTION, ARISING FROM YOUR USE OF THE SERVICE.
 
 OUR TOTAL LIABILITY TO YOU FOR ANY CLAIMS ARISING FROM THESE TERMS OR YOUR USE OF THE SERVICE SHALL NOT EXCEED THE AMOUNT YOU PAID US IN THE 12 MONTHS PRECEDING THE CLAIM.`,
   },
@@ -117,7 +117,7 @@ OUR TOTAL LIABILITY TO YOU FOR ANY CLAIMS ARISING FROM THESE TERMS OR YOUR USE O
     body: `We may update these Terms at any time. We will notify you of material changes at least 30 days before they take effect by:
 
 • Sending an email to your registered address.
-• Displaying a notice within the FieldFlow platform.
+• Displaying a notice within the CustomsFieldPro platform.
 
 Continued use of the Service after the effective date constitutes acceptance of the updated Terms.`,
   },
@@ -125,9 +125,9 @@ Continued use of the Service after the effective date constitutes acceptance of 
     title: '12. Contact',
     body: `For questions about these Terms, contact:
 
-FieldFlow CRM
-Email: legal@fieldflowcrm.com
-Support: support@fieldflowcrm.com`,
+CustomsFieldPro
+Email: legal@customsfieldprocrm.com
+Support: support@customsfieldprocrm.com`,
   },
 ]
 
@@ -161,7 +161,7 @@ export default function TermsPage() {
 
         <div style={{ background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: 10, padding: '16px 20px', marginBottom: 40 }}>
           <p style={{ fontSize: 14, color: '#9A3412', lineHeight: 1.65 }}>
-            <strong>Plain English summary:</strong> Use FieldFlow fairly, pay your subscription, keep your password safe, and your data is yours. We run a legitimate business and expect the same from you. Questions? <a href="mailto:legal@fieldflowcrm.com" style={{ color: '#EA580C' }}>legal@fieldflowcrm.com</a>
+            <strong>Plain English summary:</strong> Use CustomsFieldPro fairly, pay your subscription, keep your password safe, and your data is yours. We run a legitimate business and expect the same from you. Questions? <a href="mailto:legal@customsfieldprocrm.com" style={{ color: '#EA580C' }}>legal@customsfieldprocrm.com</a>
           </p>
         </div>
 

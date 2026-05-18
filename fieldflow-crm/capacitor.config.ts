@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.fieldflow.crm',
-  appName: 'FieldFlow CRM',
+  appId: 'com.customsfieldpro.crm',
+  appName: 'CustomsFieldPro',
   webDir: 'dist',
   server: {
     allowNavigation: ['*.openstreetmap.org', '*.tile.openstreetmap.org', 'nominatim.openstreetmap.org'],

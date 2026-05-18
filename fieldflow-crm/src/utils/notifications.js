@@ -1,8 +1,8 @@
 // ── Notifications Utility ─────────────────────────────────────────────────────
-// Stores all notifications in localStorage under 'fieldflow_notifications'
+// Stores all notifications in localStorage under 'customsfieldpro_notifications'
 
-const NOTIF_KEY   = 'fieldflow_notifications'
-const SESSION_KEY = 'fieldflow_user'
+const NOTIF_KEY   = 'customsfieldpro_notifications'
+const SESSION_KEY = 'customsfieldpro_user'
 
 // ── Notification type constants ───────────────────────────────────────────────
 export const NOTIF_TYPES = {
@@ -43,7 +43,7 @@ function getCurrentUser() {
 
 function getAdminIds() {
   try {
-    const raw = localStorage.getItem('fieldflow_users')
+    const raw = localStorage.getItem('customsfieldpro_users')
     const users = raw ? JSON.parse(raw) : []
     return users.filter(u => u.role === 'admin').map(u => u.id)
   } catch { return ['user-1'] }
@@ -363,7 +363,7 @@ export async function initPushNotifications() {
 
     // Registration token (send to your server for targeting — localStorage for now)
     PushNotifications.addListener('registration', token => {
-      localStorage.setItem('fieldflow_push_token', token.value)
+      localStorage.setItem('customsfieldpro_push_token', token.value)
     })
 
     PushNotifications.addListener('registrationError', err => {
@@ -391,7 +391,7 @@ export async function initPushNotifications() {
       const data = action.notification.data || {}
       if (data.module && data.recordId) {
         // Navigate to the relevant page — dispatched as a custom event
-        window.dispatchEvent(new CustomEvent('fieldflow:push-tap', { detail: data }))
+        window.dispatchEvent(new CustomEvent('customsfieldpro:push-tap', { detail: data }))
       }
     })
   } catch (err) {

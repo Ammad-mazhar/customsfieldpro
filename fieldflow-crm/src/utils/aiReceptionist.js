@@ -1,9 +1,9 @@
 // ── AI Receptionist Engine ───────────────────────────────────────────────────
 // Core utility: conversation storage, system prompt, Claude API, action parsing
 
-const CONV_KEY_PREFIX = 'fieldflow_ai_conv_'
-const ALL_CONVS_KEY   = 'fieldflow_ai_conversations'
-const SETTINGS_KEY    = 'fieldflow_ai_receptionist_settings'
+const CONV_KEY_PREFIX = 'customsfieldpro_ai_conv_'
+const ALL_CONVS_KEY   = 'customsfieldpro_ai_conversations'
+const SETTINGS_KEY    = 'customsfieldpro_ai_receptionist_settings'
 
 // ── Default Settings ─────────────────────────────────────────────────────────
 
@@ -13,7 +13,7 @@ export const DEFAULT_SETTINGS = {
   tone:                     'Friendly',
   language:                 'English',
   greeting:                 "Hi! You've reached {{company_name}}. I'm {{receptionist_name}}, your virtual assistant. How can I help you today?",
-  businessName:             'FieldFlow Services',
+  businessName:             'CustomsFieldPro Services',
   services:                 ['HVAC', 'Plumbing', 'Electrical', 'Appliance Repair'],
   serviceArea:              'Fairfax County, Prince William County, and surrounding areas in Northern Virginia',
   businessHours: {
@@ -239,7 +239,7 @@ export function isBusinessHours(settings) {
 
 export function buildSystemPrompt(settings, afterHours = false) {
   const name    = settings.receptionistName || 'Alex'
-  const company = settings.businessName || 'FieldFlow Services'
+  const company = settings.businessName || 'CustomsFieldPro Services'
   const tone    = settings.tone || 'Friendly'
   const services = (settings.services || []).join(', ')
 
@@ -345,7 +345,7 @@ export function createAIServiceRequest(data, phone) {
 
     // Admin notification
     try {
-      const nRaw  = localStorage.getItem('fieldflow_notifications')
+      const nRaw  = localStorage.getItem('customsfieldpro_notifications')
       const notifs = nRaw ? JSON.parse(nRaw) : []
       notifs.unshift({
         id:              `NOTIF-AI-${Date.now()}`,
@@ -359,7 +359,7 @@ export function createAIServiceRequest(data, phone) {
         createdAt:       new Date().toISOString(),
         urgent:          false,
       })
-      localStorage.setItem('fieldflow_notifications', JSON.stringify(notifs))
+      localStorage.setItem('customsfieldpro_notifications', JSON.stringify(notifs))
     } catch {}
 
     return newReq
@@ -382,7 +382,7 @@ function guessServiceType(problem) {
 
 function createEscalationNotif(phone, reason, message) {
   try {
-    const nRaw   = localStorage.getItem('fieldflow_notifications')
+    const nRaw   = localStorage.getItem('customsfieldpro_notifications')
     const notifs = nRaw ? JSON.parse(nRaw) : []
     notifs.unshift({
       id:              `NOTIF-ESC-${Date.now()}`,
@@ -396,7 +396,7 @@ function createEscalationNotif(phone, reason, message) {
       createdAt:       new Date().toISOString(),
       urgent:          true,
     })
-    localStorage.setItem('fieldflow_notifications', JSON.stringify(notifs))
+    localStorage.setItem('customsfieldpro_notifications', JSON.stringify(notifs))
   } catch {}
 }
 
@@ -405,7 +405,7 @@ function createEscalationNotif(phone, reason, message) {
 function generateDemoResponse(message, history, settings) {
   const lower    = history.length
   const name     = settings.receptionistName || 'Alex'
-  const company  = settings.businessName || 'FieldFlow'
+  const company  = settings.businessName || 'CustomsFieldPro'
   const msg      = message.toLowerCase()
 
   if (lower === 0) {

@@ -109,7 +109,7 @@ const DEFAULT_BRANDING = {
 const DEFAULT_CUSTOM_FIELDS = []
 
 function getStorageKey(tenantId) {
-  return `fieldflow_tenant_config_${tenantId || 'default'}`
+  return `customsfieldpro_tenant_config_${tenantId || 'default'}`
 }
 
 function buildDefault(businessType = 'General') {

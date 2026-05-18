@@ -1,4 +1,4 @@
-// FieldFlow CRM — Walkabout-style alphanumeric status codes
+// CustomsFieldPro — Walkabout-style alphanumeric status codes
 // These codes map the service call workflow to Walkabout CRM's numbering system.
 
 export const WALKABOUT_STATUSES = [

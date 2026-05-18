@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
-const TRIAL_KEY = 'fieldflow_trial'
+const TRIAL_KEY = 'customsfieldpro_trial'
 
 // Seed trial data for demo (5 days remaining by default)
 function seedTrialData() {
@@ -23,7 +23,7 @@ export function setTrialPlan(plan) {
 }
 
 function getDismissKey() {
-  return `fieldflow_trial_dismissed_${new Date().toISOString().slice(0, 10)}`
+  return `customsfieldpro_trial_dismissed_${new Date().toISOString().slice(0, 10)}`
 }
 
 function isDismissedToday() {
@@ -63,7 +63,7 @@ function ExpiredOverlay() {
 
         <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f1f5f9', margin: '0 0 10px' }}>Your trial has ended</h1>
         <p style={{ fontSize: 15, color: '#94a3b8', margin: '0 0 32px', lineHeight: 1.6 }}>
-          Choose a plan to continue using FieldFlow CRM. Your data is safe and will be restored once you subscribe.
+          Choose a plan to continue using CustomsFieldPro. Your data is safe and will be restored once you subscribe.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 14, marginBottom: 28 }}>
@@ -95,7 +95,7 @@ function ExpiredOverlay() {
           Choose a Plan →
         </button>
         <p style={{ marginTop: 14, fontSize: 12.5, color: '#475569' }}>
-          Need help? <a href="mailto:support@fieldflow.app" style={{ color: '#60a5fa', textDecoration: 'none' }}>Contact support</a>
+          Need help? <a href="mailto:support@customsfieldpro.app" style={{ color: '#60a5fa', textDecoration: 'none' }}>Contact support</a>
         </p>
       </div>
     </div>

@@ -23,7 +23,7 @@ function buildDoc(invoice, settings = {}) {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(21)
   doc.setTextColor(255, 255, 255)
-  doc.text(co.name || 'FieldFlow Services', margin, 38)
+  doc.text(co.name || 'CustomsFieldPro Services', margin, 38)
 
   // Tagline
   doc.setFont('helvetica', 'normal')

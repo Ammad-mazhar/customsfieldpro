@@ -3,7 +3,7 @@ import { logActivity, ACTIONS } from './activityLog'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'fieldflow_stripe'
+const STORAGE_KEY = 'customsfieldpro_stripe'
 
 export const DEFAULT_STRIPE_CONFIG = {
   publishableKey:      '',

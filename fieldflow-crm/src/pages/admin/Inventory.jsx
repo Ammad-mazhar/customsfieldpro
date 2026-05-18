@@ -593,7 +593,7 @@ function PurchaseOrdersTab({ parts, refresh }) {
 
     doc.setTextColor(30,30,30); doc.setFontSize(10)
     let y=32
-    doc.setFont('helvetica','bold'); doc.text(co.name||'FieldFlow CRM', 14, y)
+    doc.setFont('helvetica','bold'); doc.text(co.name||'CustomsFieldPro', 14, y)
     doc.setFont('helvetica','normal')
     if (co.address) { y+=5; doc.text(co.address, 14, y) }
     if (co.phone)   { y+=5; doc.text(co.phone, 14, y) }

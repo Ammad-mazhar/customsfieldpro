@@ -1,4 +1,4 @@
-// FieldFlow CRM — localStorage data store
+// CustomsFieldPro — localStorage data store
 // All reads/writes go through these functions.
 import { initCounters } from '../utils/numberGenerator'
 
@@ -40,7 +40,7 @@ const SAMPLE_JOBS = [
 ]
 
 const SAMPLE_INVOICES = [
-  {id:'INV-0001',clientId:'CLT-0001',clientName:'Martha Reynolds',   clientPhone:'(555) 214-7830',clientEmail:'martha.reynolds@email.com',  clientAddress:'142 Elm St, Springfield, VA',    jobRef:'JOB-0001',linkedJobId:'JOB-0001',linkedQuoteNumber:null,linkedQuoteId:null,issued:'2026-04-01',due:'2026-04-15',status:'Sent',    lineItems:[{id:1,description:'Service Call Fee',qty:1,unit:75,total:75},{id:2,description:'Labor - Diagnostic (2hr)',qty:2,unit:80,total:160},{id:3,description:'Refrigerant R-410A (1.5lb)',qty:1,unit:95,total:95},{id:4,description:'Freon Handling Fee',qty:1,unit:50,total:50}],subtotal:380,taxRate:0,total:380,notes:'Thank you for choosing FieldFlow services.'},
+  {id:'INV-0001',clientId:'CLT-0001',clientName:'Martha Reynolds',   clientPhone:'(555) 214-7830',clientEmail:'martha.reynolds@email.com',  clientAddress:'142 Elm St, Springfield, VA',    jobRef:'JOB-0001',linkedJobId:'JOB-0001',linkedQuoteNumber:null,linkedQuoteId:null,issued:'2026-04-01',due:'2026-04-15',status:'Sent',    lineItems:[{id:1,description:'Service Call Fee',qty:1,unit:75,total:75},{id:2,description:'Labor - Diagnostic (2hr)',qty:2,unit:80,total:160},{id:3,description:'Refrigerant R-410A (1.5lb)',qty:1,unit:95,total:95},{id:4,description:'Freon Handling Fee',qty:1,unit:50,total:50}],subtotal:380,taxRate:0,total:380,notes:'Thank you for choosing CustomsFieldPro services.'},
   {id:'INV-0002',clientId:'CLT-0002',clientName:'Sunrise Apartments',clientPhone:'(555) 480-2291',clientEmail:'mgmt@sunriseapts.com',        clientAddress:'88 Lakewood Dr, Riverside, VA',  jobRef:'JOB-0002',linkedJobId:'JOB-0002',linkedQuoteNumber:'QT-0002',linkedQuoteId:'QT-0002',issued:'2026-04-01',due:'2026-04-16',status:'Draft',   lineItems:[{id:1,description:'Labor - Plumbing Install (4hr)',qty:4,unit:110,total:440},{id:2,description:'PEX Fittings & Hardware',qty:1,unit:280,total:280},{id:3,description:'Fixture Units (3)',qty:3,unit:120,total:360},{id:4,description:'Permit Fee',qty:1,unit:160,total:160}],subtotal:1240,taxRate:0,total:1240,notes:''},
   {id:'INV-0003',clientId:'CLT-0003',clientName:'Green Valley School',clientPhone:'(555) 667-3344',clientEmail:'facilities@greenvalley.edu',clientAddress:'900 Valley Rd, Greenfield, VA',  jobRef:'JOB-0003',linkedJobId:'JOB-0003',linkedQuoteNumber:null,linkedQuoteId:null,issued:'2026-03-31',due:'2026-04-14',status:'Paid',    lineItems:[{id:1,description:'Electrical Inspection Fee',qty:1,unit:200,total:200},{id:2,description:'Labor (2hr)',qty:2,unit:110,total:220},{id:3,description:'Panel Safety Test',qty:1,unit:100,total:100}],subtotal:520,taxRate:0,total:520,notes:''},
   {id:'INV-0004',clientId:'CLT-0004',clientName:'Frank Holloway',    clientPhone:'(555) 391-0012',clientEmail:'frank.holloway@gmail.com',    clientAddress:'77 Oak Lane, Hillside, VA',      jobRef:'JOB-0004',linkedJobId:'JOB-0004',linkedQuoteNumber:null,linkedQuoteId:null,issued:'2026-03-30',due:'2026-04-13',status:'Paid',    lineItems:[{id:1,description:'Furnace Tune-Up (standard)',qty:1,unit:145,total:145},{id:2,description:'Filter Replacement',qty:1,unit:40,total:40}],subtotal:185,taxRate:0,total:185,notes:''},
@@ -105,12 +105,12 @@ function seedAll() {
   if (!localStorage.getItem(KEYS.invoices)) persist(KEYS.invoices, SAMPLE_INVOICES)
   if (!localStorage.getItem(KEYS.quotes))   persist(KEYS.quotes,   SAMPLE_QUOTES)
   if (!localStorage.getItem(KEYS.requests)) persist(KEYS.requests, SAMPLE_REQUESTS)
-  if (!localStorage.getItem('fieldflow_users')) {
-    persist('fieldflow_users', [
-      { id: 'user-1', email: 'admin@fieldflow.com', password: 'admin123', name: 'Admin User', role: 'admin', technicianId: null, status: 'active' },
-      { id: 'user-2', email: 'moore@fieldflow.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1', status: 'active' },
-      { id: 'user-3', email: 'torres@fieldflow.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2', status: 'active' },
-      { id: 'user-4', email: 'singh@fieldflow.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3', status: 'active' },
+  if (!localStorage.getItem('customsfieldpro_users')) {
+    persist('customsfieldpro_users', [
+      { id: 'user-1', email: 'admin@customsfieldpro.com', password: 'admin123', name: 'Admin User', role: 'admin', technicianId: null, status: 'active' },
+      { id: 'user-2', email: 'moore@customsfieldpro.com', password: 'staff123', name: 'D. Moore', role: 'staff', technicianId: 'tech-1', status: 'active' },
+      { id: 'user-3', email: 'torres@customsfieldpro.com', password: 'staff123', name: 'A. Torres', role: 'staff', technicianId: 'tech-2', status: 'active' },
+      { id: 'user-4', email: 'singh@customsfieldpro.com', password: 'staff123', name: 'R. Singh', role: 'staff', technicianId: 'tech-3', status: 'active' },
     ])
   }
   // Initialize sequential number counters (only sets if missing)
@@ -540,25 +540,25 @@ export function generateServiceCallId() {
 
 // ─── Settings ────────────────────────────────────────────────────────────────
 
-const SETTINGS_KEY = 'fieldflow_settings'
+const SETTINGS_KEY = 'customsfieldpro_settings'
 
 const DEFAULT_SETTINGS = {
   company: {
-    name:     'FieldFlow Services',
+    name:     'CustomsFieldPro Services',
     address:  '100 Main St',
     city:     'Springfield',
     zip:      '22150',
     phone:    '(555) 800-0000',
-    email:    'info@fieldflowcrm.com',
-    website:  'www.fieldflowcrm.com',
+    email:    'info@customsfieldprocrm.com',
+    website:  'www.customsfieldprocrm.com',
     taxRate:  0,
     currency: 'USD',
   },
   technicians: [
-    { id: 'moore',  name: 'D. Moore',  email: 'moore@fieldflow.com',  phone: '(555) 101-0001', specialty: 'HVAC',       color: '#2563EB', colorLight: '#EFF6FF', colorName: 'Ocean Blue' },
-    { id: 'torres', name: 'A. Torres', email: 'torres@fieldflow.com', phone: '(555) 101-0002', specialty: 'Plumbing',   color: '#16A34A', colorLight: '#F0FDF4', colorName: 'Forest Green' },
-    { id: 'singh',  name: 'R. Singh',  email: 'singh@fieldflow.com',  phone: '(555) 101-0003', specialty: 'Electrical', color: '#D97706', colorLight: '#FFFBEB', colorName: 'Golden Amber' },
-    { id: 'patel',  name: 'K. Patel',  email: 'patel@fieldflow.com',  phone: '(555) 101-0004', specialty: 'HVAC',       color: '#7C3AED', colorLight: '#F5F3FF', colorName: 'Royal Purple' },
+    { id: 'moore',  name: 'D. Moore',  email: 'moore@customsfieldpro.com',  phone: '(555) 101-0001', specialty: 'HVAC',       color: '#2563EB', colorLight: '#EFF6FF', colorName: 'Ocean Blue' },
+    { id: 'torres', name: 'A. Torres', email: 'torres@customsfieldpro.com', phone: '(555) 101-0002', specialty: 'Plumbing',   color: '#16A34A', colorLight: '#F0FDF4', colorName: 'Forest Green' },
+    { id: 'singh',  name: 'R. Singh',  email: 'singh@customsfieldpro.com',  phone: '(555) 101-0003', specialty: 'Electrical', color: '#D97706', colorLight: '#FFFBEB', colorName: 'Golden Amber' },
+    { id: 'patel',  name: 'K. Patel',  email: 'patel@customsfieldpro.com',  phone: '(555) 101-0004', specialty: 'HVAC',       color: '#7C3AED', colorLight: '#F5F3FF', colorName: 'Royal Purple' },
   ],
   services: [
     { id: 'svc-1', name: 'HVAC',            rate: 150 },
@@ -1182,8 +1182,8 @@ const DEFAULT_BILLING = {
   plan: 'professional',
   subscriptionStatus: 'active',
   billingCycle: 'monthly',
-  stripeCustomerId: 'cus_demo_fieldflow',
-  stripeSubscriptionId: 'sub_demo_fieldflow',
+  stripeCustomerId: 'cus_demo_customsfieldpro',
+  stripeSubscriptionId: 'sub_demo_customsfieldpro',
   currentPeriodStart: new Date(Date.now() - 14 * 86400000).toISOString(),
   currentPeriodEnd: new Date(Date.now() + 16 * 86400000).toISOString(),
   cancelAtPeriodEnd: false,
@@ -1192,16 +1192,16 @@ const DEFAULT_BILLING = {
   cardLast4: '4242',
   cardExpMonth: 12,
   cardExpYear: 2027,
-  billingEmail: 'admin@fieldflow.com',
+  billingEmail: 'admin@customsfieldpro.com',
 }
 
 const SAMPLE_BILLING_HISTORY = [
-  { id: 'inv_001', date: _m(0), description: 'FieldFlow Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
-  { id: 'inv_002', date: _m(1), description: 'FieldFlow Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
-  { id: 'inv_003', date: _m(2), description: 'FieldFlow Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
-  { id: 'inv_004', date: _m(3), description: 'FieldFlow Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
-  { id: 'inv_005', date: _m(4), description: 'FieldFlow Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
-  { id: 'inv_006', date: _m(5), description: 'FieldFlow Starter — Monthly',       amount: 4900, status: 'paid', invoiceUrl: '#' },
+  { id: 'inv_001', date: _m(0), description: 'CustomsFieldPro Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
+  { id: 'inv_002', date: _m(1), description: 'CustomsFieldPro Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
+  { id: 'inv_003', date: _m(2), description: 'CustomsFieldPro Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
+  { id: 'inv_004', date: _m(3), description: 'CustomsFieldPro Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
+  { id: 'inv_005', date: _m(4), description: 'CustomsFieldPro Professional — Monthly', amount: 9900, status: 'paid', invoiceUrl: '#' },
+  { id: 'inv_006', date: _m(5), description: 'CustomsFieldPro Starter — Monthly',       amount: 4900, status: 'paid', invoiceUrl: '#' },
 ]
 
 export function getBilling() {
@@ -1217,7 +1217,7 @@ export function getBillingHistory() { return SAMPLE_BILLING_HISTORY }
 
 // ─── Inbox ────────────────────────────────────────────────────────────────────
 
-const INBOX_KEY = 'fieldflow_inbox'
+const INBOX_KEY = 'customsfieldpro_inbox'
 
 const _h = (daysAgo, hoursAgo = 0, minsAgo = 0) =>
   new Date(Date.now() - daysAgo * 86400000 - hoursAgo * 3600000 - minsAgo * 60000).toISOString()
@@ -1276,7 +1276,7 @@ const SAMPLE_MESSAGES = [
   {
     id: 'msg-010', clientId: 'CLT-0002', clientName: 'Sunrise Apartments',
     direction: 'outgoing', channel: 'email',
-    subject: 'Quote QT-0002 from FieldFlow CRM',
+    subject: 'Quote QT-0002 from CustomsFieldPro',
     body: 'Hi, please find attached Quote QT-0002 for the re-piping project. Total: $9,750. Valid for 30 days.',
     attachments: [{ name: 'QT-0002.pdf', size: '142KB' }],
     linkedJobId: 'JOB-0002', linkedJobNumber: 'JOB-0002',
@@ -1286,7 +1286,7 @@ const SAMPLE_MESSAGES = [
   {
     id: 'msg-011', clientId: 'CLT-0002', clientName: 'Sunrise Apartments',
     direction: 'incoming', channel: 'email',
-    subject: 'Re: Quote QT-0002 from FieldFlow CRM',
+    subject: 'Re: Quote QT-0002 from CustomsFieldPro',
     body: 'Quote looks good. We approve. Please schedule for next week. Contact PM Diane at 555-480-2291.',
     attachments: [], linkedJobId: 'JOB-0002', linkedJobNumber: 'JOB-0002',
     sentBy: null, sentByName: null, isRead: true, isInternal: false,
@@ -1304,7 +1304,7 @@ const SAMPLE_MESSAGES = [
   {
     id: 'msg-020', clientId: 'CLT-0005', clientName: 'Harbor Clinic',
     direction: 'outgoing', channel: 'sms', subject: '',
-    body: 'Hi, this is FieldFlow CRM. Your tech R. Singh is en route for the quarterly HVAC maintenance. ETA 20 min.',
+    body: 'Hi, this is CustomsFieldPro. Your tech R. Singh is en route for the quarterly HVAC maintenance. ETA 20 min.',
     attachments: [], linkedJobId: 'JOB-0005', linkedJobNumber: 'JOB-0005',
     sentBy: 'user-1', sentByName: 'Admin User', isRead: true, isInternal: false,
     status: 'delivered', createdAt: _h(0, 8, 0),
@@ -1377,7 +1377,7 @@ const SAMPLE_MESSAGES = [
   {
     id: 'msg-050', clientId: 'CLT-0004', clientName: 'Frank Holloway',
     direction: 'outgoing', channel: 'sms', subject: '',
-    body: 'Hi Frank, this is FieldFlow. Your furnace tune-up is scheduled for tomorrow at 9 AM. Reply YES to confirm.',
+    body: 'Hi Frank, this is CustomsFieldPro. Your furnace tune-up is scheduled for tomorrow at 9 AM. Reply YES to confirm.',
     attachments: [], linkedJobId: 'JOB-0004', linkedJobNumber: 'JOB-0004',
     sentBy: 'user-1', sentByName: 'Admin User', isRead: true, isInternal: false,
     status: 'delivered', createdAt: _h(2, 12, 0),

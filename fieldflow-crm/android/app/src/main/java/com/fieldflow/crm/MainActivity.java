@@ -1,4 +1,4 @@
-package com.fieldflow.crm;
+package com.customsfieldpro.crm;
 
 import com.getcapacitor.BridgeActivity;
 

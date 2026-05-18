@@ -14,7 +14,7 @@ import TimeTracker from '../../components/TimeTracker'
 import { NOTE_TYPES } from '../../components/TechNotes'
 
 // ── Job Notes helpers (tech view: only see office_to_tech + add tech_to_office) ─
-const NOTES_KEY = 'fieldflow_job_notes'
+const NOTES_KEY = 'customsfieldpro_job_notes'
 
 function loadJobNotes(jobId) {
   try {

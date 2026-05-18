@@ -5,7 +5,7 @@ import { notifyAdmins, NOTIF_TYPES } from '../../utils/notifications'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const USERS_KEY = 'fieldflow_users'
+const USERS_KEY = 'customsfieldpro_users'
 
 const SPECIALTIES   = ['HVAC', 'Plumbing', 'Electrical', 'Appliance Repair', 'General']
 const PRESET_COLORS = [
@@ -753,7 +753,7 @@ export default function UserManagement() {
             <div>
               <div style={{ marginBottom: 22 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1d23', margin: '0 0 4px' }}>Create New Account</h2>
-                <p style={{ fontSize: 13, color: '#9ca3af', margin: 0 }}>Add a new admin, staff member, or technician to FieldFlow.</p>
+                <p style={{ fontSize: 13, color: '#9ca3af', margin: 0 }}>Add a new admin, staff member, or technician to CustomsFieldPro.</p>
               </div>
               <CreateForm onCreated={handleCreated} />
             </div>

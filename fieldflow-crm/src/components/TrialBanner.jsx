@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getBilling } from '../data/store'
 
-const DISMISS_KEY = 'fieldflow_trial_dismiss'
+const DISMISS_KEY = 'customsfieldpro_trial_dismiss'
 
 export default function TrialBanner() {
   const navigate = useNavigate()
@@ -49,7 +49,7 @@ export default function TrialBanner() {
             Your Trial Has Ended
           </h2>
           <p style={{ fontSize: 15, color: '#6b7280', margin: '0 0 28px', lineHeight: 1.6 }}>
-            Your 14-day free trial has expired. Choose a plan to continue using FieldFlow CRM.
+            Your 14-day free trial has expired. Choose a plan to continue using CustomsFieldPro.
           </p>
           <button
             onClick={() => navigate('/billing')}
@@ -63,8 +63,8 @@ export default function TrialBanner() {
           </button>
           <p style={{ fontSize: 13, color: '#9ca3af', margin: 0 }}>
             Questions? Contact{' '}
-            <a href="mailto:support@fieldflowcrm.com" style={{ color: '#2563eb' }}>
-              support@fieldflowcrm.com
+            <a href="mailto:support@customsfieldprocrm.com" style={{ color: '#2563eb' }}>
+              support@customsfieldprocrm.com
             </a>
           </p>
         </div>

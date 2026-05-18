@@ -1,4 +1,4 @@
-// FieldFlow CRM — Parts Required Management Card
+// CustomsFieldPro — Parts Required Management Card
 // Shows on Job Detail when status is material_required or waiting_on_parts.
 
 import { useState } from 'react'

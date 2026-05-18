@@ -135,7 +135,7 @@ export default function Register() {
   }
 
   function handleGoToDashboard() {
-    login('admin@fieldflow.com', 'admin123')
+    login('admin@customsfieldpro.com', 'admin123')
     navigate('/dashboard')
   }
 
@@ -158,7 +158,7 @@ export default function Register() {
       <div style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', padding: '14px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 22 }}>🏠</span>
-          <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>FieldFlow</span>
+          <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>CustomsFieldPro</span>
         </Link>
         <span style={{ fontSize: 13, color: '#6b7280' }}>
           Already have an account?{' '}
@@ -278,7 +278,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>How did you hear about FieldFlow?</label>
+                  <label style={labelStyle}>How did you hear about CustomsFieldPro?</label>
                   <select value={formData.hearFrom} onChange={e => set('hearFrom', e.target.value)} style={{ ...inputStyle(), background: '#fff' }}>
                     <option value="">Select...</option>
                     {HEAR_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -374,7 +374,7 @@ export default function Register() {
               <style>{`@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
 
               <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111827', margin: '0 0 8px' }}>
-                Welcome to FieldFlow, {formData.businessName || 'your business'}! 🎉
+                Welcome to CustomsFieldPro, {formData.businessName || 'your business'}! 🎉
               </h2>
               <p style={{ fontSize: 16, color: '#6b7280', margin: '0 0 12px' }}>
                 Your 14-day free trial has started.

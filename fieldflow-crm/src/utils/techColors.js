@@ -16,8 +16,8 @@ export const TECH_COLORS = [
   { name: 'Coral',         hex: '#E11D48', light: '#FFF1F2' },
 ]
 
-const CACHE_KEY    = 'fieldflow_tech_colors'
-const SETTINGS_KEY = 'fieldflow_settings'
+const CACHE_KEY    = 'customsfieldpro_tech_colors'
+const SETTINGS_KEY = 'customsfieldpro_settings'
 
 // Build / read the quick-lookup cache { [techId]: { hex, light, name } }
 export function buildTechColorCache() {

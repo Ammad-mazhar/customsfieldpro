@@ -1,4 +1,4 @@
-// FieldFlow CRM — localStorage data store
+// CustomsFieldPro — localStorage data store
 // All reads/writes go through these functions.
 
 const KEYS = {
@@ -38,7 +38,7 @@ const SAMPLE_JOBS = [
 ]
 
 const SAMPLE_INVOICES = [
-  {id:'INV-2048',clientId:1,clientName:'Martha Reynolds',   clientPhone:'(555) 214-7830',clientEmail:'martha.reynolds@email.com',  clientAddress:'142 Elm St, Springfield, VA',    jobRef:'JOB-1042',issued:'2026-04-01',due:'2026-04-15',status:'Sent',    lineItems:[{id:1,description:'Service Call Fee',qty:1,unit:75,total:75},{id:2,description:'Labor - Diagnostic (2hr)',qty:2,unit:80,total:160},{id:3,description:'Refrigerant R-410A (1.5lb)',qty:1,unit:95,total:95},{id:4,description:'Freon Handling Fee',qty:1,unit:50,total:50}],subtotal:380,taxRate:0,total:380,notes:'Thank you for choosing FieldFlow services.'},
+  {id:'INV-2048',clientId:1,clientName:'Martha Reynolds',   clientPhone:'(555) 214-7830',clientEmail:'martha.reynolds@email.com',  clientAddress:'142 Elm St, Springfield, VA',    jobRef:'JOB-1042',issued:'2026-04-01',due:'2026-04-15',status:'Sent',    lineItems:[{id:1,description:'Service Call Fee',qty:1,unit:75,total:75},{id:2,description:'Labor - Diagnostic (2hr)',qty:2,unit:80,total:160},{id:3,description:'Refrigerant R-410A (1.5lb)',qty:1,unit:95,total:95},{id:4,description:'Freon Handling Fee',qty:1,unit:50,total:50}],subtotal:380,taxRate:0,total:380,notes:'Thank you for choosing CustomsFieldPro services.'},
   {id:'INV-2047',clientId:2,clientName:'Sunrise Apartments',clientPhone:'(555) 480-2291',clientEmail:'mgmt@sunriseapts.com',        clientAddress:'88 Lakewood Dr, Riverside, VA',  jobRef:'JOB-1041',issued:'2026-04-01',due:'2026-04-16',status:'Draft',   lineItems:[{id:1,description:'Labor - Plumbing Install (4hr)',qty:4,unit:110,total:440},{id:2,description:'PEX Fittings & Hardware',qty:1,unit:280,total:280},{id:3,description:'Fixture Units (3)',qty:3,unit:120,total:360},{id:4,description:'Permit Fee',qty:1,unit:160,total:160}],subtotal:1240,taxRate:0,total:1240,notes:''},
   {id:'INV-2046',clientId:3,clientName:'Green Valley School',clientPhone:'(555) 667-3344',clientEmail:'facilities@greenvalley.edu',clientAddress:'900 Valley Rd, Greenfield, VA',  jobRef:'JOB-1040',issued:'2026-03-31',due:'2026-04-14',status:'Paid',    lineItems:[{id:1,description:'Electrical Inspection Fee',qty:1,unit:200,total:200},{id:2,description:'Labor (2hr)',qty:2,unit:110,total:220},{id:3,description:'Panel Safety Test',qty:1,unit:100,total:100}],subtotal:520,taxRate:0,total:520,notes:''},
   {id:'INV-2045',clientId:4,clientName:'Frank Holloway',    clientPhone:'(555) 391-0012',clientEmail:'frank.holloway@gmail.com',    clientAddress:'77 Oak Lane, Hillside, VA',      jobRef:'JOB-1039',issued:'2026-03-30',due:'2026-04-13',status:'Paid',    lineItems:[{id:1,description:'Furnace Tune-Up (standard)',qty:1,unit:145,total:145},{id:2,description:'Filter Replacement',qty:1,unit:40,total:40}],subtotal:185,taxRate:0,total:185,notes:''},
@@ -227,25 +227,25 @@ export function deleteRequest(id) {
 
 // ─── Settings ────────────────────────────────────────────────────────────────
 
-const SETTINGS_KEY = 'fieldflow_settings'
+const SETTINGS_KEY = 'customsfieldpro_settings'
 
 const DEFAULT_SETTINGS = {
   company: {
-    name:     'FieldFlow Services',
+    name:     'CustomsFieldPro Services',
     address:  '100 Main St',
     city:     'Springfield',
     zip:      '22150',
     phone:    '(555) 800-0000',
-    email:    'info@fieldflowcrm.com',
-    website:  'www.fieldflowcrm.com',
+    email:    'info@customsfieldprocrm.com',
+    website:  'www.customsfieldprocrm.com',
     taxRate:  0,
     currency: 'USD',
   },
   technicians: [
-    { id: 'moore',  name: 'D. Moore',  email: 'moore@fieldflow.com',  phone: '(555) 101-0001', specialty: 'HVAC',            color: '#2563eb' },
-    { id: 'torres', name: 'A. Torres', email: 'torres@fieldflow.com', phone: '(555) 101-0002', specialty: 'Plumbing',        color: '#16a34a' },
-    { id: 'singh',  name: 'R. Singh',  email: 'singh@fieldflow.com',  phone: '(555) 101-0003', specialty: 'Electrical',      color: '#d97706' },
-    { id: 'patel',  name: 'K. Patel',  email: 'patel@fieldflow.com',  phone: '(555) 101-0004', specialty: 'HVAC',            color: '#7c3aed' },
+    { id: 'moore',  name: 'D. Moore',  email: 'moore@customsfieldpro.com',  phone: '(555) 101-0001', specialty: 'HVAC',            color: '#2563eb' },
+    { id: 'torres', name: 'A. Torres', email: 'torres@customsfieldpro.com', phone: '(555) 101-0002', specialty: 'Plumbing',        color: '#16a34a' },
+    { id: 'singh',  name: 'R. Singh',  email: 'singh@customsfieldpro.com',  phone: '(555) 101-0003', specialty: 'Electrical',      color: '#d97706' },
+    { id: 'patel',  name: 'K. Patel',  email: 'patel@customsfieldpro.com',  phone: '(555) 101-0004', specialty: 'HVAC',            color: '#7c3aed' },
   ],
   services: [
     { id: 'svc-1', name: 'HVAC',            rate: 150 },

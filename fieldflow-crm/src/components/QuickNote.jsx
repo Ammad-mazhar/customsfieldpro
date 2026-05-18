@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { NOTE_TYPES } from './TechNotes'
 
-const NOTES_KEY = 'fieldflow_job_notes'
+const NOTES_KEY = 'customsfieldpro_job_notes'
 
 function loadAllNotes() {
   try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') } catch { return {} }

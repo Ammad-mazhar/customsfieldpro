@@ -135,6 +135,6 @@ app.use((req, res) => res.status(404).json({ error: 'Not found', requestId: req.
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => logger.info(`FieldFlow API running on port ${PORT} (${process.env.NODE_ENV || 'development'})`))
+app.listen(PORT, () => logger.info(`CustomsFieldPro API running on port ${PORT} (${process.env.NODE_ENV || 'development'})`))
 
 module.exports = app

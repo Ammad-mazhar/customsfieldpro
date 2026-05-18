@@ -10,7 +10,7 @@ function Navbar({ navigate }) {
     }}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 22 }}>🏠</span>
-        <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>FieldFlow</span>
+        <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>CustomsFieldPro</span>
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <Link to="/pricing" style={{ color: '#374151', textDecoration: 'none', fontSize: 15 }}>Pricing</Link>
@@ -40,7 +40,7 @@ function Footer() {
         <Link to="/demo" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14 }}>Demo</Link>
         <Link to="/contact" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: 14 }}>Contact</Link>
       </div>
-      <div style={{ fontSize: 13 }}>&copy; {new Date().getFullYear()} FieldFlow CRM. All rights reserved.</div>
+      <div style={{ fontSize: 13 }}>&copy; {new Date().getFullYear()} CustomsFieldPro. All rights reserved.</div>
     </footer>
   )
 }
@@ -70,9 +70,9 @@ export default function ContactPage() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     // Save to localStorage
     try {
-      const arr = JSON.parse(localStorage.getItem('fieldflow_contact_submissions') || '[]')
+      const arr = JSON.parse(localStorage.getItem('customsfieldpro_contact_submissions') || '[]')
       arr.push({ ...form, submittedAt: new Date().toISOString() })
-      localStorage.setItem('fieldflow_contact_submissions', JSON.stringify(arr))
+      localStorage.setItem('customsfieldpro_contact_submissions', JSON.stringify(arr))
     } catch {}
     setSubmitted(true)
   }
@@ -203,8 +203,8 @@ export default function ContactPage() {
               <div style={{ background: '#f9fafb', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>✉️</div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 4px' }}>Email Support</h3>
-                <a href="mailto:support@fieldflowcrm.com" style={{ fontSize: 15, color: '#2563eb', textDecoration: 'none' }}>
-                  support@fieldflowcrm.com
+                <a href="mailto:support@customsfieldprocrm.com" style={{ fontSize: 15, color: '#2563eb', textDecoration: 'none' }}>
+                  support@customsfieldprocrm.com
                 </a>
               </div>
 

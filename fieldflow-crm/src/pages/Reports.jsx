@@ -749,7 +749,7 @@ function ExportTab() {
       quotes:   getQuotes(),
       requests: getRequests(),
     }
-    downloadFile(JSON.stringify(backup, null, 2), 'fieldflow-backup.json', 'application/json')
+    downloadFile(JSON.stringify(backup, null, 2), 'customsfieldpro-backup.json', 'application/json')
     markExport('backup')
   }
 
@@ -771,7 +771,7 @@ function ExportTab() {
         if (data.requests) localStorage.setItem('ff_requests', JSON.stringify(data.requests))
         setImportMsg({ ok: true, text: `Backup restored successfully. ${Object.keys(data).filter(k => Array.isArray(data[k])).length} collections imported. Refresh to see changes.` })
       } catch {
-        setImportMsg({ ok: false, text: 'Failed to parse file. Make sure it is a valid FieldFlow JSON backup.' })
+        setImportMsg({ ok: false, text: 'Failed to parse file. Make sure it is a valid CustomsFieldPro JSON backup.' })
       }
     }
     reader.readAsText(file)
@@ -821,7 +821,7 @@ function ExportTab() {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1d23', margin: '0 0 4px' }}>Full JSON Backup</p>
-            <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 4px' }}>Export all FieldFlow data (clients, jobs, invoices, quotes, requests) as a single JSON file.</p>
+            <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 4px' }}>Export all CustomsFieldPro data (clients, jobs, invoices, quotes, requests) as a single JSON file.</p>
             <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>
               Estimated size: ~{estimateSize({ clients: getClients(), jobs: getJobs(), invoices: getInvoices(), quotes: getQuotes(), requests: getRequests() })}
               {lastExports.backup && <span style={{ marginLeft: 10 }}>Last exported: {lastExports.backup}</span>}
@@ -886,7 +886,7 @@ function ExportTab() {
       <div style={{ background: '#fff', border: '1px solid #e8e9ec', borderRadius: 12, padding: '20px' }}>
         <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1d23', margin: '0 0 4px' }}>Restore from Backup</p>
         <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 16px' }}>
-          Upload a previously exported FieldFlow JSON backup to restore all data.{' '}
+          Upload a previously exported CustomsFieldPro JSON backup to restore all data.{' '}
           <strong style={{ color: RED }}>This will overwrite all current data.</strong>
         </p>
 
@@ -900,7 +900,7 @@ function ExportTab() {
             <line x1="12" y1="3" x2="12" y2="15" strokeLinecap="round"/>
           </svg>
           <span style={{ fontSize: 14, fontWeight: 500 }}>Drop JSON backup here or click to browse</span>
-          <span style={{ fontSize: 12, color: '#9ca3af' }}>Accepts .json files exported from FieldFlow</span>
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>Accepts .json files exported from CustomsFieldPro</span>
           <input type="file" accept=".json" style={{ display: 'none' }} onChange={e => handleImport(e.target.files[0])} />
         </label>
 

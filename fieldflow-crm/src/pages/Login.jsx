@@ -268,12 +268,12 @@ export default function Login() {
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
-            <span style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', letterSpacing: '-0.2px' }}>FieldFlow</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', letterSpacing: '-0.2px' }}>CustomsFieldPro</span>
           </div>
 
           {/* Right side */}
           <div className="jb-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span className="jb-topbar-txt" style={{ fontSize: 13.5, color: '#64748B' }}>New to FieldFlow?</span>
+            <span className="jb-topbar-txt" style={{ fontSize: 13.5, color: '#64748B' }}>New to CustomsFieldPro?</span>
             <a href="/register" style={{ fontSize: 13.5, fontWeight: 600, color: '#16A34A', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
               onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
               onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
@@ -294,7 +294,7 @@ export default function Login() {
                 <IconLayers />
               </div>
               <h1 className="jb-h1" style={{ fontSize: 22, fontWeight: 600, color: '#0F172A', margin: '0 0 8px', letterSpacing: '-0.4px', lineHeight: 1.25 }}>
-                Sign in to FieldFlow
+                Sign in to CustomsFieldPro
               </h1>
               <p className="jb-subtitle" style={{ fontSize: 14, color: '#64748B', margin: 0, lineHeight: 1.55 }}>
                 Field service management for HVAC,<br />Plumbing &amp; Electrical teams
@@ -320,8 +320,8 @@ export default function Login() {
                 Try Demo Account
               </p>
               {[
-                { role: 'Admin', badge: '#DCFCE7', badgeTxt: '#15803D', em: 'admin@fieldflow.com', pw: 'admin123' },
-                { role: 'Staff', badge: '#D1FAE5', badgeTxt: '#065F46', em: 'moore@fieldflow.com', pw: 'staff123' },
+                { role: 'Admin', badge: '#DCFCE7', badgeTxt: '#15803D', em: 'admin@customsfieldpro.com', pw: 'admin123' },
+                { role: 'Staff', badge: '#D1FAE5', badgeTxt: '#065F46', em: 'moore@customsfieldpro.com', pw: 'staff123' },
               ].map(({ role, badge, badgeTxt, em, pw }) => (
                 <div key={role} className="jb-demo-row" onClick={() => fillDemo(em, pw)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 7, background: 'transparent', marginBottom: 4 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: badgeTxt, background: badge, borderRadius: 5, padding: '2px 8px', letterSpacing: '0.3px', flexShrink: 0 }}>{role}</span>
@@ -450,7 +450,7 @@ export default function Login() {
         {/* ─── BOTTOM FOOTER ──────────────────────────────────────────────── */}
         <footer style={{ padding: '14px 20px 20px', textAlign: 'center', flexShrink: 0 }}>
           <div className="jb-footer-txt" style={{ fontSize: 11, color: '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '4px 8px' }}>
-            <span>© 2026 FieldFlow CRM</span>
+            <span>© 2026 CustomsFieldPro</span>
             {['Privacy Policy', 'Terms of Service', 'Security', 'Help Center'].map((lbl, i) => (
               <span key={lbl} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ color: '#CBD5E1' }}>·</span>

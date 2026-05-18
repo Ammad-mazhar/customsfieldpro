@@ -1,4 +1,4 @@
--- FieldFlow CRM — Addendum
+-- CustomsFieldPro — Addendum
 -- Run AFTER schema.sql and security_schema.sql.
 -- Adds the equipment table, missing columns on existing tables,
 -- and the authenticate_user() function used by routes/auth.js.

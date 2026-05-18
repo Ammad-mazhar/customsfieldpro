@@ -35,7 +35,7 @@ function savePNG(canvas, filePath) {
   console.log('✓', path.relative(root, filePath))
 }
 
-// ─── Draw FieldFlow icon ──────────────────────────────────────────────────────
+// ─── Draw CustomsFieldPro icon ──────────────────────────────────────────────────────
 
 function drawIcon(size) {
   const canvas = createCanvas(size, size)
@@ -102,14 +102,14 @@ function drawSplash(size) {
   // App name
   ctx.font = `600 ${size * 0.035}px -apple-system, sans-serif`
   ctx.fillStyle = '#ffffffcc'
-  ctx.fillText('FieldFlow CRM', cx, cy + logoSize * 0.7)
+  ctx.fillText('CustomsFieldPro', cx, cy + logoSize * 0.7)
 
   return canvas
 }
 
 // ─── Generate ─────────────────────────────────────────────────────────────────
 
-console.log('\n🎨 Generating FieldFlow CRM icons...\n')
+console.log('\n🎨 Generating CustomsFieldPro icons...\n')
 
 const resourcesDir = path.join(root, 'resources')
 

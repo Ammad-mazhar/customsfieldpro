@@ -72,7 +72,7 @@ function makeNumberPin(num, color) {
 }
 
 // ── Tech location helpers ─────────────────────────────────────────────────────
-const TECH_LOC_KEY = 'fieldflow_tech_locations'
+const TECH_LOC_KEY = 'customsfieldpro_tech_locations'
 function getTechLocations() {
   try { return JSON.parse(localStorage.getItem(TECH_LOC_KEY) || '{}') } catch { return {} }
 }
@@ -93,7 +93,7 @@ function driveMins(lat1, lng1, lat2, lng2) {
 }
 
 // ── Scheduler notes helpers ───────────────────────────────────────────────────
-const SCHED_NOTES_KEY = 'fieldflow_scheduler_notes'
+const SCHED_NOTES_KEY = 'customsfieldpro_scheduler_notes'
 
 function loadSchedulerNotes() {
   try { return JSON.parse(localStorage.getItem(SCHED_NOTES_KEY) || '{}') } catch { return {} }

@@ -3,7 +3,7 @@ import { logActivity, ACTIONS } from './activityLog'
 import { addInboxMessage } from '../data/store'
 import { replacePlaceholders } from './reviewEmailTemplate'
 
-const REQUESTS_KEY = 'fieldflow_review_requests'
+const REQUESTS_KEY = 'customsfieldpro_review_requests'
 
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 export function getReviewRequests() {
@@ -144,7 +144,7 @@ export function triggerReviewRequest(job, client, technician) {
 }
 
 async function sendReviewRequest(job, client, technician, reviewSettings, fullSettings) {
-  const companyName = fullSettings?.company?.name || 'FieldFlow CRM'
+  const companyName = fullSettings?.company?.name || 'CustomsFieldPro'
   const companyAddress = fullSettings?.company?.address || ''
   const techName = technician?.name || job?.techName || 'our technician'
   const clientFirstName = client?.firstName || (client?.name || '').split(' ')[0] || 'Valued Customer'
@@ -178,7 +178,7 @@ async function sendReviewRequest(job, client, technician, reviewSettings, fullSe
         linkedJobId:  job.id || job.callId,
         linkedJobNumber: job.id || job.callId,
         sentBy:       null,
-        sentByName:   'FieldFlow (Auto)',
+        sentByName:   'CustomsFieldPro (Auto)',
         isRead:       true,
         isInternal:   false,
         status:       'sent',
@@ -204,7 +204,7 @@ async function sendReviewRequest(job, client, technician, reviewSettings, fullSe
         linkedJobId:  job.id || job.callId,
         linkedJobNumber: job.id || job.callId,
         sentBy:       null,
-        sentByName:   'FieldFlow (Auto)',
+        sentByName:   'CustomsFieldPro (Auto)',
         isRead:       true,
         isInternal:   false,
         status:       'sent',

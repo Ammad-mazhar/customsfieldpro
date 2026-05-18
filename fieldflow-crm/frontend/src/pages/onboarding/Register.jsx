@@ -77,7 +77,7 @@ function Logo() {
           <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      <span style={{ fontSize: 18, fontWeight: 800, color: '#1a1d23', letterSpacing: '-0.4px' }}>FieldFlow</span>
+      <span style={{ fontSize: 18, fontWeight: 800, color: '#1a1d23', letterSpacing: '-0.4px' }}>CustomsFieldPro</span>
     </Link>
   )
 }
@@ -254,7 +254,7 @@ export default function Register() {
                 {step === 1 ? 'Set up your business' : step === 2 ? 'Create your account' : 'Choose a plan'}
               </h1>
               <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>
-                {step === 1 ? 'Tell us about your field service business' : step === 2 ? 'You\'ll use this to log into FieldFlow' : 'Start free — upgrade anytime'}
+                {step === 1 ? 'Tell us about your field service business' : step === 2 ? 'You\'ll use this to log into CustomsFieldPro' : 'Start free — upgrade anytime'}
               </p>
             </div>
             <Steps current={step} />
@@ -276,7 +276,7 @@ export default function Register() {
                 <input value={biz.name} onChange={e => { setBiz(p => ({ ...p, name: e.target.value })); setErrs(p => ({ ...p, name: undefined })) }}
                   placeholder="Apex HVAC & Plumbing" style={{ ...INP, borderColor: errs.name ? '#fca5a5' : '#e8e9ec' }} />
                 {errs.name && <p style={ET}>{errs.name}</p>}
-                {biz.name && <p style={{ fontSize: 11.5, color: '#9ca3af', margin: '4px 0 0' }}>Your URL: fieldflow.app/<strong>{slug}</strong></p>}
+                {biz.name && <p style={{ fontSize: 11.5, color: '#9ca3af', margin: '4px 0 0' }}>Your URL: customsfieldpro.app/<strong>{slug}</strong></p>}
               </div>
               <div>
                 <label style={LB}>Business Type</label>
@@ -422,7 +422,7 @@ export default function Register() {
               </svg>
             </div>
             <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1a1d23', margin: '0 0 8px', letterSpacing: '-0.5px' }}>
-              Welcome to FieldFlow, {result.businessName}!
+              Welcome to CustomsFieldPro, {result.businessName}!
             </h1>
             {result.plan === 'trial' ? (
               <>

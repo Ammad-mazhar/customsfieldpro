@@ -1,4 +1,4 @@
-// FieldFlow CRM — Job Status Pipeline
+// CustomsFieldPro — Job Status Pipeline
 // Single source of truth for all job statuses, transitions, and metadata.
 
 export const JOB_STATUSES = [

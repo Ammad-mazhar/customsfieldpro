@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'FieldFlow CRM',
-        short_name: 'FieldFlow',
+        name: 'CustomsFieldPro',
+        short_name: 'CustomsFieldPro',
         description: 'HVAC Plumbing Electrical Field Service CRM',
         theme_color: '#2563eb',
         background_color: '#ffffff',

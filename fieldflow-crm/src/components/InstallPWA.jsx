@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const DISMISS_KEY   = 'fieldflow_pwa_dismissed_until'
+const DISMISS_KEY   = 'customsfieldpro_pwa_dismissed_until'
 const DISMISS_DAYS  = 7
 
 function isIOS() {
@@ -81,7 +81,7 @@ export default function InstallPWA() {
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, margin: '0 0 4px' }}>Install FieldFlow CRM</p>
+            <p style={{ fontSize: 14, fontWeight: 700, margin: '0 0 4px' }}>Install CustomsFieldPro</p>
             <p style={{ fontSize: 12.5, margin: 0, color: '#bfdbfe', lineHeight: 1.5 }}>
               Tap{' '}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ display: 'inline', verticalAlign: 'middle' }}>
@@ -130,7 +130,7 @@ export default function InstallPWA() {
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13.5, fontWeight: 700, margin: '0 0 2px' }}>Install FieldFlow CRM</p>
+        <p style={{ fontSize: 13.5, fontWeight: 700, margin: '0 0 2px' }}>Install CustomsFieldPro</p>
         <p style={{ fontSize: 12, color: '#bfdbfe', margin: 0 }}>Quick access from your home screen</p>
       </div>
 

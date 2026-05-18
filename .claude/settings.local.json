@@ -7,7 +7,8 @@
       "Bash(python:*)",
       "Bash(/c/Users/ammad/AppData/Local/Python/pythoncore-3.14-64/Scripts/code-review-graph.exe status:*)",
       "Bash(node -e ' *)",
-      "Bash(mkdir -p fieldflow-crm/src/services)"
+      "Bash(mkdir -p fieldflow-crm/src/services)",
+      "Bash(dir \"c:\\\\Users\\\\ammad\\\\Desktop\\\\crm\\\\fieldflow-crm\\\\android\\\\app\\\\src\\\\main\\\\java\\\\com\\\\fieldflow\\\\crm\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\ammad\\Desktop\\crm\\fieldflow-crm\\src"

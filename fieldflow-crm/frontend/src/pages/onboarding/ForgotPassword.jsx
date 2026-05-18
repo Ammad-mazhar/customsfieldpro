@@ -39,7 +39,7 @@ export default function ForgotPassword() {
               <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <span style={S.logoName}>FieldFlow CRM</span>
+          <span style={S.logoName}>CustomsFieldPro</span>
         </div>
 
         {submitted ? (
@@ -82,7 +82,7 @@ export default function ForgotPassword() {
                   autoFocus
                   value={email}
                   onChange={e => { setEmail(e.target.value); setError('') }}
-                  placeholder="you@fieldflow.com"
+                  placeholder="you@customsfieldpro.com"
                   style={{ ...S.input, borderColor: error ? '#fca5a5' : '#e8e9ec' }}
                 />
               </div>

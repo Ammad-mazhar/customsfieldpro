@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const AuthContext = createContext(null)
 
-const SESSION_KEY = 'fieldflow_session'
+const SESSION_KEY = 'customsfieldpro_session'
 const TOKEN_KEY = 'token'
 
 function loadSession() {

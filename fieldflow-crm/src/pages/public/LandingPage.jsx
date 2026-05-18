@@ -210,7 +210,7 @@ function Logo({ onClick }) {
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>FieldFlow</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>CustomsFieldPro</span>
     </div>
   )
 }
@@ -644,7 +644,7 @@ function Pricing({ onRegister, onContact }) {
 // ─── Section 7: Comparison ────────────────────────────────────────────────────
 const COMPARE = [
   {
-    name: 'FieldFlow', price: 'From $49/mo', you: true, url: null,
+    name: 'CustomsFieldPro', price: 'From $49/mo', you: true, url: null,
     rows: [
       [true,      'AI Receptionist',    'Included'],
       [true,      'Route optimization', 'All plans'],
@@ -690,7 +690,7 @@ function Comparison({ onRegister, navigate }) {
     <section id="compare" ref={ref} className="lp-fade" style={{ background: '#F8FAFC', padding: '72px 40px' }}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <p style={{ fontSize: 12, fontWeight: 700, color: '#16A34A', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 10 }}>COMPARE</p>
-        <h2 className="lp-section-h2" style={{ fontSize: 36, fontWeight: 800, color: '#0F172A', letterSpacing: '-1px' }}>Why teams choose FieldFlow</h2>
+        <h2 className="lp-section-h2" style={{ fontSize: 36, fontWeight: 800, color: '#0F172A', letterSpacing: '-1px' }}>Why teams choose CustomsFieldPro</h2>
       </div>
 
       <div className="lp-compare-row" style={{ display: 'flex', gap: 16, justifyContent: 'center', maxWidth: 900, margin: '0 auto 36px', flexWrap: 'wrap' }}>
@@ -728,7 +728,7 @@ function Comparison({ onRegister, navigate }) {
 
       <div style={{ textAlign: 'center' }}>
         <GreenBtn onClick={onRegister} style={{ padding: '13px 28px', fontSize: 15 }}>
-          Switch to FieldFlow — start free →
+          Switch to CustomsFieldPro — start free →
         </GreenBtn>
       </div>
     </section>
@@ -738,7 +738,7 @@ function Comparison({ onRegister, navigate }) {
 // ─── Section 8: Testimonials ──────────────────────────────────────────────────
 const TESTIMONIALS = [
   {
-    quote: "FieldFlow replaced 3 separate tools we were paying for. Scheduling, invoicing, and customer follow-up all in one place. Our collection rate went from 72% to 96% in the first month.",
+    quote: "CustomsFieldPro replaced 3 separate tools we were paying for. Scheduling, invoicing, and customer follow-up all in one place. Our collection rate went from 72% to 96% in the first month.",
     name: 'Mike Rodriguez', company: 'Rodriguez HVAC', location: 'Texas', techs: 12, initials: 'MR', color: '#3B82F6',
   },
   {
@@ -786,7 +786,7 @@ function Testimonials() {
 const FAQS = [
   ['Is there a free trial?',                    '14 days, all features included, no credit card required. If you love it, pick a plan. If not, your data can be exported anytime.'],
   ['Can I import my existing clients?',         'Yes — we support CSV import for clients, job history, and equipment records. Our onboarding team will help you get set up in under a day.'],
-  ['Does it work on mobile?',                   'Yes. FieldFlow has native iOS and Android apps for field technicians. They work offline too — syncs when connection is restored.'],
+  ['Does it work on mobile?',                   'Yes. CustomsFieldPro has native iOS and Android apps for field technicians. They work offline too — syncs when connection is restored.'],
   ['Can I customize it for my business type?',  'Absolutely. You can customize job types, checklists, invoice templates, and branding to match your specific trade and workflow.'],
   ["What happens to my data if I cancel?",      'Your data is kept for 30 days after cancellation so you can export everything. After that, it is permanently deleted. You own your data.'],
   ['Do you integrate with QuickBooks?',         'Yes — full two-way sync with QuickBooks Online. Invoices, payments, and customers stay in sync automatically with no manual work.'],
@@ -843,7 +843,7 @@ function FinalCTA({ onRegister, onContact }) {
         Ready to grow your field service business?
       </h2>
       <p style={{ fontSize: 16, color: '#94A3B8', marginBottom: 32, lineHeight: 1.6 }}>
-        Join 500+ businesses already running smarter with FieldFlow.
+        Join 500+ businesses already running smarter with CustomsFieldPro.
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
         <button onClick={onRegister} className="lp-btn-green" style={{
@@ -922,7 +922,7 @@ function Footer({ navigate, onRegister }) {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           style={{ fontSize: 13, color: '#94A3B8', cursor: 'pointer' }}
         >
-          © 2026 FieldFlow CRM. All rights reserved.
+          © 2026 CustomsFieldPro. All rights reserved.
         </p>
         <p style={{ fontSize: 13, color: '#CBD5E1' }}>HVAC · Plumbing · Electrical · Appliance Repair</p>
       </div>

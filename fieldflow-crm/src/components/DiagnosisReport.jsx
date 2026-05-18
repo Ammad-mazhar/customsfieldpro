@@ -1,4 +1,4 @@
-// FieldFlow CRM — Diagnosis Report Modal
+// CustomsFieldPro — Diagnosis Report Modal
 // 4-step wizard: Findings → Recommended Action → Parts (conditional) → Summary & Sign
 
 import { useState, useRef } from 'react'

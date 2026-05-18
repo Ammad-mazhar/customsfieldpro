@@ -1,8 +1,8 @@
 // ── Notifications Utility ─────────────────────────────────────────────────────
-// Stores all notifications in localStorage under 'fieldflow_notifications'
+// Stores all notifications in localStorage under 'customsfieldpro_notifications'
 
-const NOTIF_KEY   = 'fieldflow_notifications'
-const SESSION_KEY = 'fieldflow_user'
+const NOTIF_KEY   = 'customsfieldpro_notifications'
+const SESSION_KEY = 'customsfieldpro_user'
 
 // ── Notification type constants ───────────────────────────────────────────────
 export const NOTIF_TYPES = {
@@ -36,7 +36,7 @@ function getCurrentUser() {
 
 function getAdminIds() {
   try {
-    const raw = localStorage.getItem('fieldflow_users')
+    const raw = localStorage.getItem('customsfieldpro_users')
     const users = raw ? JSON.parse(raw) : []
     return users.filter(u => u.role === 'admin').map(u => u.id)
   } catch { return ['user-1'] }

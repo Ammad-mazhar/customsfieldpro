@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generates solid-color PNG icons for the FieldFlow PWA.
+// Generates solid-color PNG icons for the CustomsFieldPro PWA.
 // Pure Node.js — no extra dependencies needed.
 
 import { deflateSync } from 'zlib'
@@ -69,7 +69,7 @@ function solidPNG(w, h, [r, g, b, a = 255]) {
 }
 
 // ── Generate icons ─────────────────────────────────────────────────────────
-const BLUE = [0x25, 0x63, 0xEB, 255]   // #2563eb (FieldFlow brand blue)
+const BLUE = [0x25, 0x63, 0xEB, 255]   // #2563eb (CustomsFieldPro brand blue)
 const pub  = join(__dirname, '..', 'public')
 
 const icons = [

@@ -32,7 +32,7 @@ export default function Topbar({ onMenuToggle }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
-  const title    = pageTitles[pathname] ?? 'FieldFlow'
+  const title    = pageTitles[pathname] ?? 'CustomsFieldPro'
   const today    = formatDate(new Date())
   const initials = (user?.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 

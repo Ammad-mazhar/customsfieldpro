@@ -9,7 +9,7 @@ const FAKE_REFERRALS = [
 ]
 
 function generateReferralCode(user) {
-  const src = user?.id || user?.name || 'fieldflow'
+  const src = user?.id || user?.name || 'customsfieldpro'
   try {
     return btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 6).toUpperCase()
   } catch {
@@ -23,7 +23,7 @@ export default function Referrals() {
   const [copied, setCopied] = useState(false)
 
   const code = generateReferralCode(user)
-  const referralLink = `fieldflowcrm.com/register?ref=${code}`
+  const referralLink = `customsfieldprocrm.com/register?ref=${code}`
 
   function copyLink() {
     navigator.clipboard?.writeText(`https://${referralLink}`).catch(() => {})
@@ -32,9 +32,9 @@ export default function Referrals() {
   }
 
   function shareEmail() {
-    const subject = encodeURIComponent('Try FieldFlow CRM — Field Service Software')
+    const subject = encodeURIComponent('Try CustomsFieldPro — Field Service Software')
     const body = encodeURIComponent(
-      `Hi,\n\nI've been using FieldFlow CRM for my field service business and it's been fantastic. I think it would be a great fit for you too.\n\nYou can sign up here: https://${referralLink}\n\nThis will give you a 14-day free trial.\n\nBest,\n${user?.name || 'A FieldFlow User'}`
+      `Hi,\n\nI've been using CustomsFieldPro for my field service business and it's been fantastic. I think it would be a great fit for you too.\n\nYou can sign up here: https://${referralLink}\n\nThis will give you a 14-day free trial.\n\nBest,\n${user?.name || 'A CustomsFieldPro User'}`
     )
     window.location.href = `mailto:?subject=${subject}&body=${body}`
   }
@@ -47,7 +47,7 @@ export default function Referrals() {
         Referral Program
       </h1>
       <p style={{ fontSize: 14, color: 'var(--color-text-secondary, #6b7280)', margin: '0 0 28px' }}>
-        Earn free months by referring other field service businesses to FieldFlow.
+        Earn free months by referring other field service businesses to CustomsFieldPro.
       </p>
 
       {/* Referral card */}
@@ -123,7 +123,7 @@ export default function Referrals() {
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           {[
             { step: 1, title: 'Share Your Link', desc: 'Send your unique referral link to other field service business owners.' },
-            { step: 2, title: 'They Sign Up', desc: 'Your contact creates a FieldFlow account using your referral link.' },
+            { step: 2, title: 'They Sign Up', desc: 'Your contact creates a CustomsFieldPro account using your referral link.' },
             { step: 3, title: 'You Both Earn', desc: 'When they convert to a paid plan, you get 1 free month credited automatically.' },
           ].map(s => (
             <div key={s.step} style={{ flex: '1 1 180px', display: 'flex', gap: 12 }}>
@@ -190,7 +190,7 @@ export default function Referrals() {
       {/* Terms */}
       <div style={{ padding: '0 4px' }}>
         <p style={{ fontSize: 12, color: '#9ca3af', lineHeight: 1.7 }}>
-          <strong>Terms:</strong> Referral credits are applied after the referred business completes their first paid billing cycle. Credits are non-transferable and have no cash value. FieldFlow reserves the right to modify or cancel the referral program at any time with 30 days notice. Self-referrals are not permitted. Credits expire 12 months after issuance.
+          <strong>Terms:</strong> Referral credits are applied after the referred business completes their first paid billing cycle. Credits are non-transferable and have no cash value. CustomsFieldPro reserves the right to modify or cancel the referral program at any time with 30 days notice. Self-referrals are not permitted. Credits expire 12 months after issuance.
         </p>
       </div>
     </div>

@@ -318,7 +318,7 @@ function Tab2Setup({ settings, persist, flash }) {
   }
 
   const previewGreeting = (settings.greeting || '')
-    .replace('{{company_name}}', settings.businessName || 'FieldFlow')
+    .replace('{{company_name}}', settings.businessName || 'CustomsFieldPro')
     .replace('{{receptionist_name}}', settings.receptionistName || 'Alex')
 
   return (

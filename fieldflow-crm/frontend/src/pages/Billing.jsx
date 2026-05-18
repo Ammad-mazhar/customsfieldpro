@@ -215,7 +215,7 @@ export default function Billing() {
 
               <div style={{ marginTop: 'auto' }}>
                 {plan.id === 'enterprise' ? (
-                  <a href="mailto:sales@fieldflow.app?subject=Enterprise%20Plan%20Inquiry"
+                  <a href="mailto:sales@customsfieldpro.app?subject=Enterprise%20Plan%20Inquiry"
                     style={{ display: 'block', textAlign: 'center', height: 40, lineHeight: '40px', background: '#1a1d23', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13.5, fontWeight: 600, textDecoration: 'none', cursor: 'pointer' }}>
                     Contact Sales
                   </a>
@@ -246,7 +246,7 @@ export default function Billing() {
           <p style={{ margin: '0 0 3px', fontSize: 13.5, fontWeight: 600, color: '#4f46e5' }}>Stripe billing coming soon</p>
           <p style={{ margin: 0, fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>
             Clicking "Upgrade" currently simulates the plan change. Full Stripe integration is in progress.
-            To upgrade now, email <a href="mailto:billing@fieldflow.app" style={{ color: '#4f46e5', textDecoration: 'none', fontWeight: 600 }}>billing@fieldflow.app</a> and we'll set you up manually within 24 hours.
+            To upgrade now, email <a href="mailto:billing@customsfieldpro.app" style={{ color: '#4f46e5', textDecoration: 'none', fontWeight: 600 }}>billing@customsfieldpro.app</a> and we'll set you up manually within 24 hours.
           </p>
         </div>
       </div>

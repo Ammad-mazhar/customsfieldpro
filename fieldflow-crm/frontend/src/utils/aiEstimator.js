@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'fieldflow_ai'
+const STORAGE_KEY = 'customsfieldpro_ai'
 
 export const DEFAULT_AI_CONFIG = {
   apiKey: '',

@@ -1,7 +1,7 @@
 {
-  "name": "fieldflow-backend",
+  "name": "customsfieldpro-backend",
   "version": "1.0.0",
-  "description": "FieldFlow CRM — Node.js/Express API",
+  "description": "CustomsFieldPro — Node.js/Express API",
   "main": "src/index.js",
   "engines": {
     "node": ">=20.0.0"

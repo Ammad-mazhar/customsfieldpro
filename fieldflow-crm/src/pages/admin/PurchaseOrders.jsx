@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react'
 import { getNextNumber, formatPONumber } from '../../utils/numberGenerator'
 
 // ─── Storage ───────────────────────────────────────────────────────────────────
-const PO_KEY  = 'fieldflow_purchase_orders'
-const SUP_KEY = 'fieldflow_suppliers'
-const RET_KEY = 'fieldflow_po_returns'
+const PO_KEY  = 'customsfieldpro_purchase_orders'
+const SUP_KEY = 'customsfieldpro_suppliers'
+const RET_KEY = 'customsfieldpro_po_returns'
 
 function load(key) { try { return JSON.parse(localStorage.getItem(key) || 'null') } catch { return null } }
 function persist(key, val) { localStorage.setItem(key, JSON.stringify(val)) }
@@ -116,7 +116,7 @@ function Card({ children, style }) {
 // ─── Email Modal ───────────────────────────────────────────────────────────────
 function EmailModal({ po, supplier, onClose }) {
   const [to, setTo]   = useState(supplier?.email || '')
-  const [msg, setMsg] = useState(`Hi ${supplier?.contact || 'there'},\n\nPlease find attached purchase order ${po.number} totalling ${fmtMoney(calcTotal(po))}.\n\nKindly confirm receipt and expected delivery date.\n\nThank you,\nFieldFlow CRM`)
+  const [msg, setMsg] = useState(`Hi ${supplier?.contact || 'there'},\n\nPlease find attached purchase order ${po.number} totalling ${fmtMoney(calcTotal(po))}.\n\nKindly confirm receipt and expected delivery date.\n\nThank you,\nCustomsFieldPro`)
   const [sent, setSent] = useState(false)
 
   function handleSend() {
@@ -143,7 +143,7 @@ function EmailModal({ po, supplier, onClose }) {
                 <input value={to} onChange={e => setTo(e.target.value)} style={inputStyle} />
               </label>
               <label style={labelStyle}>Subject
-                <input defaultValue={`Purchase Order ${po.number} – FieldFlow CRM`} style={inputStyle} />
+                <input defaultValue={`Purchase Order ${po.number} – CustomsFieldPro`} style={inputStyle} />
               </label>
               <label style={labelStyle}>Message
                 <textarea value={msg} onChange={e => setMsg(e.target.value)} rows={6} style={{ ...inputStyle, resize: 'vertical' }} />
@@ -884,7 +884,7 @@ export default function PurchaseOrders() {
   // Low stock suggestions from inventory
   const lowStockSuggestions = useMemo(() => {
     try {
-      const inv = JSON.parse(localStorage.getItem('fieldflow_inventory') || '[]')
+      const inv = JSON.parse(localStorage.getItem('customsfieldpro_inventory') || '[]')
       return inv.filter(i => i.quantity <= (i.reorderPoint || 0))
     } catch { return [] }
   }, [])

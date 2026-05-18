@@ -167,7 +167,7 @@ function TicketDetail({ ticket, onBack }) {
             <div style={{ padding: 16 }}>
               <select style={{ width: '100%', padding: '8px 12px', borderRadius: 7, border: '1.5px solid #d1d5db', fontSize: 13, outline: 'none', background: '#fff' }}>
                 <option>Unassigned</option>
-                <option>superadmin@fieldflow.com</option>
+                <option>superadmin@customsfieldpro.com</option>
               </select>
             </div>
           </Card>

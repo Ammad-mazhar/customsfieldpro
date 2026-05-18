@@ -36,13 +36,13 @@ module.exports = function runSecurityCheck() {
 
   // Logging output
   if (warns.length > 0) {
-    console.warn('\n[FieldFlow Security] ⚠ Configuration warnings:')
+    console.warn('\n[CustomsFieldPro Security] ⚠ Configuration warnings:')
     warns.forEach(w => console.warn(w))
     console.warn('')
   }
 
   if (!isProd) {
-    console.log('[FieldFlow Security] Startup check (development mode):')
+    console.log('[CustomsFieldPro Security] Startup check (development mode):')
     oks.forEach(o => console.log(o))
     warns.forEach(w => console.log(w))
     console.log('')

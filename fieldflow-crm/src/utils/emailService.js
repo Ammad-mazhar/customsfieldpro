@@ -1,12 +1,12 @@
 // ── EmailJS Email Service ──────────────────────────────────────────────────────
 // Uses EmailJS (emailjs.com) — no backend required, free tier available.
-// Config is stored in localStorage under 'fieldflow_emailjs'.
+// Config is stored in localStorage under 'customsfieldpro_emailjs'.
 
 import emailjs from '@emailjs/browser'
 import { logActivity, ACTIONS } from './activityLog'
 import { getSettings } from '../data/store'
 
-const EMAILJS_KEY = 'fieldflow_emailjs'
+const EMAILJS_KEY = 'customsfieldpro_emailjs'
 
 export const DEFAULT_CONFIG = {
   serviceId:                    '',
@@ -78,7 +78,7 @@ export async function sendJobAssignedEmail(job, technician) {
     service_type:    job.type,
     priority:        job.priority || 'Normal',
     description:     job.description || '',
-    company_name:    settings?.company?.name || 'FieldFlow CRM',
+    company_name:    settings?.company?.name || 'CustomsFieldPro',
   }
   const result = await send(cfg.templateId_job_assigned, params)
   if (result.success) {
@@ -102,7 +102,7 @@ export async function sendInvoiceEmail(invoice, client) {
     due_date:       invoice.due || 'Upon receipt',
     job_reference:  invoice.jobRef || '',
     notes:          invoice.notes || '',
-    company_name:   settings?.company?.name  || 'FieldFlow CRM',
+    company_name:   settings?.company?.name  || 'CustomsFieldPro',
     company_phone:  settings?.company?.phone || '',
     company_email:  settings?.company?.email || '',
   }
@@ -129,7 +129,7 @@ export async function sendQuoteEmail(quote, client) {
     valid_until:  quote.expires || '',
     service_type: quote.type || '',
     description:  quote.description || '',
-    company_name: settings?.company?.name  || 'FieldFlow CRM',
+    company_name: settings?.company?.name  || 'CustomsFieldPro',
     company_phone:settings?.company?.phone || '',
     company_email:settings?.company?.email || '',
   }
@@ -158,7 +158,7 @@ export async function sendRequestConfirmation(request, client) {
     preferred_date:   request.preferredDate !== '—' ? request.preferredDate : 'To be confirmed',
     priority:         request.priority,
     description:      request.description || '',
-    company_name:     settings?.company?.name  || 'FieldFlow CRM',
+    company_name:     settings?.company?.name  || 'CustomsFieldPro',
     company_phone:    settings?.company?.phone || '',
     company_email:    settings?.company?.email || '',
   }
@@ -186,7 +186,7 @@ export async function sendJobCompletionEmail(job, client) {
     service_type:     job.type,
     technician_name:  job.techName || '',
     completion_notes: job.completionNotes || 'Job completed successfully.',
-    company_name:     settings?.company?.name  || 'FieldFlow CRM',
+    company_name:     settings?.company?.name  || 'CustomsFieldPro',
     company_phone:    settings?.company?.phone || '',
     company_email:    settings?.company?.email || '',
   }
@@ -208,7 +208,7 @@ export async function sendPasswordResetEmail(user, tempPassword) {
     to_email:      user.email || '',
     user_name:     user.name  || user.email || '',
     temp_password: tempPassword,
-    company_name:  settings?.company?.name || 'FieldFlow CRM',
+    company_name:  settings?.company?.name || 'CustomsFieldPro',
   }
   const result = await send(cfg.templateId_password_reset, params)
   if (result.success) {
@@ -241,8 +241,8 @@ export async function sendTestEmail(toEmail) {
     scheduled_time:  'Today',
     service_type:    'Test',
     priority:        'Normal',
-    description:     'This is a test email from FieldFlow CRM to verify your EmailJS configuration.',
-    company_name:    settings?.company?.name || 'FieldFlow CRM',
+    description:     'This is a test email from CustomsFieldPro to verify your EmailJS configuration.',
+    company_name:    settings?.company?.name || 'CustomsFieldPro',
     // cover all template vars in case a non-job template is used
     invoice_number:  'TEST-001',
     amount:          '$0.00',

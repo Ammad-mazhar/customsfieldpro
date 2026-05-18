@@ -9,10 +9,10 @@ const supabase = createClient(
 
 async function seedUsers() {
   const demoUsers = [
-    { email: 'admin@fieldflow.com', password: 'admin123', role: 'admin', full_name: 'Admin User' },
-    { email: 'moore@fieldflow.com', password: 'staff123', role: 'staff', full_name: 'Moore' },
-    { email: 'torres@fieldflow.com', password: 'staff123', role: 'staff', full_name: 'Torres' },
-    { email: 'singh@fieldflow.com', password: 'staff123', role: 'staff', full_name: 'Singh' }
+    { email: 'admin@customsfieldpro.com', password: 'admin123', role: 'admin', full_name: 'Admin User' },
+    { email: 'moore@customsfieldpro.com', password: 'staff123', role: 'staff', full_name: 'Moore' },
+    { email: 'torres@customsfieldpro.com', password: 'staff123', role: 'staff', full_name: 'Torres' },
+    { email: 'singh@customsfieldpro.com', password: 'staff123', role: 'staff', full_name: 'Singh' }
   ];
 
   console.log('\n🌱 Seeding demo users to Supabase...\n');

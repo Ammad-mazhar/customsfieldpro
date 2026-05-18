@@ -6,11 +6,11 @@ import {
 } from 'recharts'
 
 // ── Credentials from env (demo fallback) ──────────────────────────────────────
-const SA_EMAIL    = import.meta.env.VITE_SUPERADMIN_EMAIL    || 'superadmin@fieldflow.com'
+const SA_EMAIL    = import.meta.env.VITE_SUPERADMIN_EMAIL    || 'superadmin@customsfieldpro.com'
 const SA_PASSWORD = import.meta.env.VITE_SUPERADMIN_PASSWORD || 'superadmin123'
 
-const SA_SESSION_KEY = 'fieldflow_sa_session'
-const TENANTS_KEY    = 'fieldflow_sa_tenants'
+const SA_SESSION_KEY = 'customsfieldpro_sa_session'
+const TENANTS_KEY    = 'customsfieldpro_sa_tenants'
 
 // ── Plan config ───────────────────────────────────────────────────────────────
 const PLAN_MRR = { trial: 0, starter: 79, professional: 179, business: 349, enterprise: 699 }
@@ -120,13 +120,13 @@ function SuperAdminLogin({ onLogin }) {
             </svg>
           </div>
           <div>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>FieldFlow</p>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>CustomsFieldPro</p>
             <p style={{ margin: 0, fontSize: 11, color: '#7c3aed', fontWeight: 600, letterSpacing: '0.5px' }}>SUPER ADMIN</p>
           </div>
         </div>
 
         <h1 style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', margin: '0 0 6px', textAlign: 'center' }}>Restricted Access</h1>
-        <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px', textAlign: 'center' }}>FieldFlow internal use only</p>
+        <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px', textAlign: 'center' }}>CustomsFieldPro internal use only</p>
 
         {error && (
           <div style={{ background: '#450a0a', border: '1px solid #7f1d1d', color: '#fca5a5', borderRadius: 8, padding: '10px 14px', fontSize: 13, marginBottom: 16 }}>
@@ -429,7 +429,7 @@ export default function SuperAdmin() {
 
   function handleImpersonate(tenant) {
     // Store impersonation flag
-    localStorage.setItem('fieldflow_impersonation', JSON.stringify({
+    localStorage.setItem('customsfieldpro_impersonation', JSON.stringify({
       active: true,
       tenantId: tenant.id,
       tenantName: tenant.businessName,
@@ -441,7 +441,7 @@ export default function SuperAdmin() {
       name: `${tenant.adminName}`,
       role: 'admin',
     }
-    localStorage.setItem('fieldflow_user', JSON.stringify(fakeUser))
+    localStorage.setItem('customsfieldpro_user', JSON.stringify(fakeUser))
     // Navigate to the main app
     navigate('/dashboard')
   }
@@ -465,7 +465,7 @@ export default function SuperAdmin() {
             </svg>
           </div>
           <div>
-            <p style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>FieldFlow</p>
+            <p style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>CustomsFieldPro</p>
             <p style={{ margin: 0, fontSize: 10, color: '#7c3aed', fontWeight: 700, letterSpacing: '0.5px' }}>SUPER ADMIN</p>
           </div>
         </div>

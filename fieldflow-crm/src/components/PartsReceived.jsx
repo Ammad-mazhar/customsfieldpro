@@ -1,4 +1,4 @@
-// FieldFlow CRM — Parts Receipt Confirmation Modal
+// CustomsFieldPro — Parts Receipt Confirmation Modal
 // Triggered when tech clicks "Confirm Parts Received" on a part or all parts.
 
 import { useState } from 'react'
