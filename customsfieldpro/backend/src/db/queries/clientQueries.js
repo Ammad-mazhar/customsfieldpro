@@ -11,9 +11,10 @@ async function getClients(tenantId, { search, client_type, page = 1, limit = 50 
   let query = supabase
     .from('clients')
     .select('*', { count: 'exact' })
-    .eq('tenant_id', tenantId)
     .order('created_at', { ascending: false })
     .range(from, from + limit - 1)
+
+  if (tenantId) query = query.eq('tenant_id', tenantId)
 
   if (search) {
     // .ilike() is parameterized by the Supabase JS client

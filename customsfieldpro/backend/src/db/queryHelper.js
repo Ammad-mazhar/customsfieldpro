@@ -13,7 +13,10 @@ class DatabaseError extends Error {
 
 class QueryHelper {
   constructor(supabase, tenantId) {
-    if (!tenantId) throw new Error('QueryHelper requires a tenantId')
+    const INVALID = new Set(['null', 'undefined', 'demo-tenant', ''])
+    if (!tenantId || INVALID.has(String(tenantId))) {
+      throw new Error('QueryHelper requires a valid tenant ID')
+    }
     this.supabase  = supabase
     this.tenantId  = tenantId
   }

@@ -45,9 +45,15 @@ module.exports = async function authenticate(req, res, next) {
       return res.status(401).json({ error: 'Account is inactive' })
     }
 
-    // 3 — Attach verified data — tenantId always from DB, never from request
+    // 3 — Attach verified data — tenantId always from DB, never from request.
+    //     Normalize any non-UUID placeholder to null so the DB never receives
+    //     the string "null", "undefined", or "demo-tenant" as a UUID value.
+    const INVALID_TENANT = new Set(['null', 'undefined', 'demo-tenant', ''])
+    const rawTenantId = user.tenant_id ?? decoded.tenant_id ?? null
     req.user     = user
-    req.tenantId = user.tenant_id || decoded.tenant_id || null
+    req.tenantId = (rawTenantId && !INVALID_TENANT.has(String(rawTenantId)))
+      ? rawTenantId
+      : null
 
     next()
   } catch (err) {
