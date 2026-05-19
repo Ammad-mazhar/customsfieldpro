@@ -47,8 +47,9 @@ async function getClientById(tenantId, clientId) {
 }
 
 async function createClient(tenantId, userId, fields) {
-  const allowed = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'zip',
-                   'property_type', 'client_type', 'notes', 'portal_access']
+  const allowed = ['first_name', 'last_name', 'company_name', 'email', 'phone', 'address',
+                   'city', 'state', 'zip', 'country', 'property_type', 'client_type',
+                   'notes', 'lead_source', 'portal_access']
   const clean = Object.fromEntries(Object.entries(fields).filter(([k]) => allowed.includes(k)))
   return qh(tenantId).insert('clients', { ...clean, created_by: userId })
 }

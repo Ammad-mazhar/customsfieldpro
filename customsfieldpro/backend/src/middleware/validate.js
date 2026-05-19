@@ -87,8 +87,8 @@ const validateForgotPassword = [
 // ── Clients ───────────────────────────────────────────────────────────────────
 
 const validateCreateClient = [
-  body('first_name').trim().notEmpty().withMessage('First name required').isLength({ max: 100 }).escape(),
-  body('last_name').trim().notEmpty().withMessage('Last name required').isLength({ max: 100 }).escape(),
+  body('first_name').optional().trim().isLength({ max: 100 }).escape(),
+  body('last_name').optional().trim().isLength({ max: 100 }).escape(),
   emailField('email', false),
   body('phone').optional().trim().isLength({ max: 30 }),
   body('address').optional().trim().isLength({ max: 300 }).escape(),
