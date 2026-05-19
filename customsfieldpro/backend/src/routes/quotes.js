@@ -129,10 +129,12 @@ router.get('/:id/pdf', async (req, res) => {
 })
 
 async function logActivity(req, action, module, recordId, label, details) {
-  await supabase.from('activity_log').insert({
-    tenant_id: req.tenantId, user_id: req.user.id,
-    action, module, record_id: recordId, record_label: label, details,
-  }).catch(() => {})
+  try {
+    await supabase.from('activity_log').insert({
+      tenant_id: req.tenantId, user_id: req.user.id,
+      action, module, record_id: recordId, record_label: label, details,
+    })
+  } catch {}
 }
 
 module.exports = router

@@ -9,10 +9,12 @@ const supabase = require('../utils/supabase')
 router.use(authenticate)
 
 async function log(req, action, recordId, label, details) {
-  await supabase.from('activity_log').insert({
-    tenant_id: req.tenantId, user_id: req.user.id,
-    action, module: 'clients', record_id: String(recordId), record_label: label, details,
-  }).catch(() => {})
+  try {
+    await supabase.from('activity_log').insert({
+      tenant_id: req.tenantId, user_id: req.user.id,
+      action, module: 'clients', record_id: String(recordId), record_label: label, details,
+    })
+  } catch {}
 }
 
 // GET /api/clients
