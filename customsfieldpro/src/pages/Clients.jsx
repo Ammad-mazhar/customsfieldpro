@@ -151,7 +151,7 @@ export default function Clients() {
         state: form.state.trim(),
         zip: form.zip.trim(),
         country: form.country,
-        client_type: form.type,
+        client_type: form.type?.toLowerCase(),
         property_type: form.propertyType,
         notes: form.notes.trim(),
         lead_source: form.leadSource,
