@@ -42,7 +42,7 @@ const uuidParam = (field = 'id') =>
 const emailField = (field = 'email', required = true) => {
   const v = required
     ? body(field).isEmail().withMessage('Valid email required')
-    : body(field).optional().isEmail().withMessage('Valid email required')
+    : body(field).optional({ checkFalsy: true }).isEmail().withMessage('Valid email required')
   return v.normalizeEmail().trim()
 }
 

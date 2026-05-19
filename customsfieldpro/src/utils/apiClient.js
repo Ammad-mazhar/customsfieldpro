@@ -101,7 +101,8 @@ export async function apiPost(endpoint, body) {
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Request failed' }))
-    throw new Error(err.error || `Request failed: ${res.status}`)
+    const detail = err.details?.map(d => `${d.field}: ${d.message}`).join('; ')
+    throw new Error(detail || err.error || `Request failed: ${res.status}`)
   }
   return res.json()
 }
