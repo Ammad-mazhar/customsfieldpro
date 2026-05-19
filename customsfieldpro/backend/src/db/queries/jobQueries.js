@@ -11,9 +11,10 @@ async function getJobs(tenantId, userId, userRole, { status, assigned_to, client
   let query = supabase
     .from('jobs')
     .select('*, clients(id, first_name, last_name, email, phone), users!assigned_to(id, full_name, color)', { count: 'exact' })
-    .eq('tenant_id', tenantId)
     .order('created_at', { ascending: false })
     .range(from, from + limit - 1)
+
+  if (tenantId) query = query.eq('tenant_id', tenantId)
 
   // Technicians only see their own jobs — enforced on backend, not just frontend
   if (userRole === 'staff' || userRole === 'technician') {
@@ -34,12 +35,12 @@ async function getJobs(tenantId, userId, userRole, { status, assigned_to, client
 }
 
 async function getJobById(tenantId, jobId) {
-  const { data, error } = await supabase
+  let query = supabase
     .from('jobs')
     .select('*, clients(*), users!assigned_to(id, full_name, email, color, specialty), time_entries(*), invoices(id, invoice_number, total, status)')
     .eq('id', jobId)
-    .eq('tenant_id', tenantId)
-    .single()
+  if (tenantId) query = query.eq('tenant_id', tenantId)
+  const { data, error } = await query.single()
   if (error) throw error
   return data
 }
@@ -51,7 +52,9 @@ async function createJob(tenantId, userId, fields) {
   const clean = Object.fromEntries(Object.entries(fields).filter(([k]) => allowed.includes(k)))
 
   // Generate job number
-  const { count } = await supabase.from('jobs').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId)
+  let countQuery = supabase.from('jobs').select('id', { count: 'exact', head: true })
+  if (tenantId) countQuery = countQuery.eq('tenant_id', tenantId)
+  const { count } = await countQuery
   const job_number = `JOB-${String((count || 0) + 1001).padStart(4, '0')}`
 
   return qh(tenantId).insert('jobs', {
@@ -86,7 +89,9 @@ async function updateJob(tenantId, jobId, userId, userRole, fields) {
 async function completeJob(tenantId, jobId, userId, userRole, fields) {
   // Verify ownership before marking complete (admins bypass)
   if (userRole !== 'admin' && userRole !== 'staff') {
-    const { data: job } = await supabase.from('jobs').select('assigned_to').eq('id', jobId).eq('tenant_id', tenantId).single()
+    let jobQuery = supabase.from('jobs').select('assigned_to').eq('id', jobId)
+    if (tenantId) jobQuery = jobQuery.eq('tenant_id', tenantId)
+    const { data: job } = await jobQuery.single()
     if (!job || job.assigned_to !== userId) {
       const err = new Error('Forbidden'); err.status = 403; throw err
     }

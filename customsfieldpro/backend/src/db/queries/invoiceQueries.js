@@ -10,9 +10,10 @@ async function getInvoices(tenantId, { status, client_id, search, page = 1, limi
   let query = supabase
     .from('invoices')
     .select('*, clients(id, first_name, last_name, email), jobs(id, job_number, title)', { count: 'exact' })
-    .eq('tenant_id', tenantId)
     .order('created_at', { ascending: false })
     .range(from, from + limit - 1)
+
+  if (tenantId) query = query.eq('tenant_id', tenantId)
 
   if (status)    query = query.eq('status', status)
   if (client_id) query = query.eq('client_id', client_id)
@@ -27,12 +28,12 @@ async function getInvoices(tenantId, { status, client_id, search, page = 1, limi
 }
 
 async function getInvoiceById(tenantId, invoiceId) {
-  const { data, error } = await supabase
+  let query = supabase
     .from('invoices')
     .select('*, clients(*), jobs(id, job_number, title, service_type)')
     .eq('id', invoiceId)
-    .eq('tenant_id', tenantId)
-    .single()
+  if (tenantId) query = query.eq('tenant_id', tenantId)
+  const { data, error } = await query.single()
   if (error) throw error
   return data
 }
@@ -40,7 +41,9 @@ async function getInvoiceById(tenantId, invoiceId) {
 async function createInvoice(tenantId, userId, fields) {
   const { client_id, job_id, line_items = [], subtotal = 0, tax_rate = 0, notes, issue_date, due_date } = fields
 
-  const { count } = await supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId)
+  let countQuery = supabase.from('invoices').select('id', { count: 'exact', head: true })
+  if (tenantId) countQuery = countQuery.eq('tenant_id', tenantId)
+  const { count } = await countQuery
   const invoice_number = `INV-${String((count || 0) + 1001).padStart(4, '0')}`
 
   const tax_amount = +(subtotal * (tax_rate / 100)).toFixed(2)
