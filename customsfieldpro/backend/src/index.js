@@ -62,24 +62,16 @@ app.use(helmet({
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman)
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true)
 
-    // Allow localhost for development
-    if (origin.startsWith('http://localhost')) {
-      return callback(null, true);
-    }
+    if (origin.startsWith('http://localhost')) return callback(null, true)
 
-    // Allow all Vercel deployments
-    if (origin.includes('vercel.app')) {
-      return callback(null, true);
-    }
+    if (origin.includes('vercel.app')) return callback(null, true)
 
-    // Block everything else
-    callback(new Error('Not allowed by CORS'));
+    callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
