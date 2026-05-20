@@ -1,13 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getRequests, saveRequests, saveRequest, saveJob, saveQuote, getClients, getSettings, clientDisplayName } from '../data/store'
-import { apiGet, apiPost, apiPut } from '../utils/apiClient'
+import { api } from '../services/api'
 import { useAuth } from '../auth/AuthContext'
 import AddressAutocomplete from '../components/AddressAutocomplete'
-import { getNextNumber, formatJobNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { notifyAdmins, NOTIF_TYPES } from '../utils/notifications'
 import { logActivity, ACTIONS } from '../utils/activityLog'
-import { sendRequestConfirmation } from '../utils/emailService'
 
 const PRIORITY_C = { Urgent:{bg:'#fef2f2',color:'#dc2626'}, Normal:{bg:'#eff6ff',color:'#2563eb'}, Low:{bg:'#f3f4f6',color:'#6b7280'} }
 const STATUS_C   = { Open:{bg:'#fffbeb',color:'#d97706'}, Converted:{bg:'#f0fdf4',color:'#16a34a'} }
@@ -26,6 +23,42 @@ const BLANK = {
   claimFields:['','','','','','','','','',''],
   uploadedImages:[],
   onSiteAssessment:'',
+}
+
+function clientDisplayName(c) {
+  if (!c) return ''
+  const name = [c.first_name, c.last_name].filter(Boolean).join(' ')
+  return name || c.company_name || c.email || ''
+}
+
+// Maps a backend request record to the shape the UI expects
+function mapRequest(r) {
+  const priority = r.priority
+    ? r.priority.charAt(0).toUpperCase() + r.priority.slice(1)
+    : 'Normal'
+  const status = r.status === 'new' ? 'Open'
+    : r.status === 'converted' ? 'Converted'
+    : r.status || 'Open'
+  return {
+    ...r,
+    clientId:   r.client_id,
+    clientName: r.clients ? clientDisplayName(r.clients) : '',
+    clientPhone: r.clients?.phone || '',
+    type:        r.service_type || '',
+    description: r.description || '',
+    priority,
+    status,
+    received: r.created_at
+      ? new Date(r.created_at).toLocaleString('en-US', {
+          month:'short', day:'numeric', year:'numeric',
+          hour:'numeric', minute:'2-digit', hour12:true,
+        })
+      : '',
+    internalNotes: r.internal_notes || '',
+    preferredDate: r.preferred_time || '—',
+    preferredTime: r.preferred_time || '',
+    claimNumber:   r.claim_number   || '',
+  }
 }
 
 function Bdg({label,map}) {
@@ -53,9 +86,8 @@ export default function Requests() {
   const { user } = useAuth()
   const imgInputRef = useRef(null)
 
-  const [requests,setRequests]   = useState(() => getRequests())
-  const [clients]                = useState(() => getClients())
-  const [settings]               = useState(() => getSettings())
+  const [requests,setRequests]   = useState([])
+  const [clients,setClients]     = useState([])
   const [tab,setTab]             = useState('all')
   const [selId,setSelId]         = useState(null)
   const [priorityF,setPriorityF] = useState('All')
@@ -67,9 +99,12 @@ export default function Requests() {
   const [banner,setBanner]       = useState('')
 
   useEffect(() => {
-    apiGet('/api/requests').then(data => {
-      if (Array.isArray(data)) { setRequests(data); saveRequests(data) }
-    }).catch(() => {})
+    Promise.all([api.getRequests(), api.getClients()])
+      .then(([reqResult, clientResult]) => {
+        setRequests((reqResult.data || []).map(mapRequest))
+        setClients(clientResult.data || [])
+      })
+      .catch(() => {})
   }, [])
 
   const sel = requests.find(r=>r.id===selId)
@@ -84,58 +119,48 @@ export default function Requests() {
   function open(id) { setSelId(id); setTab('detail'); setEditNote(false) }
   function flash(msg) { setBanner(msg); setTimeout(()=>setBanner(''),3000) }
 
-  function markConverted(id, note) {
-    const req = requests.find(r => r.id === id)
-    const updatedReq = { ...req, status: 'Converted', internalNotes: note || req?.internalNotes }
-    const newArr = requests.map(r=>r.id===id ? updatedReq : r)
-    setRequests(newArr)
-    saveRequests(newArr)
-    apiPut(`/api/requests/${id}`, updatedReq).catch(() => {})
-  }
-
-  function saveNote() {
-    const updatedReq = { ...sel, internalNotes: noteDraft }
-    const newArr = requests.map(r=>r.id===sel.id ? updatedReq : r)
-    setRequests(newArr)
-    saveRequests(newArr)
-    apiPut(`/api/requests/${sel.id}`, updatedReq).catch(() => {})
-    setEditNote(false)
-  }
-
-  function convertToJob(req) {
-    const newJob = {
-      id: formatJobNumber(getNextNumber('jobs')),
-      clientId:req.clientId,clientName:req.clientName,
-      clientPhone:req.clientPhone||'',clientEmail:'',clientAddress:'',
-      type:req.type,title:req.type,techName:'',status:'Scheduled',
-      date:req.preferredDate||new Date().toISOString().split('T')[0],
-      time:'',duration:'2 hrs',
-      lineItems:[],taxRate:0,total:0,
-      notes:req.description||'',
-      claimNumber:req.claimNumber||'',
-      linkedQuoteNumber:null,linkedQuoteId:null,linkedInvoiceNumbers:[],linkedInvoiceIds:[],
+  async function markConverted(id, note) {
+    try {
+      const result = await api.updateRequest(id, { status: 'converted', internal_notes: note })
+      const updated = mapRequest(result)
+      setRequests(prev => prev.map(r => r.id === id ? updated : r))
+    } catch (err) {
+      console.error('Failed to mark request as converted:', err)
     }
-    saveJob(newJob)
-    markConverted(req.id, `Converted to ${newJob.id}.`)
-    navigate('/jobs')
-    flash(`Job ${newJob.id} created.`)
   }
 
-  function convertToQuote(req) {
-    const newQuote = {
-      id: formatQuoteNumber(getNextNumber('quotes')),
-      clientId:req.clientId,clientName:req.clientName,
-      clientPhone:req.clientPhone||'',clientEmail:'',
-      type:req.type,description:req.description||'',
-      created:new Date().toISOString().split('T')[0],expires:'',
-      status:'Draft',lineItems:[],total:0,notes:'',
-      claimNumber:req.claimNumber||'',
-      linkedJobId:null,linkedJobNumber:null,linkedInvoiceId:null,linkedInvoiceNumber:null,
+  async function saveNote() {
+    try {
+      const result = await api.updateRequest(sel.id, { internal_notes: noteDraft })
+      const updated = mapRequest(result)
+      setRequests(prev => prev.map(r => r.id === sel.id ? updated : r))
+      setEditNote(false)
+      flash('Notes saved')
+    } catch (err) {
+      flash('Failed to save notes')
     }
-    saveQuote(newQuote)
-    markConverted(req.id, `Converted to ${newQuote.id}.`)
-    navigate('/quotes')
-    flash(`Quote ${newQuote.id} created.`)
+  }
+
+  async function convertToJob(req) {
+    try {
+      const result = await api.convertRequest(req.id)
+      const jobNumber = result?.job?.job_number || 'job'
+      await markConverted(req.id, `Converted to ${jobNumber}.`)
+      navigate('/jobs')
+      flash(`Job created from request.`)
+    } catch (err) {
+      flash(`Error: ${err.message}`)
+    }
+  }
+
+  async function convertToQuote(req) {
+    try {
+      await markConverted(req.id, 'Converted to quote.')
+      navigate('/quotes')
+      flash('Request converted — create a quote from the Quotes page.')
+    } catch (err) {
+      flash(`Error: ${err.message}`)
+    }
   }
 
   const visible = requests.filter(r=>
@@ -150,50 +175,31 @@ export default function Requests() {
     return e
   }
 
-  function submitNew() {
+  async function submitNew() {
     const e=validate(); if(Object.keys(e).length){setErrs(e);return}
-    const c = form.clientMode==='existing' ? clients.find(x=>x.id===Number(form.clientId)) : null
+    const c = form.clientMode==='existing' ? clients.find(x=>x.id===form.clientId) : null
     const arrivalMap = {any_time:'Any Time',morning:'Morning (8am–12pm)',afternoon:'Afternoon (12pm–5pm)',evening:'Evening (5pm–8pm)',emergency:'Emergency'}
-    const n = {
-      id:`REQ-${Date.now()}`,
-      clientId: c?.id||0,
-      clientName: c ? clientDisplayName(c) : form.newClientName,
-      clientPhone: c?.phone||form.phone,
-      type: form.type||'Service Request',
-      description: form.issueSymptoms||form.scopeFromOffice||'',
-      priority: form.priority,
-      received: new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true}),
-      status:'Open',
-      preferredDate: form.preferredDate1||'—',
-      preferredTime: arrivalMap[form.preferredArrivalTime]||'Any Time',
-      internalNotes: form.internalNotes,
-      claimNumber: form.claimTrackingId,
-      title: form.title,
-      tenantNameContact: form.tenantNameContact,
-      tenantAddress: form.tenantAddress,
-      equipmentMake: form.equipmentMake,
-      equipmentUnit: form.equipmentUnit,
-      equipmentModel: form.equipmentModel,
-      preferredDate2: form.preferredDate2,
-      scopeFromOffice: form.scopeFromOffice,
-      scopeFieldSupervisor: form.scopeFieldSupervisor,
-      jobAcceptedByRep: form.jobAcceptedByRep,
-      jobAcceptedByCompany: form.jobAcceptedByCompany,
-      claimFields: form.claimFields,
-      uploadedImages: form.uploadedImages,
-      onSiteAssessment: form.onSiteAssessment,
+
+    try {
+      const requestData = {
+        client_id:    c?.id || null,
+        service_type: form.type || 'Service Request',
+        description:  form.issueSymptoms || form.scopeFromOffice || '',
+        priority:     form.priority.toLowerCase(),
+        preferred_time: form.preferredDate1 || null,
+      }
+      const result = await api.createRequest(requestData)
+      const newReq = mapRequest(result)
+
+      setRequests(prev => [newReq, ...prev])
+      logActivity(ACTIONS.REQUEST_CREATED, 'Requests', String(newReq.id), `${newReq.id} – ${newReq.clientName}`, `New service request: ${newReq.type}.`)
+      notifyAdmins(NOTIF_TYPES.NEW_REQUEST, 'New Service Request', `New service request from ${newReq.clientName} — ${newReq.type}.`, 'Requests', newReq.id)
+      setForm({...BLANK,claimFields:['','','','','','','','','',''],uploadedImages:[]})
+      setErrs({});setTab('all')
+      flash(`Request logged successfully.`)
+    } catch (err) {
+      flash(`Error: ${err.message}`)
     }
-    const updated = saveRequest(n)
-    setRequests(updated)
-    apiPost('/api/requests', n).catch(() => {})
-    logActivity(ACTIONS.REQUEST_CREATED, 'Requests', n.id, `${n.id} – ${n.clientName}`, `New service request: ${n.type}.`)
-    notifyAdmins(NOTIF_TYPES.NEW_REQUEST, 'New Service Request', `New service request from ${n.clientName} — ${n.type}.`, 'Requests', n.id)
-    if (settings.notifications?.emailOnNewRequest && c?.email) {
-      sendRequestConfirmation(n, c)
-    }
-    setForm({...BLANK,claimFields:['','','','','','','','','',''],uploadedImages:[]})
-    setErrs({});setTab('all')
-    flash(`${n.id} logged successfully.`)
   }
 
   return (
@@ -385,7 +391,7 @@ export default function Requests() {
                     {form.clientMode==='existing'?(
                       <>
                         <select value={form.clientId} onChange={e=>{
-                          const c=clients.find(x=>x.id===Number(e.target.value))
+                          const c=clients.find(x=>x.id===e.target.value)
                           setForm(p=>({...p,clientId:e.target.value,phone:c?.phone||''}))
                           setErrs(p=>({...p,clientId:undefined}))
                         }} style={{width:'100%',height:38,border:`1px solid ${errs.clientId?'#dc2626':'#e5e7eb'}`,borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
