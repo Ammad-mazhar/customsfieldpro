@@ -61,19 +61,18 @@ app.use(helmet({
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true)
-
-    if (origin.startsWith('http://localhost')) return callback(null, true)
-
-    if (origin.includes('vercel.app')) return callback(null, true)
-
-    callback(new Error('Not allowed by CORS'))
-  },
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://customfieldpros.com',
+    'https://www.customfieldpros.com',
+    'https://customsfieldpro-sandy.vercel.app',
+    'https://fieldflow-crm-sandy.vercel.app',
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+}))
 
 // ── HTTP request logging ──────────────────────────────────────────────────────
 const morganFormat = process.env.NODE_ENV === 'production' ? 'combined' : 'dev'
