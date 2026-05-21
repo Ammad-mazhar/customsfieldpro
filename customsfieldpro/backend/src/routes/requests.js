@@ -32,18 +32,23 @@ router.get('/:id', async (req, res) => {
   res.json(data)
 })
 
-// POST /api/requests — public-facing, no auth required for portal
+// POST /api/requests — authenticated users or public client portal
 router.post('/', async (req, res) => {
   const { client_id, service_type, description, priority = 'normal', preferred_time } = req.body
   if (!service_type || !description) return res.status(400).json({ error: 'service_type and description are required' })
 
-  // Allow unauthenticated submissions (client portal)
-  const tenantId = req.tenantId || req.body.tenant_id
-  if (!tenantId) return res.status(400).json({ error: 'tenant_id is required for unauthenticated requests' })
+  // Authenticated users: use req.tenantId (null is valid for demo users)
+  // Unauthenticated portal submissions: require tenant_id in body
+  const isAuthenticated = !!req.user
+  const tenantId = isAuthenticated ? req.tenantId : req.body.tenant_id
+  if (!isAuthenticated && !tenantId) return res.status(400).json({ error: 'tenant_id is required for unauthenticated requests' })
+
+  const record = { client_id, service_type, description, priority, preferred_time, status: 'new' }
+  if (tenantId) record.tenant_id = tenantId
 
   const { data, error } = await supabase
     .from('requests')
-    .insert({ tenant_id: tenantId, client_id, service_type, description, priority, preferred_time, status: 'new' })
+    .insert(record)
     .select().single()
   if (error) return res.status(400).json({ error: error.message })
   res.status(201).json(data)
