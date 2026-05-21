@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getQuotes, saveQuotes, saveQuote, saveJob, getClients, getSettings, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut } from '../utils/apiClient'
+import { api } from '../services/api'
 import { getNextNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { generateQuotePDF, printQuotePDF } from '../utils/generateQuotePDF'
 import { useAuth } from '../auth/AuthContext'
@@ -54,7 +55,7 @@ export default function Quotes() {
   const navigate = useNavigate()
 
   const [quotes,setQuotes] = useState(() => getQuotes())
-  const [clients]          = useState(() => getClients())
+  const [clients, setClients] = useState(() => getClients())
   const [settings]         = useState(() => getSettings())
   const [tab,setTab]       = useState('all')
   const [selId,setSelId]   = useState(null)
@@ -68,6 +69,10 @@ export default function Quotes() {
   useEffect(() => {
     apiGet('/api/quotes').then(data => {
       if (Array.isArray(data)) { setQuotes(data); saveQuotes(data) }
+    }).catch(() => {})
+    api.getClients().then(res => {
+      const list = res?.data || res || []
+      if (Array.isArray(list) && list.length > 0) setClients(list)
     }).catch(() => {})
   }, [])
 
@@ -153,7 +158,15 @@ export default function Quotes() {
     }
     const updated = saveQuote(n)
     setQuotes(updated)
-    apiPost('/api/quotes', n).catch(() => {})
+    apiPost('/api/quotes', {
+      client_id:   form.clientId,
+      title:       form.type,
+      subtotal:    sub,
+      tax_rate:    0,
+      line_items:  lines.filter(l => l.description.trim()),
+      notes:       form.notes || null,
+      valid_until: form.expires || null,
+    }).catch(() => {})
     logActivity(ACTIONS.QUOTE_CREATED, 'Quotes', n.id, `${n.id} – ${n.clientName}`, `Quote created: ${n.type}.`)
     // Send quote email to client if toggle is on
     if (settings.notifications?.emailOnQuoteSent && c?.email) {

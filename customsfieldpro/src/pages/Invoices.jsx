@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getInvoices, saveInvoices, saveInvoice, getClients, getJobs, getSettings, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut } from '../utils/apiClient'
+import { api } from '../services/api'
 import { getNextNumber, formatInvoiceNumber } from '../utils/numberGenerator'
 import { generateInvoicePDF, printInvoicePDF } from '../utils/generateInvoicePDF'
 import { useAuth } from '../auth/AuthContext'
@@ -49,7 +50,7 @@ function AccessDenied() {
 export default function Invoices() {
   const { isAdmin, hasPermission } = useAuth()
   const [invoices,setInvoices] = useState(() => getInvoices())
-  const [clients]              = useState(() => getClients())
+  const [clients, setClients]  = useState(() => getClients())
   const [notifSettings]        = useState(() => getSettings().notifications)
   const [jobs]                 = useState(() => getJobs())
   const [settings]             = useState(() => getSettings())
@@ -85,6 +86,10 @@ export default function Invoices() {
   useEffect(() => {
     apiGet('/api/invoices').then(data => {
       if (Array.isArray(data)) { setInvoices(data); saveInvoices(data) }
+    }).catch(() => {})
+    api.getClients().then(res => {
+      const list = res?.data || res || []
+      if (Array.isArray(list) && list.length > 0) setClients(list)
     }).catch(() => {})
     const flag = sessionStorage.getItem('customsfieldpro_open_new')
     if (flag === 'invoice') { sessionStorage.removeItem('customsfieldpro_open_new'); setForm(BLANK_FORM); setLines([BLANK_LINE()]); setErrs({}); setTab('create') }
@@ -202,7 +207,13 @@ export default function Invoices() {
     }
     const updated = saveInvoice(n)
     setInvoices(updated)
-    apiPost('/api/invoices', n).catch(() => {})
+    apiPost('/api/invoices', {
+      client_id:  form.clientId,
+      subtotal:   sub,
+      tax_rate:   parseFloat(form.taxRate || 0),
+      line_items: lines.filter(l => l.description.trim()),
+      notes:      form.notes || null,
+    }).catch(() => {})
     logActivity(ACTIONS.INVOICE_CREATED, 'Invoices', n.id, `${n.id} – ${n.clientName}`, `Invoice created as Draft.`)
     setForm(BLANK_FORM);setLines([BLANK_LINE()]);setErrs({});setTab('all')
     flash(`${n.id} created as Draft.`)

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getJobs, saveJobs, saveJob, getClients, saveInvoice, getInvoices, getSettings, saveQuote, getQuotes, clientDisplayName } from '../data/store'
 import { apiGet, apiPost, apiPut, apiDelete } from '../utils/apiClient'
+import { api } from '../services/api'
 import { getNextNumber, peekNextNumber, formatJobNumber, formatInvoiceNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { useAuth } from '../auth/AuthContext'
 import { logActivity, ACTIONS } from '../utils/activityLog'
@@ -206,7 +207,7 @@ export default function Jobs() {
     ? allJobs
     : allJobs.filter(j => j.technicianId === user?.technicianId)
   function setJobs(newArr) { setAllJobs(newArr) }
-  const [clients]             = useState(() => getClients())
+  const [clients, setClients] = useState(() => getClients())
   const [settings]            = useState(() => getSettings())
   const [techs]               = useState(() => settings.technicians)
   const [tab, setTab]         = useState('all')
@@ -234,6 +235,10 @@ export default function Jobs() {
   useEffect(() => {
     apiGet('/api/jobs').then(data => {
       if (Array.isArray(data)) { setAllJobs(data); saveJobs(data) }
+    }).catch(() => {})
+    api.getClients().then(res => {
+      const list = res?.data || res || []
+      if (Array.isArray(list) && list.length > 0) setClients(list)
     }).catch(() => {})
   }, [])
 
@@ -391,7 +396,14 @@ export default function Jobs() {
     }
     const updated = saveJob(newJob)
     setJobs(updated); setForm(blankForm()); setErrs({}); setErrList([]); setTab('all')
-    apiPost('/api/jobs', newJob).catch(() => {})
+    apiPost('/api/jobs', {
+      client_id:    form.clientId,
+      title:        form.title,
+      description:  form.description,
+      service_type: form.type,
+      status:       (form.status || 'New').toLowerCase().replace(/ /g, '_'),
+      priority:     (form.priority || 'Normal').toLowerCase(),
+    }).catch(() => {})
     logActivity(ACTIONS.JOB_CREATED, 'Jobs', newJob.id, `${newJob.id} – ${newJob.clientName}`, `Job created: ${newJob.title}.`)
     // Notify the assigned technician/staff
     if (newJob.technicianId) {
