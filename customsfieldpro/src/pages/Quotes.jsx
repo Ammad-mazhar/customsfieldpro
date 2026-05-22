@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getQuotes, saveQuotes, saveQuote, saveJob, getClients, getSettings, clientDisplayName } from '../data/store'
-import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { api } from '../services/api'
 import { getNextNumber, formatQuoteNumber } from '../utils/numberGenerator'
 import { generateQuotePDF, printQuotePDF } from '../utils/generateQuotePDF'
@@ -67,8 +66,9 @@ export default function Quotes() {
   const [showAI,setShowAI] = useState(false)
 
   useEffect(() => {
-    apiGet('/api/quotes').then(data => {
-      if (Array.isArray(data)) { setQuotes(data); saveQuotes(data) }
+    api.getQuotes().then(res => {
+      const list = res?.data || []
+      if (list.length > 0) { setQuotes(list); saveQuotes(list) }
     }).catch(() => {})
     api.getClients().then(res => {
       const list = res?.data || res || []
@@ -95,7 +95,7 @@ export default function Quotes() {
     const newArr = quotes.map(x=>x.id===id ? updatedQ : x)
     setQuotes(newArr)
     saveQuotes(newArr)
-    apiPut(`/api/quotes/${id}`, updatedQ).catch(() => {})
+    api.updateQuote(id, { status }).catch(() => {})
     const action = status === 'Approved' ? ACTIONS.QUOTE_APPROVED : status === 'Sent' ? ACTIONS.QUOTE_SENT : ACTIONS.QUOTE_CREATED
     logActivity(action, 'Quotes', id, `${id} – ${q?.clientName || ''}`, `Quote status set to ${status}.`)
     if (status === 'Approved') {
@@ -158,7 +158,7 @@ export default function Quotes() {
     }
     const updated = saveQuote(n)
     setQuotes(updated)
-    apiPost('/api/quotes', {
+    api.createQuote({
       client_id:   form.clientId,
       title:       form.type,
       subtotal:    sub,
