@@ -881,8 +881,35 @@ export default function Scheduler() {
   const [dayNotesOpen,    setDayNotesOpen]    = useState(true)
   const [techHoverCard,   setTechHoverCard]   = useState(null)  // { tech, x, y }
   const [jobHoverCard,    setJobHoverCard]    = useState(null)   // { job, x, y }
-  const toastTimer   = useRef(null)
+  const toastTimer    = useRef(null)
   const hoverTimerRef = useRef(null)
+  const [calTopH, setCalTopH] = useState(() => {
+    const saved = localStorage.getItem('scheduler-cal-height')
+    return saved ? parseInt(saved, 10) : 330
+  })
+  const calTopHRef = useRef(calTopH)
+
+  const onResizeStart = useCallback((e) => {
+    e.preventDefault()
+    const startY = e.clientY
+    const startH = calTopHRef.current
+    document.body.style.cursor    = 'row-resize'
+    document.body.style.userSelect = 'none'
+    function onMove(ev) {
+      const newH = Math.max(160, Math.min(620, startH + ev.clientY - startY))
+      setCalTopH(newH)
+      calTopHRef.current = newH
+    }
+    function onUp() {
+      document.body.style.cursor    = ''
+      document.body.style.userSelect = ''
+      localStorage.setItem('scheduler-cal-height', String(calTopHRef.current))
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup',   onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup',   onUp)
+  }, [])
 
   function updateSchedulerNote(key, note) {
     const all = upsertSchedulerNote(key, note)
@@ -1056,7 +1083,7 @@ export default function Scheduler() {
 
         {/* Gantt calendar with technicians + unscheduled panels */}
         {!isMobile && (
-          <div style={s.calTop}>
+          <div style={{ ...s.calTop, height: calTopH }}>
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
               {/* Technicians left panel */}
               <div style={s.techPanel}>
@@ -1233,6 +1260,19 @@ export default function Scheduler() {
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Resize handle between Gantt and Map — desktop only */}
+        {!isMobile && (
+          <div
+            onMouseDown={onResizeStart}
+            title="Drag to resize"
+            style={{ height: 8, flexShrink: 0, cursor: 'row-resize', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
+            onMouseEnter={e => { e.currentTarget.querySelector('span').style.background = '#6b7280' }}
+            onMouseLeave={e => { e.currentTarget.querySelector('span').style.background = '#d1d5db' }}
+          >
+            <span style={{ display: 'block', width: 48, height: 3, background: '#d1d5db', borderRadius: 2, transition: 'background 0.15s' }} />
           </div>
         )}
 
