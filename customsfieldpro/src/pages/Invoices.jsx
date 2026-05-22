@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { getInvoices, saveInvoices, saveInvoice, getClients, getJobs, getSettings, clientDisplayName } from '../data/store'
-import { apiGet, apiPost, apiPut } from '../utils/apiClient'
 import { api } from '../services/api'
 import { getNextNumber, formatInvoiceNumber } from '../utils/numberGenerator'
 import { generateInvoicePDF, printInvoicePDF } from '../utils/generateInvoicePDF'
@@ -84,8 +83,9 @@ export default function Invoices() {
   function open(id) { setSelId(id); setTab('detail') }
 
   useEffect(() => {
-    apiGet('/api/invoices').then(data => {
-      if (Array.isArray(data)) { setInvoices(data); saveInvoices(data) }
+    api.getInvoices().then(res => {
+      const list = res?.data || []
+      if (list.length > 0) { setInvoices(list); saveInvoices(list) }
     }).catch(() => {})
     api.getClients().then(res => {
       const list = res?.data || res || []
@@ -117,7 +117,7 @@ export default function Invoices() {
     const newArr = invoices.map(i => i.id === sendModal.id ? updatedInv : i)
     setInvoices(newArr)
     saveInvoices(newArr)
-    apiPut(`/api/invoices/${sendModal.id}`, updatedInv).catch(() => {})
+    api.updateInvoice(sendModal.id, { status: 'Sent' }).catch(() => {})
     logActivity(ACTIONS.INVOICE_SENT, 'Invoices', sendModal.id, `${sendModal.id} – ${sendModal.clientName}`, `Invoice sent to ${sendForm.to}.`)
     notifyAdmins(NOTIF_TYPES.QUOTE_APPROVED, 'Invoice Sent', `Invoice ${sendModal.id} sent to ${sendModal.clientName} (${sendForm.to}).`, 'Invoices', sendModal.id)
     // Send real email if toggle is on
@@ -142,7 +142,7 @@ export default function Invoices() {
     const newArr = invoices.map(i => i.id === payModal.id ? updatedInv : i)
     setInvoices(newArr)
     saveInvoices(newArr)
-    apiPut(`/api/invoices/${payModal.id}`, updatedInv).catch(() => {})
+    api.updateInvoice(payModal.id, { status: 'Payment Link Sent' }).catch(() => {})
     logActivity(ACTIONS.INVOICE_SENT, 'Invoices', payModal.id, `${payModal.id} – ${payModal.clientName}`, `Payment link sent for ${payModal.id}.`)
     setPayLinkSent(true)
     setTimeout(() => { setPayModal(null); flash(`Payment link sent for ${payModal.id}.`) }, 1600)
@@ -158,7 +158,7 @@ export default function Invoices() {
     const newArr = invoices.map(i=>i.id===id ? updatedInv : i)
     setInvoices(newArr)
     saveInvoices(newArr)
-    apiPut(`/api/invoices/${id}`, updatedInv).catch(() => {})
+    api.updateInvoice(id, { status }).catch(() => {})
     const action = status === 'Paid' ? ACTIONS.INVOICE_PAID : status === 'Sent' ? ACTIONS.INVOICE_SENT : ACTIONS.INVOICE_CREATED
     logActivity(action, 'Invoices', id, `${id} – ${inv?.clientName || ''}`, `Invoice status set to ${status}.`)
   }
@@ -207,7 +207,7 @@ export default function Invoices() {
     }
     const updated = saveInvoice(n)
     setInvoices(updated)
-    apiPost('/api/invoices', {
+    api.createInvoice({
       client_id:  form.clientId,
       subtotal:   sub,
       tax_rate:   parseFloat(form.taxRate || 0),
