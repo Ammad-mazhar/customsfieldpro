@@ -69,6 +69,7 @@ export default function Invoices() {
   const [payLinkSent,setPayLinkSent] = useState(false)
   const [stripeCfg]              = useState(() => getStripeConfig())
   const stripeReady              = isStripeConfigured()
+  const [newClientForm, setNewClientForm] = useState({ firstName: '', lastName: '', email: '', phone: '', address: '' })
 
   if (!isAdmin && !hasPermission('view_invoices')) return <AccessDenied />
 
@@ -191,13 +192,31 @@ export default function Invoices() {
     return e
   }
 
-  function submitCreate() {
+  async function submitCreate() {
     const e=validate(); if(Object.keys(e).length){setErrs(e);return}
-    const c=clients.find(x=>x.id===form.clientId)
+    let resolvedClientId = form.clientId
+    let c = clients.find(x=>x.id===form.clientId)
+    if (form.clientId === '__new__') {
+      if (!newClientForm.firstName.trim()) { setErrs(p=>({...p,clientId:'First name required'})); return }
+      try {
+        const resp = await api.createClient({
+          first_name: newClientForm.firstName.trim(),
+          last_name:  newClientForm.lastName.trim(),
+          email:      newClientForm.email.trim() || undefined,
+          phone:      newClientForm.phone.trim() || undefined,
+          address:    newClientForm.address.trim() || undefined,
+        })
+        if (!resp.success || !resp.data?.id) { flash('Failed to create client'); return }
+        resolvedClientId = resp.data.id
+        c = resp.data
+        setClients(prev => [c, ...prev])
+        setNewClientForm({ firstName: '', lastName: '', email: '', phone: '', address: '' })
+      } catch { flash('Failed to create client. Please try again.'); return }
+    }
     const {sub,tax,grand}=calcTotals()
     const n={
       id: formatInvoiceNumber(getNextNumber('invoices')),
-      clientId:form.clientId,clientName:c ? clientDisplayName(c) : '',clientPhone:c?.phone||'',
+      clientId:resolvedClientId,clientName:c ? clientDisplayName(c) : '',clientPhone:c?.phone||'',
       clientEmail:c?.email||'',clientAddress:c?`${c.address}, ${c.city}, ${c.state}`:'',
       jobRef:form.jobRef,linkedJobId:form.jobRef||null,
       linkedQuoteNumber:null,linkedQuoteId:null,
@@ -208,7 +227,7 @@ export default function Invoices() {
     const updated = saveInvoice(n)
     setInvoices(updated)
     api.createInvoice({
-      client_id:  form.clientId,
+      client_id:  resolvedClientId,
       subtotal:   sub,
       tax_rate:   parseFloat(form.taxRate || 0),
       line_items: lines.filter(l => l.description.trim()),
@@ -422,9 +441,42 @@ export default function Invoices() {
                       <select value={form.clientId} onChange={e=>{setForm(p=>({...p,clientId:e.target.value,jobRef:''}));setErrs(p=>({...p,clientId:undefined}))}}
                         style={{width:'100%',height:38,border:`1px solid ${errs.clientId?'#dc2626':'#e8e9ec'}`,borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
                         <option value="">— Select client —</option>
+                        <option value="__new__">+ Create New Client</option>
                         {clients.map(c=><option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                       </select>
                       {errs.clientId&&<p style={ET}>Required</p>}
+                      {form.clientId==='__new__'&&(
+                        <div style={{marginTop:10,padding:14,background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:8}}>
+                          <p style={{fontSize:12,fontWeight:700,color:'#15803d',margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'0.4px'}}>New Client Details</p>
+                          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                            <div>
+                              <label style={LB}>First Name <span style={{color:'#dc2626'}}>*</span></label>
+                              <input value={newClientForm.firstName} onChange={e=>setNewClientForm(p=>({...p,firstName:e.target.value}))}
+                                placeholder="First Name" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                            </div>
+                            <div>
+                              <label style={LB}>Last Name</label>
+                              <input value={newClientForm.lastName} onChange={e=>setNewClientForm(p=>({...p,lastName:e.target.value}))}
+                                placeholder="Last Name" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                            </div>
+                            <div>
+                              <label style={LB}>Email</label>
+                              <input type="email" value={newClientForm.email} onChange={e=>setNewClientForm(p=>({...p,email:e.target.value}))}
+                                placeholder="Email" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                            </div>
+                            <div>
+                              <label style={LB}>Phone</label>
+                              <input value={newClientForm.phone} onChange={e=>setNewClientForm(p=>({...p,phone:e.target.value}))}
+                                placeholder="Phone" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                            </div>
+                          </div>
+                          <div>
+                            <label style={LB}>Address</label>
+                            <input value={newClientForm.address} onChange={e=>setNewClientForm(p=>({...p,address:e.target.value}))}
+                              placeholder="Address" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label style={LB}>Job Reference (optional)</label>

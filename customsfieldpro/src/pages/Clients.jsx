@@ -68,8 +68,30 @@ export default function Clients() {
   const [propContactsOpen,setPropContactsOpen]= useState(false)
   const [tagInput,        setTagInput]        = useState('')
   const [addlContacts,    setAddlContacts]    = useState([])
+  const [workTab,        setWorkTab]         = useState('requests')
+  const [workItems,      setWorkItems]       = useState({ requests: null, quotes: null, jobs: null, invoices: null })
+  const [workLoading,    setWorkLoading]     = useState(false)
+  const [workForms,      setWorkForms]       = useState({
+    requests: { service_type: 'HVAC Service', description: '', priority: 'normal' },
+    quotes:   { title: '', notes: '', valid_until: '' },
+    jobs:     { title: '', service_type: '', description: '', priority: 'Normal' },
+    invoices: { notes: '' },
+  })
+  const [workSubmitting, setWorkSubmitting]  = useState(false)
+  const [workMsg,        setWorkMsg]         = useState({ type: '', text: '' })
 
   useEffect(() => { loadClients() }, [])
+
+  useEffect(() => {
+    if (!sel) return
+    setWorkItems({ requests: null, quotes: null, jobs: null, invoices: null })
+    setWorkTab('requests')
+  }, [sel?.id])
+
+  useEffect(() => {
+    if (!sel || tab !== 'detail') return
+    loadWorkItems(workTab, sel.id)
+  }, [workTab, sel?.id, tab])
 
   async function loadClients() {
     try {
@@ -105,6 +127,56 @@ export default function Clients() {
   ]
 
   function open(id) { setSelId(id); setTab('detail'); setEditNote(false) }
+
+  async function loadWorkItems(type, clientId) {
+    if (!clientId) return
+    setWorkLoading(true)
+    try {
+      const methods = { requests: 'getRequests', quotes: 'getQuotes', jobs: 'getJobs', invoices: 'getInvoices' }
+      const result = await api[methods[type]]()
+      const all = result?.data || []
+      const filtered = all.filter(item => item.client_id === clientId || item.clientId === clientId)
+      setWorkItems(prev => ({ ...prev, [type]: filtered }))
+    } catch { /* silent */ } finally {
+      setWorkLoading(false)
+    }
+  }
+
+  async function submitWorkItem() {
+    if (workSubmitting || !sel) return
+    setWorkSubmitting(true)
+    setWorkMsg({ type: '', text: '' })
+    try {
+      const f = workForms[workTab]
+      if (workTab === 'requests') {
+        if (!f.description.trim()) { setWorkMsg({ type: 'error', text: 'Description is required' }); return }
+        await api.createRequest({ client_id: sel.id, service_type: f.service_type, description: f.description, priority: f.priority })
+      } else if (workTab === 'quotes') {
+        if (!f.title.trim()) { setWorkMsg({ type: 'error', text: 'Title is required' }); return }
+        await api.createQuote({ client_id: sel.id, title: f.title, notes: f.notes || null, valid_until: f.valid_until || null, subtotal: 0, tax_rate: 0, line_items: [] })
+      } else if (workTab === 'jobs') {
+        if (!f.title.trim() || !f.service_type) { setWorkMsg({ type: 'error', text: 'Title and service type are required' }); return }
+        await api.createJob({ client_id: sel.id, title: f.title, service_type: f.service_type, description: f.description || '', priority: f.priority.toLowerCase(), status: 'new' })
+      } else if (workTab === 'invoices') {
+        await api.createInvoice({ client_id: sel.id, notes: f.notes || null, subtotal: 0, tax_rate: 0, line_items: [] })
+      }
+      const label = workTab === 'requests' ? 'Request' : workTab === 'quotes' ? 'Quote' : workTab === 'jobs' ? 'Job' : 'Invoice'
+      setWorkMsg({ type: 'success', text: `${label} created successfully` })
+      setTimeout(() => setWorkMsg({ type: '', text: '' }), 3000)
+      const blank = {
+        requests: { service_type: 'HVAC Service', description: '', priority: 'normal' },
+        quotes:   { title: '', notes: '', valid_until: '' },
+        jobs:     { title: '', service_type: '', description: '', priority: 'Normal' },
+        invoices: { notes: '' },
+      }
+      setWorkForms(prev => ({ ...prev, [workTab]: blank[workTab] }))
+      await loadWorkItems(workTab, sel.id)
+    } catch {
+      setWorkMsg({ type: 'error', text: 'Failed to create. Please try again.' })
+    } finally {
+      setWorkSubmitting(false)
+    }
+  }
 
   function flash(msg) { setBanner(msg); setTimeout(()=>setBanner(''),3000) }
 
@@ -445,6 +517,200 @@ export default function Clients() {
                   ?<textarea value={noteDraft} onChange={e=>setNoteDraft(e.target.value)} rows={4}
                       style={{width:'100%',boxSizing:'border-box',border:'1px solid #e8e9ec',borderRadius:7,padding:'10px 12px',fontSize:13.5,color:'#374151',resize:'vertical',outline:'none'}}/>
                   :<p style={{fontSize:13.5,color:sel.notes?'#374151':'#9ca3af',lineHeight:1.7,margin:0}}>{sel.notes||'No notes for this client.'}</p>}
+              </div>
+
+              {/* ── Work Overview ───────────────────────────────────────── */}
+              <div style={C}>
+                <p style={{...CT,marginBottom:16}}>Work Overview</p>
+                <div style={{display:'flex',borderBottom:'1px solid #e8e9ec',marginBottom:16}}>
+                  {[{id:'requests',label:'Requests'},{id:'quotes',label:'Quotes'},{id:'jobs',label:'Jobs'},{id:'invoices',label:'Invoices'}].map(t=>(
+                    <button key={t.id} onClick={()=>setWorkTab(t.id)}
+                      style={{padding:'9px 16px',fontSize:13,fontWeight:workTab===t.id?600:500,
+                        color:workTab===t.id?'#2563eb':'#6b7280',background:'none',border:'none',
+                        borderBottom:`2px solid ${workTab===t.id?'#2563eb':'transparent'}`,
+                        cursor:'pointer',marginBottom:-1,display:'flex',alignItems:'center',gap:6}}>
+                      {t.label}
+                      {workItems[t.id]!==null&&(
+                        <span style={{fontSize:11,fontWeight:700,padding:'1px 7px',borderRadius:10,
+                          background:workTab===t.id?'#eff6ff':'#f3f4f6',
+                          color:workTab===t.id?'#2563eb':'#9ca3af'}}>
+                          {workItems[t.id].length}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {workMsg.text&&(
+                  <div style={{background:workMsg.type==='error'?'#fef2f2':'#f0fdf4',
+                    border:`1px solid ${workMsg.type==='error'?'#fecaca':'#bbf7d0'}`,
+                    color:workMsg.type==='error'?'#dc2626':'#16a34a',
+                    borderRadius:8,padding:'9px 14px',fontSize:13,fontWeight:600,marginBottom:14}}>
+                    {workMsg.text}
+                  </div>
+                )}
+                {workTab==='requests'&&(
+                  <div style={{padding:14,background:'#f8f9fa',border:'1px solid #e8e9ec',borderRadius:8,marginBottom:16}}>
+                    <p style={{fontSize:13,fontWeight:600,color:'#374151',margin:'0 0 12px'}}>New Request</p>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Service Type</label>
+                        <select value={workForms.requests.service_type}
+                          onChange={e=>setWorkForms(p=>({...p,requests:{...p.requests,service_type:e.target.value}}))}
+                          style={{width:'100%',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                          {['HVAC Service','Plumbing','Electrical','Appliance Repair','Roofing','Landscaping','Cleaning','Inspection','Other'].map(s=><option key={s}>{s}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Priority</label>
+                        <select value={workForms.requests.priority}
+                          onChange={e=>setWorkForms(p=>({...p,requests:{...p.requests,priority:e.target.value}}))}
+                          style={{width:'100%',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                          {['normal','urgent','low'].map(p=><option key={p} value={p}>{p.charAt(0).toUpperCase()+p.slice(1)}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{marginBottom:10}}>
+                      <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Description <span style={{color:'#dc2626'}}>*</span></label>
+                      <textarea value={workForms.requests.description}
+                        onChange={e=>setWorkForms(p=>({...p,requests:{...p.requests,description:e.target.value}}))}
+                        placeholder="Describe the service request…" rows={3}
+                        style={{width:'100%',boxSizing:'border-box',border:'1px solid #e8e9ec',borderRadius:7,padding:'8px 12px',fontSize:13.5,color:'#374151',resize:'vertical',outline:'none'}}/>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'flex-end'}}>
+                      <button onClick={submitWorkItem} disabled={workSubmitting}
+                        style={{height:34,padding:'0 18px',background:'#2563eb',color:'#fff',border:'none',borderRadius:7,fontSize:13.5,fontWeight:600,cursor:'pointer',opacity:workSubmitting?0.6:1}}>
+                        {workSubmitting?'Creating…':'Create Request'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {workTab==='quotes'&&(
+                  <div style={{padding:14,background:'#f8f9fa',border:'1px solid #e8e9ec',borderRadius:8,marginBottom:16}}>
+                    <p style={{fontSize:13,fontWeight:600,color:'#374151',margin:'0 0 12px'}}>New Quote</p>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Title <span style={{color:'#dc2626'}}>*</span></label>
+                        <input value={workForms.quotes.title}
+                          onChange={e=>setWorkForms(p=>({...p,quotes:{...p.quotes,title:e.target.value}}))}
+                          placeholder="e.g. AC Tune-Up"
+                          style={{width:'100%',boxSizing:'border-box',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',outline:'none'}}/>
+                      </div>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Valid Until</label>
+                        <input type="date" value={workForms.quotes.valid_until}
+                          onChange={e=>setWorkForms(p=>({...p,quotes:{...p.quotes,valid_until:e.target.value}}))}
+                          style={{width:'100%',boxSizing:'border-box',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',outline:'none'}}/>
+                      </div>
+                    </div>
+                    <div style={{marginBottom:10}}>
+                      <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Notes</label>
+                      <textarea value={workForms.quotes.notes}
+                        onChange={e=>setWorkForms(p=>({...p,quotes:{...p.quotes,notes:e.target.value}}))}
+                        placeholder="Additional details…" rows={2}
+                        style={{width:'100%',boxSizing:'border-box',border:'1px solid #e8e9ec',borderRadius:7,padding:'8px 12px',fontSize:13.5,color:'#374151',resize:'vertical',outline:'none'}}/>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'flex-end'}}>
+                      <button onClick={submitWorkItem} disabled={workSubmitting}
+                        style={{height:34,padding:'0 18px',background:'#2563eb',color:'#fff',border:'none',borderRadius:7,fontSize:13.5,fontWeight:600,cursor:'pointer',opacity:workSubmitting?0.6:1}}>
+                        {workSubmitting?'Creating…':'Create Quote'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {workTab==='jobs'&&(
+                  <div style={{padding:14,background:'#f8f9fa',border:'1px solid #e8e9ec',borderRadius:8,marginBottom:16}}>
+                    <p style={{fontSize:13,fontWeight:600,color:'#374151',margin:'0 0 12px'}}>New Job</p>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Job Title <span style={{color:'#dc2626'}}>*</span></label>
+                        <input value={workForms.jobs.title}
+                          onChange={e=>setWorkForms(p=>({...p,jobs:{...p.jobs,title:e.target.value}}))}
+                          placeholder="e.g. AC Inspection"
+                          style={{width:'100%',boxSizing:'border-box',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',outline:'none'}}/>
+                      </div>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Service Type <span style={{color:'#dc2626'}}>*</span></label>
+                        <select value={workForms.jobs.service_type}
+                          onChange={e=>setWorkForms(p=>({...p,jobs:{...p.jobs,service_type:e.target.value}}))}
+                          style={{width:'100%',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                          <option value="">— Select —</option>
+                          {['HVAC','Plumbing','Electrical','Appliance Repair'].map(s=><option key={s}>{s}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Description</label>
+                        <textarea value={workForms.jobs.description}
+                          onChange={e=>setWorkForms(p=>({...p,jobs:{...p.jobs,description:e.target.value}}))}
+                          placeholder="Job details…" rows={2}
+                          style={{width:'100%',boxSizing:'border-box',border:'1px solid #e8e9ec',borderRadius:7,padding:'8px 12px',fontSize:13.5,color:'#374151',resize:'vertical',outline:'none'}}/>
+                      </div>
+                      <div>
+                        <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Priority</label>
+                        <select value={workForms.jobs.priority}
+                          onChange={e=>setWorkForms(p=>({...p,jobs:{...p.jobs,priority:e.target.value}}))}
+                          style={{width:'100%',height:36,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 10px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                          {['Normal','Urgent','Low'].map(p=><option key={p}>{p}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'flex-end'}}>
+                      <button onClick={submitWorkItem} disabled={workSubmitting}
+                        style={{height:34,padding:'0 18px',background:'#2563eb',color:'#fff',border:'none',borderRadius:7,fontSize:13.5,fontWeight:600,cursor:'pointer',opacity:workSubmitting?0.6:1}}>
+                        {workSubmitting?'Creating…':'Create Job'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {workTab==='invoices'&&(
+                  <div style={{padding:14,background:'#f8f9fa',border:'1px solid #e8e9ec',borderRadius:8,marginBottom:16}}>
+                    <p style={{fontSize:13,fontWeight:600,color:'#374151',margin:'0 0 12px'}}>New Invoice</p>
+                    <div style={{marginBottom:10}}>
+                      <label style={{fontSize:12,fontWeight:600,color:'#6b7280',display:'block',marginBottom:4}}>Notes</label>
+                      <textarea value={workForms.invoices.notes}
+                        onChange={e=>setWorkForms(p=>({...p,invoices:{...p.invoices,notes:e.target.value}}))}
+                        placeholder="Invoice notes…" rows={2}
+                        style={{width:'100%',boxSizing:'border-box',border:'1px solid #e8e9ec',borderRadius:7,padding:'8px 12px',fontSize:13.5,color:'#374151',resize:'vertical',outline:'none'}}/>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'flex-end'}}>
+                      <button onClick={submitWorkItem} disabled={workSubmitting}
+                        style={{height:34,padding:'0 18px',background:'#2563eb',color:'#fff',border:'none',borderRadius:7,fontSize:13.5,fontWeight:600,cursor:'pointer',opacity:workSubmitting?0.6:1}}>
+                        {workSubmitting?'Creating…':'Create Invoice'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {workLoading?(
+                  <div style={{textAlign:'center',padding:'20px 0',color:'#9ca3af',fontSize:13}}>Loading…</div>
+                ):workItems[workTab]!==null&&workItems[workTab].length>0?(
+                  <div>
+                    <p style={{fontSize:11.5,fontWeight:700,color:'#9ca3af',margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'0.5px'}}>
+                      {workItems[workTab].length} {workTab.charAt(0).toUpperCase()+workTab.slice(1)}
+                    </p>
+                    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                      {workItems[workTab].map((item,i)=>(
+                        <div key={item.id||i} style={{background:'#fff',border:'1px solid #e8e9ec',borderRadius:8,padding:'10px 14px',display:'flex',justifyContent:'space-between',alignItems:'center',gap:10}}>
+                          <div>
+                            <p style={{fontSize:13.5,fontWeight:600,color:'#1a1d23',margin:'0 0 2px'}}>
+                              {item.title||item.service_type||item.id||'—'}
+                            </p>
+                            <p style={{fontSize:12,color:'#9ca3af',margin:0}}>
+                              {item.created_at?new Date(item.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—'}
+                            </p>
+                          </div>
+                          <span style={{fontSize:11.5,fontWeight:600,padding:'2px 9px',borderRadius:20,background:'#f3f4f6',color:'#6b7280',whiteSpace:'nowrap'}}>
+                            {item.status||'—'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ):workItems[workTab]!==null&&(
+                  <p style={{fontSize:13.5,color:'#9ca3af',textAlign:'center',padding:'20px 0',margin:0}}>
+                    No {workTab} for this client yet.
+                  </p>
+                )}
               </div>
 
               {/* ── Google Reviews card ─────────────────────────────────── */}

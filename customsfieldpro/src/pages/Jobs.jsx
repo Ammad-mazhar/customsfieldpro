@@ -231,6 +231,7 @@ export default function Jobs() {
   const [showOverride, setShowOverride]     = useState(false)
   const [overrideStatus, setOverrideStatus] = useState('')
   const [overrideReason, setOverrideReason] = useState('')
+  const [newClientForm, setNewClientForm]   = useState({ firstName: '', lastName: '', email: '', phone: '', address: '' })
 
   useEffect(() => {
     apiGet('/api/jobs').then(data => {
@@ -290,6 +291,11 @@ export default function Jobs() {
   }
 
   function handleClientChange(clientId) {
+    if (clientId === '__new__') {
+      setForm(p => ({ ...p, clientId: '__new__', clientAddress: '', clientPhone: '' }))
+      setErrs(p => ({ ...p, clientId: undefined }))
+      return
+    }
     const c = clients.find(x => String(x.id) === clientId)
     setForm(p => ({
       ...p, clientId,
@@ -369,18 +375,46 @@ export default function Jobs() {
     return { e, list }
   }
 
-  function submitCreate() {
+  async function submitCreate() {
     const { e, list } = validate()
     if (list.length > 0) { setErrs(e); setErrList(list); return }
     setErrList([])
-    const c = clients.find(x => String(x.id) === form.clientId)
+
+    let resolvedClientId = form.clientId
+    let c = clients.find(x => String(x.id) === form.clientId)
+
+    if (form.clientId === '__new__') {
+      if (!newClientForm.firstName.trim()) {
+        setErrs(p => ({ ...p, clientId: 'First name required for new client' }))
+        setErrList(['Client first name is required'])
+        return
+      }
+      try {
+        const resp = await api.createClient({
+          first_name: newClientForm.firstName.trim(),
+          last_name:  newClientForm.lastName.trim(),
+          email:      newClientForm.email.trim() || undefined,
+          phone:      newClientForm.phone.trim() || undefined,
+          address:    newClientForm.address.trim() || undefined,
+        })
+        if (!resp.success || !resp.data?.id) { flash('Failed to create client'); return }
+        resolvedClientId = resp.data.id
+        c = resp.data
+        setClients(prev => [c, ...prev])
+        setNewClientForm({ firstName: '', lastName: '', email: '', phone: '', address: '' })
+      } catch {
+        flash('Failed to create client. Please try again.')
+        return
+      }
+    }
+
     const validItems = form.lineItems.filter(li => li.description.trim())
     const sub = validItems.reduce((s, li) => s + li.total, 0)
     const tax = sub * (form.taxRate / 100)
     const jobId = formatJobNumber(getNextNumber('jobs'))
     const newJob = {
       id: jobId,
-      clientId: form.clientId, clientName: c ? clientDisplayName(c) : '',
+      clientId: resolvedClientId, clientName: c ? clientDisplayName(c) : '',
       clientPhone: form.clientPhone, clientEmail: c?.email || '', clientAddress: form.clientAddress,
       type: form.type, title: form.title, description: form.description,
       internalNotes: form.internalNotes, notes: form.internalNotes, claimNumber: form.claimNumber,
@@ -397,7 +431,7 @@ export default function Jobs() {
     const updated = saveJob(newJob)
     setJobs(updated); setForm(blankForm()); setErrs({}); setErrList([]); setTab('all')
     apiPost('/api/jobs', {
-      client_id:    form.clientId,
+      client_id:    resolvedClientId,
       title:        form.title,
       description:  form.description,
       service_type: form.type,
@@ -1129,9 +1163,42 @@ export default function Jobs() {
                     <label style={LB}>Client<Req /></label>
                     <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} style={selStyle('clientId')}>
                       <option value="">— Select client —</option>
+                      <option value="__new__">+ Create New Client</option>
                       {clients.map(c => <option key={c.id} value={c.id}>{clientDisplayName(c)}</option>)}
                     </select>
                     {errs.clientId && <p style={ET}>Required</p>}
+                    {form.clientId === '__new__' && (
+                      <div style={{marginTop:10,padding:14,background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:8}}>
+                        <p style={{fontSize:12,fontWeight:700,color:'#15803d',margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'0.4px'}}>New Client Details</p>
+                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                          <div>
+                            <label style={LB}>First Name <span style={{color:'#dc2626'}}>*</span></label>
+                            <input value={newClientForm.firstName} onChange={e=>setNewClientForm(p=>({...p,firstName:e.target.value}))}
+                              placeholder="First Name" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                          </div>
+                          <div>
+                            <label style={LB}>Last Name</label>
+                            <input value={newClientForm.lastName} onChange={e=>setNewClientForm(p=>({...p,lastName:e.target.value}))}
+                              placeholder="Last Name" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                          </div>
+                          <div>
+                            <label style={LB}>Email</label>
+                            <input type="email" value={newClientForm.email} onChange={e=>setNewClientForm(p=>({...p,email:e.target.value}))}
+                              placeholder="Email" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                          </div>
+                          <div>
+                            <label style={LB}>Phone</label>
+                            <input value={newClientForm.phone} onChange={e=>setNewClientForm(p=>({...p,phone:e.target.value}))}
+                              placeholder="Phone" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                          </div>
+                        </div>
+                        <div>
+                          <label style={LB}>Address</label>
+                          <input value={newClientForm.address} onChange={e=>setNewClientForm(p=>({...p,address:e.target.value}))}
+                            placeholder="Address" style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',background:'#fff'}}/>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label style={LB}>Contact Phone</label>
