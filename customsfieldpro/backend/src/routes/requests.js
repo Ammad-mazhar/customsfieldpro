@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
 
 // POST /api/requests — authenticated users or public client portal
 router.post('/', async (req, res) => {
-  const { client_id, service_type, description, priority = 'normal', preferred_time } = req.body
+  const { client_id, service_type, description, priority = 'normal', preferred_time, claim_number } = req.body
   if (!service_type || !description) return res.status(400).json({ error: 'service_type and description are required' })
 
   // Authenticated users: use req.tenantId (null is valid for demo users)
@@ -44,6 +44,7 @@ router.post('/', async (req, res) => {
   if (!isAuthenticated && !tenantId) return res.status(400).json({ error: 'tenant_id is required for unauthenticated requests' })
 
   const record = { client_id, service_type, description, priority, preferred_time, status: 'new' }
+  if (claim_number) record.claim_number = claim_number
   if (tenantId) record.tenant_id = tenantId
 
   const { data, error } = await supabase
@@ -56,7 +57,7 @@ router.post('/', async (req, res) => {
 
 // PUT /api/requests/:id
 router.put('/:id', async (req, res) => {
-  const allowed = ['status', 'priority', 'internal_notes', 'converted_to', 'converted_id']
+  const allowed = ['status', 'priority', 'internal_notes', 'converted_to', 'converted_id', 'claim_number']
   const patch = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)))
 
   let updateQuery = supabase.from('requests').update(patch).eq('id', req.params.id)

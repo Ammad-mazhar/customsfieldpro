@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../services/api'
 import { useAuth } from '../auth/AuthContext'
+import { getSettings } from '../data/store'
 import AddressAutocomplete from '../components/AddressAutocomplete'
 import { notifyAdmins, NOTIF_TYPES } from '../utils/notifications'
 import { logActivity, ACTIONS } from '../utils/activityLog'
@@ -14,11 +15,12 @@ const BLANK = {
   type:'',priority:'Normal',internalNotes:'',
   title:'',
   tenantNameContact:'',tenantAddress:'',
-  equipmentMake:'',equipmentUnit:'',equipmentModel:'',
+  equipmentMake:'',equipmentUnit:'',equipmentModel:'',equipmentSerial:'',
   issueSymptoms:'',
   preferredDate1:'',preferredDate2:'',preferredArrivalTime:'any_time',
   scopeFromOffice:'',scopeFieldSupervisor:'',
   claimTrackingId:'',
+  serviceFee:'0',authLimit:'100',assignedTechId:'',
   jobAcceptedByRep:'',jobAcceptedByCompany:'',
   claimFields:['','','','','','','','','',''],
   uploadedImages:[],
@@ -88,6 +90,7 @@ export default function Requests() {
 
   const [requests,setRequests]   = useState([])
   const [clients,setClients]     = useState([])
+  const [techs]                  = useState(() => getSettings().technicians || [])
   const [tab,setTab]             = useState('all')
   const [selId,setSelId]         = useState(null)
   const [priorityF,setPriorityF] = useState('All')
@@ -178,15 +181,35 @@ export default function Requests() {
   async function submitNew() {
     const e=validate(); if(Object.keys(e).length){setErrs(e);return}
     const c = form.clientMode==='existing' ? clients.find(x=>x.id===form.clientId) : null
-    const arrivalMap = {any_time:'Any Time',morning:'Morning (8am–12pm)',afternoon:'Afternoon (12pm–5pm)',evening:'Evening (5pm–8pm)',emergency:'Emergency'}
 
     try {
+      const descParts = []
+      if (form.issueSymptoms) descParts.push(form.issueSymptoms)
+      if (form.scopeFromOffice) descParts.push(`Scope (Office): ${form.scopeFromOffice}`)
+      if (form.equipmentMake||form.equipmentModel||form.equipmentSerial||form.equipmentUnit) {
+        const equip = [
+          form.equipmentMake  && `Make: ${form.equipmentMake}`,
+          form.equipmentModel && `Model: ${form.equipmentModel}`,
+          form.equipmentSerial && `Serial: ${form.equipmentSerial}`,
+          form.equipmentUnit  && `Unit: ${form.equipmentUnit}`,
+        ].filter(Boolean).join(', ')
+        descParts.push(`Equipment — ${equip}`)
+      }
+      if (form.tenantNameContact||form.tenantAddress) {
+        const tenant = [
+          form.tenantNameContact && `Contact: ${form.tenantNameContact}`,
+          form.tenantAddress     && `Address: ${form.tenantAddress}`,
+        ].filter(Boolean).join(', ')
+        descParts.push(`Tenant — ${tenant}`)
+      }
+
       const requestData = {
-        client_id:    c?.id || null,
-        service_type: form.type || 'Service Request',
-        description:  form.issueSymptoms || form.scopeFromOffice || '',
-        priority:     form.priority.toLowerCase(),
+        client_id:      c?.id || null,
+        service_type:   form.type || 'Service Request',
+        description:    descParts.join('\n\n') || form.title || 'Service Request',
+        priority:       form.priority.toLowerCase(),
         preferred_time: form.preferredDate1 || null,
+        claim_number:   form.claimTrackingId || null,
       }
       const result = await api.createRequest(requestData)
       const newReq = mapRequest(result)
@@ -431,35 +454,79 @@ export default function Requests() {
                   </div>
 
                   {/* Equipment */}
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginBottom:14}}>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
                     <div>
-                      <label style={LB}>Equipment Make</label>
+                      <label style={LB}>Equipment Make / Brand</label>
                       <input className="wrInp" value={form.equipmentMake} onChange={e=>setForm(p=>({...p,equipmentMake:e.target.value}))}
-                        placeholder="e.g. Carrier"
+                        placeholder="e.g. Carrier, Kenmore"
                         style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151'}}/>
                     </div>
                     <div>
-                      <label style={LB}>Unit #</label>
+                      <label style={LB}>Unit # / Location</label>
                       <input className="wrInp" value={form.equipmentUnit} onChange={e=>setForm(p=>({...p,equipmentUnit:e.target.value}))}
-                        placeholder="e.g. 4B"
+                        placeholder="e.g. Unit 4B, Basement"
                         style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151'}}/>
                     </div>
                     <div>
-                      <label style={LB}>Equipment Model</label>
+                      <label style={LB}>Model Number</label>
                       <input className="wrInp" value={form.equipmentModel} onChange={e=>setForm(p=>({...p,equipmentModel:e.target.value}))}
                         placeholder="Model number"
-                        style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151'}}/>
+                        style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,fontFamily:'monospace',color:'#374151'}}/>
+                    </div>
+                    <div>
+                      <label style={LB}>Serial Number</label>
+                      <input className="wrInp" value={form.equipmentSerial} onChange={e=>setForm(p=>({...p,equipmentSerial:e.target.value}))}
+                        placeholder="Serial number"
+                        style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,fontFamily:'monospace',color:'#374151'}}/>
                     </div>
                   </div>
 
-                  {/* Service type */}
-                  <div style={{marginBottom:14}}>
-                    <label style={LB}>Service Type</label>
-                    <select value={form.type} onChange={e=>setForm(p=>({...p,type:e.target.value}))}
-                      style={{width:'100%',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
-                      <option value="">— Select type —</option>
-                      {['HVAC Repair','HVAC Install','Furnace Service','Plumbing','Drain','Electrical','Generator','Other'].map(t=><option key={t}>{t}</option>)}
-                    </select>
+                  {/* Service type + Priority */}
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
+                    <div>
+                      <label style={LB}>Service Type</label>
+                      <select value={form.type} onChange={e=>setForm(p=>({...p,type:e.target.value}))}
+                        style={{width:'100%',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                        <option value="">— Select type —</option>
+                        {['HVAC Repair','HVAC Install','Furnace Service','Plumbing','Drain','Electrical','Appliance Repair','Generator','Other'].map(t=><option key={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={LB}>Priority</label>
+                      <div style={{display:'flex',gap:6}}>
+                        {['Normal','Urgent','Low'].map(p=>(
+                          <button key={p} onClick={()=>setForm(f=>({...f,priority:p}))}
+                            style={{flex:1,height:38,border:`1px solid ${form.priority===p?(p==='Urgent'?'#dc2626':p==='Low'?'#9ca3af':'#2563eb'):'#e5e7eb'}`,borderRadius:7,fontSize:12.5,fontWeight:form.priority===p?700:400,
+                              color:form.priority===p?(p==='Urgent'?'#dc2626':p==='Low'?'#6b7280':'#2563eb'):'#9ca3af',
+                              background:form.priority===p?(p==='Urgent'?'#fef2f2':p==='Low'?'#f3f4f6':'#eff6ff'):'#fff',cursor:'pointer'}}>
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Service fee, auth limit, technician */}
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginBottom:14}}>
+                    <div>
+                      <label style={LB}>Service Call Fee ($)</label>
+                      <input className="wrInp" type="number" min="0" step="0.01" value={form.serviceFee} onChange={e=>setForm(p=>({...p,serviceFee:e.target.value}))}
+                        placeholder="0.00"
+                        style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',textAlign:'right'}}/>
+                    </div>
+                    <div>
+                      <label style={LB}>Authorization Limit ($)</label>
+                      <input className="wrInp" type="number" min="0" step="0.01" value={form.authLimit} onChange={e=>setForm(p=>({...p,authLimit:e.target.value}))}
+                        placeholder="100.00"
+                        style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',textAlign:'right'}}/>
+                    </div>
+                    <div>
+                      <label style={LB}>Assign Technician</label>
+                      <select value={form.assignedTechId} onChange={e=>setForm(p=>({...p,assignedTechId:e.target.value}))}
+                        style={{width:'100%',height:38,border:'1px solid #e5e7eb',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                        <option value="">— Unassigned —</option>
+                        {techs.map(t=><option key={t.id||t.name} value={t.id||t.name}>{t.name}</option>)}
+                      </select>
+                    </div>
                   </div>
 
                   {/* Issue symptoms */}
@@ -507,9 +574,9 @@ export default function Requests() {
                   </div>
                 </div>
 
-                {/* Scop of work */}
+                {/* Scope of Work */}
                 <div style={{padding:'20px',borderBottom:'1px solid #f0f1f3'}}>
-                  <p className="wrSec">Scop of work</p>
+                  <p className="wrSec">Scope of Work</p>
                   <div style={{marginBottom:14}}>
                     <label style={LB}>Scope — From Office</label>
                     <textarea className="wrTA" value={form.scopeFromOffice} onChange={e=>setForm(p=>({...p,scopeFromOffice:e.target.value}))} rows={3}

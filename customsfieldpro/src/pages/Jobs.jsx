@@ -141,6 +141,7 @@ function blankForm() {
   return {
     clientId: '', clientAddress: '', clientPhone: '',
     jobNumber: formatJobNumber(peekNextNumber('jobs')),
+    linkedRequestId: '', linkedQuoteId: '',
     title: '', type: '', description: '', internalNotes: '', claimNumber: '',
     techName: '', technicianId: '', startDate: '', startTime: '', endTime: '', duration: '', recurrence: 'One-time',
     equipment: [], equipBrand: '', equipModel: '', equipSerial: '',
@@ -232,6 +233,8 @@ export default function Jobs() {
   const [overrideStatus, setOverrideStatus] = useState('')
   const [overrideReason, setOverrideReason] = useState('')
   const [newClientForm, setNewClientForm]   = useState({ firstName: '', lastName: '', email: '', phone: '', address: '' })
+  const [linkedRequests, setLinkedRequests] = useState([])
+  const [linkedQuotes, setLinkedQuotes]     = useState([])
 
   useEffect(() => {
     apiGet('/api/jobs').then(data => {
@@ -240,6 +243,24 @@ export default function Jobs() {
     api.getClients().then(res => {
       const list = res?.data || res || []
       if (Array.isArray(list) && list.length > 0) setClients(list)
+    }).catch(() => {})
+    api.getRequests().then(res => {
+      setLinkedRequests((res?.data || []).map(r => ({
+        id: r.id,
+        clientId: r.client_id || '',
+        type: r.service_type || '',
+        description: r.description || '',
+        clientName: r.clients ? [r.clients.first_name, r.clients.last_name].filter(Boolean).join(' ') || r.clients.email || '' : '',
+        status: r.status || '',
+      })))
+    }).catch(() => {})
+    api.getQuotes().then(res => {
+      setLinkedQuotes((res?.data || []).map(q => ({
+        id: q.id,
+        clientId: q.client_id || '',
+        type: q.title || '',
+        description: q.description || '',
+      })))
     }).catch(() => {})
   }, [])
 
@@ -373,6 +394,34 @@ export default function Jobs() {
     if (validItems.length === 0)                          { e.lineItems = 'At least one line item is required'; list.push('Line Items') }
     if (form.status === 'Completed' && !form.completionNotes.trim()) { e.completionNotes = 'Required when status is Completed'; list.push('Completion Notes') }
     return { e, list }
+  }
+
+  function handleLinkedRequest(requestId) {
+    setForm(p => ({ ...p, linkedRequestId: requestId }))
+    if (!requestId) return
+    const req = linkedRequests.find(r => r.id === requestId)
+    if (!req) return
+    setForm(p => ({
+      ...p,
+      linkedRequestId: requestId,
+      type:        p.type        || req.type        || p.type,
+      description: p.description || req.description || p.description,
+    }))
+    if (req.clientId && !form.clientId) handleClientChange(req.clientId)
+  }
+
+  function handleLinkedQuote(quoteId) {
+    setForm(p => ({ ...p, linkedQuoteId: quoteId }))
+    if (!quoteId) return
+    const q = linkedQuotes.find(x => x.id === quoteId)
+    if (!q) return
+    setForm(p => ({
+      ...p,
+      linkedQuoteId: quoteId,
+      type:        p.type        || q.type        || p.type,
+      description: p.description || q.description || p.description,
+    }))
+    if (q.clientId && !form.clientId) handleClientChange(q.clientId)
   }
 
   async function submitCreate() {
@@ -1220,6 +1269,39 @@ export default function Jobs() {
                   />
                 </div>
               </div>
+
+              {/* Linked Records */}
+              {(linkedRequests.length > 0 || linkedQuotes.length > 0) && (
+                <div style={{ ...CS, marginBottom: 16 }}>
+                  <SectionHead title="Linked Records (optional — auto-fills fields)" />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    {linkedRequests.length > 0 && (
+                      <div>
+                        <label style={LB}>From Request</label>
+                        <select value={form.linkedRequestId} onChange={e => handleLinkedRequest(e.target.value)}
+                          style={{ width: '100%', height: 38, border: '1px solid #e8e9ec', borderRadius: 7, padding: '0 12px', fontSize: 13.5, color: '#374151', background: '#fff' }}>
+                          <option value="">— No linked request —</option>
+                          {linkedRequests.filter(r => r.status !== 'converted').map(r => (
+                            <option key={r.id} value={r.id}>{r.clientName ? `${r.clientName} — ` : ''}{r.type || 'Service Request'} ({r.id})</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {linkedQuotes.length > 0 && (
+                      <div>
+                        <label style={LB}>From Quote</label>
+                        <select value={form.linkedQuoteId} onChange={e => handleLinkedQuote(e.target.value)}
+                          style={{ width: '100%', height: 38, border: '1px solid #e8e9ec', borderRadius: 7, padding: '0 12px', fontSize: 13.5, color: '#374151', background: '#fff' }}>
+                          <option value="">— No linked quote —</option>
+                          {linkedQuotes.map(q => (
+                            <option key={q.id} value={q.id}>{q.type || 'Quote'} ({q.id})</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Job Details */}
               <div style={{ ...CS, marginBottom: 16 }}>

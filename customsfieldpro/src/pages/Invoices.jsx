@@ -11,7 +11,7 @@ import { getStripeConfig, generatePaymentLink, markInvoicePaidViaStripe, isStrip
 
 const SC = { Paid:{bg:'#f0fdf4',color:'#16a34a'}, Overdue:{bg:'#fef2f2',color:'#dc2626'}, Draft:{bg:'#f3f4f6',color:'#6b7280'}, Sent:{bg:'#eff6ff',color:'#2563eb'}, 'Payment Link Sent':{bg:'#f5f3ff',color:'#7c3aed'} }
 
-const BLANK_FORM = { clientId:'', jobRef:'', issued:new Date().toISOString().split('T')[0], due:'', taxRate:'0', notes:'' }
+const BLANK_FORM = { clientId:'', jobRef:'', issued:new Date().toISOString().split('T')[0], due:'', taxRate:'0', notes:'', paymentMethod:'', datePaid:'', amountPaid:'', transactionId:'', paymentNotes:'' }
 const BLANK_LINE = () => ({ id:Date.now()+Math.random(), description:'', qty:1, unit:0, total:0 })
 
 function Bdg({label}) {
@@ -214,15 +214,22 @@ export default function Invoices() {
       } catch { flash('Failed to create client. Please try again.'); return }
     }
     const {sub,tax,grand}=calcTotals()
+    const amountPaid = parseFloat(form.amountPaid) || 0
+    const autoStatus = form.paymentMethod && amountPaid >= grand ? 'Paid' : 'Draft'
     const n={
       id: formatInvoiceNumber(getNextNumber('invoices')),
       clientId:resolvedClientId,clientName:c ? clientDisplayName(c) : '',clientPhone:c?.phone||'',
       clientEmail:c?.email||'',clientAddress:c?`${c.address}, ${c.city}, ${c.state}`:'',
       jobRef:form.jobRef,linkedJobId:form.jobRef||null,
       linkedQuoteNumber:null,linkedQuoteId:null,
-      issued:form.issued,due:form.due,status:'Draft',
+      issued:form.issued,due:form.due,status:autoStatus,
       lineItems:lines.filter(l=>l.description.trim()),
       subtotal:sub,taxRate:parseFloat(form.taxRate||0),total:grand,notes:form.notes,
+      paymentMethod:form.paymentMethod||null,
+      datePaid:form.datePaid||null,
+      amountPaid,
+      transactionId:form.transactionId||null,
+      paymentNotes:form.paymentNotes||null,
     }
     const updated = saveInvoice(n)
     setInvoices(updated)
@@ -425,6 +432,27 @@ export default function Invoices() {
                 </div>
               )}
               {sel.notes&&<div style={C}><p style={CT}>Notes</p><p style={{fontSize:13.5,color:'#374151',lineHeight:1.7,margin:0,background:'#f8f9fa',borderRadius:8,padding:'12px 14px'}}>{sel.notes}</p></div>}
+
+              {sel.paymentMethod && (
+                <div style={{...C,background:'#f0fdf4',border:'1px solid #bbf7d0'}}>
+                  <p style={{...CT,color:'#15803d',margin:'0 0 14px'}}>Payment Record</p>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:sel.paymentNotes?12:0}}>
+                    {[['Method',sel.paymentMethod],['Date Paid',sel.datePaid||'—'],['Amount Paid',sel.amountPaid?`$${parseFloat(sel.amountPaid).toLocaleString()}`:'-'],['Transaction #',sel.transactionId||'—']].map(([l,v])=>(
+                      <div key={l}>
+                        <span style={{fontSize:11,fontWeight:600,color:'#6b7280',textTransform:'uppercase',letterSpacing:'0.4px',display:'block',marginBottom:3}}>{l}</span>
+                        <span style={{fontSize:13.5,color:'#1a1d23',fontWeight:600}}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {sel.amountPaid > 0 && sel.total > 0 && (
+                    <div style={{marginTop:10,paddingTop:10,borderTop:'1px solid #bbf7d0',display:'flex',alignItems:'center',gap:16}}>
+                      <div><span style={{fontSize:11,color:'#6b7280',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.4px',display:'block',marginBottom:2}}>Invoice Total</span><span style={{fontSize:13.5,color:'#374151',fontWeight:600}}>${(sel.total||0).toLocaleString()}</span></div>
+                      <div><span style={{fontSize:11,color:'#6b7280',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.4px',display:'block',marginBottom:2}}>Balance Due</span><span style={{fontSize:15,color:Math.max(0,(sel.total||0)-parseFloat(sel.amountPaid||0))<0.01?'#16a34a':'#dc2626',fontWeight:700}}>${Math.max(0,(sel.total||0)-parseFloat(sel.amountPaid||0)).toLocaleString()}</span></div>
+                    </div>
+                  )}
+                  {sel.paymentNotes&&<p style={{fontSize:13,color:'#374151',lineHeight:1.6,marginTop:10,marginBottom:0}}>{sel.paymentNotes}</p>}
+                </div>
+              )}
             </div>
           )}
 
@@ -531,7 +559,7 @@ export default function Invoices() {
                   </div>
 
                   <div style={{display:'flex',justifyContent:'flex-end',marginTop:12}}>
-                    <div style={{width:280,background:'#f8f9fa',borderRadius:8,padding:'12px 16px'}}>
+                    <div style={{width:300,background:'#f8f9fa',borderRadius:8,padding:'12px 16px'}}>
                       <div style={{display:'flex',justifyContent:'space-between',fontSize:13.5,color:'#6b7280',marginBottom:6}}><span>Subtotal</span><span>${sub.toFixed(2)}</span></div>
                       <div style={{display:'flex',justifyContent:'space-between',fontSize:13.5,color:'#6b7280',marginBottom:6,alignItems:'center'}}>
                         <span>Tax %</span>
@@ -539,8 +567,52 @@ export default function Invoices() {
                           style={{width:60,height:28,border:'1px solid #e8e9ec',borderRadius:5,padding:'0 6px',fontSize:13,textAlign:'right',outline:'none'}}/>
                       </div>
                       <div style={{display:'flex',justifyContent:'space-between',fontSize:13.5,color:'#6b7280',marginBottom:8}}><span>Tax Amount</span><span>${tax.toFixed(2)}</span></div>
-                      <div style={{display:'flex',justifyContent:'space-between',fontSize:15,fontWeight:700,color:'#1a1d23',borderTop:'1px solid #e8e9ec',paddingTop:8}}><span>Total</span><span>${grand.toFixed(2)}</span></div>
+                      <div style={{display:'flex',justifyContent:'space-between',fontSize:15,fontWeight:700,color:'#1a1d23',borderTop:'1px solid #e8e9ec',paddingTop:8,marginBottom:parseFloat(form.amountPaid)>0?6:0}}><span>Invoice Total</span><span>${grand.toFixed(2)}</span></div>
+                      {parseFloat(form.amountPaid) > 0 && <>
+                        <div style={{display:'flex',justifyContent:'space-between',fontSize:13.5,color:'#16a34a',marginBottom:6}}><span>Amount Paid</span><span>− ${parseFloat(form.amountPaid).toFixed(2)}</span></div>
+                        <div style={{display:'flex',justifyContent:'space-between',fontSize:15,fontWeight:700,color:Math.max(0,grand-parseFloat(form.amountPaid||0))<0.01?'#16a34a':'#dc2626',borderTop:'1px solid #e8e9ec',paddingTop:8}}><span>Balance Due</span><span>${Math.max(0,grand-parseFloat(form.amountPaid||0)).toFixed(2)}</span></div>
+                      </>}
                     </div>
+                  </div>
+
+                  {/* Payment Section */}
+                  <div style={{marginTop:20,background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:10,padding:'16px'}}>
+                    <p style={{...CT,margin:'0 0 14px',color:'#15803d'}}>Record Payment <span style={{fontSize:11,fontWeight:400,color:'#6b7280',textTransform:'none',letterSpacing:0}}>(optional)</span></p>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                      <div>
+                        <label style={LB}>Payment Method</label>
+                        <select value={form.paymentMethod} onChange={e=>setForm(p=>({...p,paymentMethod:e.target.value}))}
+                          style={{width:'100%',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                          <option value="">— Not yet paid —</option>
+                          {['Cash','Check','Credit Card','Debit Card','Zelle','Venmo','Bank Transfer','Other'].map(m=><option key={m}>{m}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label style={LB}>Date Paid</label>
+                        <input type="date" value={form.datePaid} onChange={e=>setForm(p=>({...p,datePaid:e.target.value}))}
+                          style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none'}}/>
+                      </div>
+                      <div>
+                        <label style={LB}>Amount Paid ($)</label>
+                        <input type="number" min="0" step="0.01" value={form.amountPaid} onChange={e=>setForm(p=>({...p,amountPaid:e.target.value}))}
+                          placeholder="0.00"
+                          style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none',textAlign:'right'}}/>
+                      </div>
+                      <div>
+                        <label style={LB}>Transaction / Reference #</label>
+                        <input value={form.transactionId} onChange={e=>setForm(p=>({...p,transactionId:e.target.value}))}
+                          placeholder="Check #, confirmation code…"
+                          style={{width:'100%',boxSizing:'border-box',height:38,border:'1px solid #d1fae5',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',outline:'none'}}/>
+                      </div>
+                    </div>
+                    {form.paymentMethod && (
+                      <div style={{marginTop:12}}>
+                        <label style={LB}>Payment Notes</label>
+                        <textarea value={form.paymentNotes} onChange={e=>setForm(p=>({...p,paymentNotes:e.target.value}))} rows={2}
+                          placeholder="Any additional payment notes…"
+                          style={{width:'100%',boxSizing:'border-box',border:'1px solid #d1fae5',borderRadius:7,padding:'10px 12px',fontSize:13.5,color:'#374151',resize:'vertical',outline:'none'}}/>
+                      </div>
+                    )}
                   </div>
 
                   <div style={{marginTop:14}}>

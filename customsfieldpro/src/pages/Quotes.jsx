@@ -14,7 +14,7 @@ import { isAIEnabled } from '../utils/aiEstimator'
 
 const SC = { Approved:{bg:'#f0fdf4',color:'#16a34a'}, Sent:{bg:'#eff6ff',color:'#2563eb'}, Declined:{bg:'#fef2f2',color:'#dc2626'}, Draft:{bg:'#f3f4f6',color:'#6b7280'} }
 
-const BLANK_FORM = {clientId:'',type:'',description:'',expires:'',notes:''}
+const BLANK_FORM = {clientId:'',linkedRequestId:'',type:'',description:'',expires:'',notes:''}
 const BLANK_LINE = () => ({id:Date.now()+Math.random(),description:'',qty:1,unit:0,total:0})
 
 function Bdg({label}) {
@@ -55,6 +55,7 @@ export default function Quotes() {
 
   const [quotes,setQuotes] = useState(() => getQuotes())
   const [clients, setClients] = useState(() => getClients())
+  const [requests, setRequests] = useState([])
   const [settings]         = useState(() => getSettings())
   const [tab,setTab]       = useState('all')
   const [selId,setSelId]   = useState(null)
@@ -74,6 +75,16 @@ export default function Quotes() {
     api.getClients().then(res => {
       const list = res?.data || res || []
       if (Array.isArray(list) && list.length > 0) setClients(list)
+    }).catch(() => {})
+    api.getRequests().then(res => {
+      setRequests((res?.data || []).map(r => ({
+        id: r.id,
+        clientId: r.client_id || '',
+        type: r.service_type || '',
+        description: r.description || '',
+        clientName: r.clients ? [r.clients.first_name, r.clients.last_name].filter(Boolean).join(' ') || r.clients.email || '' : '',
+        status: r.status || '',
+      })))
     }).catch(() => {})
   }, [])
 
@@ -144,6 +155,20 @@ export default function Quotes() {
     if(!form.expires) e.expires='Required'
     if(!lines.some(l=>l.description.trim())) e.lines='At least one line item required'
     return e
+  }
+
+  function handleRequestLink(requestId) {
+    setForm(p => ({ ...p, linkedRequestId: requestId }))
+    if (!requestId) return
+    const req = requests.find(r => r.id === requestId)
+    if (!req) return
+    setForm(p => ({
+      ...p,
+      linkedRequestId: requestId,
+      clientId:    p.clientId    || req.clientId    || p.clientId,
+      type:        p.type        || req.type        || p.type,
+      description: p.description || req.description || p.description,
+    }))
   }
 
   async function submitCreate() {
@@ -359,6 +384,18 @@ export default function Quotes() {
             <div style={{maxWidth:720}}>
               <h3 style={{fontSize:17,fontWeight:700,color:'#1a1d23',margin:'0 0 20px'}}>Create Quote</h3>
               <div style={C}>
+                {requests.length > 0 && (
+                  <div style={{marginBottom:16}}>
+                    <label style={LB}>Link to Request <span style={{fontWeight:400,color:'#9ca3af'}}>(optional — auto-fills fields)</span></label>
+                    <select value={form.linkedRequestId} onChange={e=>handleRequestLink(e.target.value)}
+                      style={{width:'100%',height:38,border:'1px solid #e8e9ec',borderRadius:7,padding:'0 12px',fontSize:13.5,color:'#374151',background:'#fff'}}>
+                      <option value="">— No linked request —</option>
+                      {requests.filter(r=>r.status!=='converted').map(r=>(
+                        <option key={r.id} value={r.id}>{r.clientName ? `${r.clientName} — ` : ''}{r.type || 'Service Request'} ({r.id})</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
                   <div>
                     <label style={LB}>Client <span style={{color:'#dc2626'}}>*</span></label>

@@ -54,6 +54,12 @@ export function formatPONumber(n) {
   return `PO-${new Date().getFullYear()}-${String(n).padStart(3, '0')}`
 }
 
+export function formatRequestNumber(n) {
+  const d = new Date()
+  const ymd = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`
+  return `REQ-${ymd}-${String(n).padStart(3,'0')}`
+}
+
 /**
  * Initialize counters on first app load if they are missing.
  * Called once from store.js seedAll().
