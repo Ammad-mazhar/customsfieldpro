@@ -4,17 +4,12 @@ const { authorize } = require('../middleware/authorize')
 const { validateCreateClient, validateUpdateClient, checkValidation } = require('../middleware/validate')
 const { param } = require('express-validator')
 const { getClients, getClientById, createClient, updateClient, deleteClient } = require('../db/queries/clientQueries')
-const supabase = require('../utils/supabase')
+const { logActivity } = require('../utils/activityLogger')
 
 router.use(authenticate)
 
-async function log(req, action, recordId, label, details) {
-  try {
-    await supabase.from('activity_log').insert({
-      tenant_id: req.tenantId, user_id: req.user.id,
-      action, module: 'clients', record_id: String(recordId), record_label: label, details,
-    })
-  } catch {}
+function clientLabel(c) {
+  return [c?.first_name, c?.last_name].filter(Boolean).join(' ') || c?.company_name || c?.id || '—'
 }
 
 // GET /api/clients
@@ -49,8 +44,7 @@ router.post('/',
   async (req, res) => {
     try {
       const data = await createClient(req.tenantId, req.user.id, req.body)
-      const label = [data.first_name, data.last_name].filter(Boolean).join(' ') || data.company_name || data.id
-      await log(req, 'CLIENT_CREATED', data.id, label, 'Client created.')
+      await logActivity(req, 'create', 'clients', data.id, clientLabel(data))
       res.status(201).json({ success: true, data })
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -64,9 +58,20 @@ router.put('/:id',
   validateUpdateClient,
   async (req, res) => {
     try {
+      // Pre-fetch so we can detect status changes and get the label before update
+      const oldData = await getClientById(req.tenantId, req.params.id).catch(() => null)
+
       const data = await updateClient(req.tenantId, req.params.id, req.body)
-      const label = [data.first_name, data.last_name].filter(Boolean).join(' ') || data.id
-      await log(req, 'CLIENT_UPDATED', data.id, label, 'Client updated.')
+      const label = clientLabel(data)
+
+      if (req.body.status !== undefined && oldData?.status !== req.body.status) {
+        await logActivity(req, 'status_change', 'clients', data.id, label, {
+          field: 'status', oldValue: oldData?.status, newValue: req.body.status,
+        })
+      } else {
+        await logActivity(req, 'edit', 'clients', data.id, label)
+      }
+
       res.json({ success: true, data })
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -81,8 +86,9 @@ router.delete('/:id',
   checkValidation,
   async (req, res) => {
     try {
+      const existing = await getClientById(req.tenantId, req.params.id).catch(() => null)
       await deleteClient(req.tenantId, req.params.id)
-      await log(req, 'CLIENT_DELETED', req.params.id, req.params.id, 'Client deleted.')
+      await logActivity(req, 'delete', 'clients', req.params.id, clientLabel(existing))
       res.json({ success: true, message: 'Client deleted' })
     } catch (e) {
       res.status(400).json({ error: e.message })

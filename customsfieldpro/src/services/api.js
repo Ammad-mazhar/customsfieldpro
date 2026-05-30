@@ -196,6 +196,15 @@ export const api = {
     return Array.isArray(result) ? result : []
   },
 
+  // ── Activity Logs ────────────────────────────────────────────────────────────
+
+  async getActivityLogs(params) {
+    return apiGet('/api/activity-logs', params)
+  },
+  async getRecordActivity(recordId) {
+    return apiGet(`/api/activity-logs/record/${recordId}`)
+  },
+
   // ── Equipment ─────────────────────────────────────────────────────────────────
 
   async getEquipment(params) {

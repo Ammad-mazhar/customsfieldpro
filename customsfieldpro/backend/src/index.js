@@ -111,6 +111,7 @@ app.use('/api/inventory', require('./routes/inventory'))
 app.use('/api/reports', require('./routes/reports'))
 app.use('/api/timesheets', require('./routes/timesheets'))
 app.use('/api/equipment', require('./routes/equipment'))
+app.use('/api/activity-logs', require('./routes/activityLogs'))
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({

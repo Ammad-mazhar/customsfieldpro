@@ -1,5 +1,6 @@
 const router   = require('express').Router()
 const auth     = require('../middleware/auth')
+const { logActivity } = require('../utils/activityLogger')
 const supabase = require('../utils/supabase')
 const { sendQuoteEmail } = require('../utils/email')
 const { generateQuotePDF } = require('../utils/pdf')
@@ -48,13 +49,11 @@ router.post('/', async (req, res) => {
 
   const record = { quote_number, client_id, title, line_items, subtotal, tax_rate, total, valid_until, notes, status: 'draft', created_by: req.user.id }
   if (req.tenantId) record.tenant_id = req.tenantId
-  const { data, error } = await supabase
-    .from('quotes')
-    .insert(record)
-    .select('*, clients(*)').single()
+
+  const { data, error } = await supabase.from('quotes').insert(record).select('*, clients(*)').single()
   if (error) return res.status(400).json({ error: error.message })
 
-  await logActivity(req, 'QUOTE_CREATED', 'quotes', data.id, data.quote_number, `Quote for $${total}.`)
+  await logActivity(req, 'create', 'quotes', data.id, data.quote_number)
   res.status(201).json(data)
 })
 
@@ -63,12 +62,28 @@ router.put('/:id', async (req, res) => {
   const allowed = ['title', 'line_items', 'subtotal', 'tax_rate', 'total', 'status', 'valid_until', 'notes', 'approved_at', 'approved_by_client']
   const patch = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)))
 
+  // Pre-fetch for status change detection
+  let oldData = null
+  if (patch.status) {
+    let oldQ = supabase.from('quotes').select('status').eq('id', req.params.id)
+    if (req.tenantId) oldQ = oldQ.eq('tenant_id', req.tenantId)
+    const { data: od } = await oldQ.single()
+    oldData = od
+  }
+
   let updateQuery = supabase.from('quotes').update(patch).eq('id', req.params.id)
   if (req.tenantId) updateQuery = updateQuery.eq('tenant_id', req.tenantId)
   const { data, error } = await updateQuery.select().single()
   if (error) return res.status(400).json({ error: error.message })
 
-  await logActivity(req, 'QUOTE_UPDATED', 'quotes', data.id, data.quote_number, `Status: ${data.status}`)
+  if (patch.status && oldData) {
+    await logActivity(req, 'status_change', 'quotes', data.id, data.quote_number, {
+      field: 'status', oldValue: oldData.status, newValue: patch.status,
+    })
+  } else {
+    await logActivity(req, 'edit', 'quotes', data.id, data.quote_number)
+  }
+
   res.json(data)
 })
 
@@ -76,12 +91,16 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin only' })
 
+  let nameQ = supabase.from('quotes').select('quote_number').eq('id', req.params.id)
+  if (req.tenantId) nameQ = nameQ.eq('tenant_id', req.tenantId)
+  const { data: existing } = await nameQ.single()
+
   let deleteQuery = supabase.from('quotes').delete().eq('id', req.params.id)
   if (req.tenantId) deleteQuery = deleteQuery.eq('tenant_id', req.tenantId)
   const { error } = await deleteQuery
   if (error) return res.status(400).json({ error: error.message })
 
-  await logActivity(req, 'QUOTE_DELETED', 'quotes', req.params.id, req.params.id, 'Quote deleted.')
+  await logActivity(req, 'delete', 'quotes', req.params.id, existing?.quote_number || req.params.id)
   res.json({ message: 'Quote deleted' })
 })
 
@@ -96,7 +115,9 @@ router.post('/:id/send', async (req, res) => {
   await sendQuoteEmail(quote, quote.clients)
   await supabase.from('quotes').update({ status: 'sent' }).eq('id', req.params.id)
 
-  await logActivity(req, 'QUOTE_SENT', 'quotes', quote.id, quote.quote_number, `Sent to ${quote.clients.email}`)
+  await logActivity(req, 'send', 'quotes', quote.id, quote.quote_number, {
+    field: 'recipient', newValue: quote.clients.email,
+  })
   res.json({ message: 'Quote sent' })
 })
 
@@ -114,11 +135,16 @@ router.post('/:id/convert', async (req, res) => {
 
   const jobRecord = { job_number, client_id: quote.client_id, title: quote.title || quote.quote_number, line_items: quote.line_items, status: 'new', created_by: req.user.id }
   if (req.tenantId) jobRecord.tenant_id = req.tenantId
+
   const { data: job, error } = await supabase.from('jobs').insert(jobRecord).select().single()
   if (error) return res.status(400).json({ error: error.message })
 
   await supabase.from('quotes').update({ status: 'approved', approved_at: new Date().toISOString() }).eq('id', req.params.id)
-  await logActivity(req, 'QUOTE_CONVERTED', 'quotes', quote.id, quote.quote_number, `Converted to ${job_number}`)
+
+  await logActivity(req, 'convert', 'quotes', quote.id, quote.quote_number, {
+    field: 'converted_to', newValue: job_number,
+  })
+
   res.json({ job, quote: { ...quote, status: 'approved' } })
 })
 
@@ -134,14 +160,5 @@ router.get('/:id/pdf', async (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="${quote.quote_number}.pdf"`)
   res.send(pdf)
 })
-
-async function logActivity(req, action, module, recordId, label, details) {
-  try {
-    await supabase.from('activity_log').insert({
-      tenant_id: req.tenantId, user_id: req.user.id,
-      action, module, record_id: recordId, record_label: label, details,
-    })
-  } catch {}
-}
 
 module.exports = router

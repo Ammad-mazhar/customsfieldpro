@@ -1,22 +1,14 @@
 const router       = require('express').Router()
 const authenticate = require('../middleware/auth')
-const { authorize, requireOwnJobOrAdmin } = require('../middleware/authorize')
+const { authorize } = require('../middleware/authorize')
 const { validateCreateJob, validateUpdateJob, checkValidation } = require('../middleware/validate')
 const { param } = require('express-validator')
 const { getJobs, getJobById, createJob, updateJob, completeJob, deleteJob } = require('../db/queries/jobQueries')
 const { sendJobAssignedEmail } = require('../utils/email')
+const { logActivity } = require('../utils/activityLogger')
 const supabase = require('../utils/supabase')
 
 router.use(authenticate)
-
-async function log(req, action, recordId, label, details) {
-  try {
-    await supabase.from('activity_log').insert({
-      tenant_id: req.tenantId, user_id: req.user.id,
-      action, module: 'jobs', record_id: recordId, record_label: label, details,
-    })
-  } catch {}
-}
 
 // GET /api/jobs — role-aware: techs only see their own jobs
 router.get('/', async (req, res) => {
@@ -28,7 +20,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-// GET /api/jobs/:id — verify tenant; techs verified by role in getJobs logic
+// GET /api/jobs/:id
 router.get('/:id',
   param('id').isUUID().withMessage('Invalid job ID'),
   checkValidation,
@@ -37,7 +29,6 @@ router.get('/:id',
       const data = await getJobById(req.tenantId, req.params.id)
       if (!data) return res.status(404).json({ error: 'Job not found' })
 
-      // Technicians can only view their own jobs
       if ((req.user.role === 'staff' || req.user.role === 'technician') && data.assigned_to !== req.user.id) {
         return res.status(403).json({ error: 'Forbidden' })
       }
@@ -49,7 +40,7 @@ router.get('/:id',
   }
 )
 
-// POST /api/jobs — admin and staff only (not technicians)
+// POST /api/jobs — admin and staff only
 router.post('/',
   authorize(['admin', 'staff']),
   validateCreateJob,
@@ -60,7 +51,7 @@ router.post('/',
         const { data: assignee } = await supabase.from('users').select('id, full_name, email').eq('id', req.body.assigned_to).single()
         if (assignee) sendJobAssignedEmail(data, assignee).catch(() => {})
       }
-      await log(req, 'JOB_CREATED', data.id, data.job_number, `Job "${data.title}" created.`)
+      await logActivity(req, 'create', 'jobs', data.id, data.job_number || data.title)
       res.status(201).json(data)
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -68,13 +59,25 @@ router.post('/',
   }
 )
 
-// PUT /api/jobs/:id — verifies job ownership for non-admins
+// PUT /api/jobs/:id
 router.put('/:id',
   validateUpdateJob,
   async (req, res) => {
     try {
+      // Pre-fetch for status change detection
+      const oldData = await getJobById(req.tenantId, req.params.id).catch(() => null)
+
       const data = await updateJob(req.tenantId, req.params.id, req.user.id, req.user.role, req.body)
-      await log(req, 'JOB_UPDATED', data.id, data.job_number, `Status: ${data.status}`)
+      const label = data.job_number || data.title || data.id
+
+      if (req.body.status !== undefined && oldData?.status !== req.body.status) {
+        await logActivity(req, 'status_change', 'jobs', data.id, label, {
+          field: 'status', oldValue: oldData?.status, newValue: req.body.status,
+        })
+      } else {
+        await logActivity(req, 'edit', 'jobs', data.id, label)
+      }
+
       res.json(data)
     } catch (e) {
       res.status(e.status || 400).json({ error: e.message })
@@ -82,14 +85,16 @@ router.put('/:id',
   }
 )
 
-// POST /api/jobs/:id/complete — verifies job ownership; admins/staff bypass
+// POST /api/jobs/:id/complete
 router.post('/:id/complete',
   param('id').isUUID().withMessage('Invalid job ID'),
   checkValidation,
   async (req, res) => {
     try {
       const data = await completeJob(req.tenantId, req.params.id, req.user.id, req.user.role, req.body)
-      await log(req, 'JOB_COMPLETED', data.id, data.job_number, 'Job marked complete.')
+      await logActivity(req, 'complete', 'jobs', data.id, data.job_number || data.title, {
+        field: 'status', oldValue: 'in_progress', newValue: 'completed',
+      })
       res.json(data)
     } catch (e) {
       res.status(e.status || 400).json({ error: e.message })
@@ -104,8 +109,9 @@ router.delete('/:id',
   checkValidation,
   async (req, res) => {
     try {
+      const existing = await getJobById(req.tenantId, req.params.id).catch(() => null)
       await deleteJob(req.tenantId, req.params.id)
-      await log(req, 'JOB_DELETED', req.params.id, req.params.id, 'Job deleted.')
+      await logActivity(req, 'delete', 'jobs', req.params.id, existing?.job_number || existing?.title || req.params.id)
       res.json({ message: 'Job deleted' })
     } catch (e) {
       res.status(400).json({ error: e.message })

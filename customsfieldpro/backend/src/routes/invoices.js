@@ -6,20 +6,11 @@ const { param } = require('express-validator')
 const { getInvoices, getInvoiceById, createInvoice, updateInvoice, deleteInvoice } = require('../db/queries/invoiceQueries')
 const { sendInvoiceEmail } = require('../utils/email')
 const { generateInvoicePDF } = require('../utils/pdf')
-const supabase = require('../utils/supabase')
+const { logActivity } = require('../utils/activityLogger')
 
 router.use(authenticate)
 
-async function log(req, action, recordId, label, details) {
-  try {
-    await supabase.from('activity_log').insert({
-      tenant_id: req.tenantId, user_id: req.user.id,
-      action, module: 'invoices', record_id: recordId, record_label: label, details,
-    })
-  } catch {}
-}
-
-// GET /api/invoices — admin only (invoices contain financial data)
+// GET /api/invoices
 router.get('/', authorize('admin'), async (req, res) => {
   try {
     const result = await getInvoices(req.tenantId, req.query)
@@ -45,14 +36,14 @@ router.get('/:id',
   }
 )
 
-// POST /api/invoices — admin only
+// POST /api/invoices
 router.post('/',
   authorize('admin'),
   validateCreateInvoice,
   async (req, res) => {
     try {
       const data = await createInvoice(req.tenantId, req.user.id, req.body)
-      await log(req, 'INVOICE_CREATED', data.id, data.invoice_number, `Invoice for $${data.total}.`)
+      await logActivity(req, 'create', 'invoices', data.id, data.invoice_number)
       res.status(201).json(data)
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -60,15 +51,31 @@ router.post('/',
   }
 )
 
-// PUT /api/invoices/:id — admin only
+// PUT /api/invoices/:id
 router.put('/:id',
   authorize('admin'),
   param('id').isUUID().withMessage('Invalid invoice ID'),
   checkValidation,
   async (req, res) => {
     try {
+      // Pre-fetch for status/payment change detection
+      const oldData = await getInvoiceById(req.tenantId, req.params.id).catch(() => null)
+
       const data = await updateInvoice(req.tenantId, req.params.id, req.body)
-      await log(req, 'INVOICE_UPDATED', data.id, data.invoice_number, `Status: ${data.status}`)
+
+      const isPayment = req.body.paymentMethod || req.body.amountPaid != null
+      if (isPayment) {
+        await logActivity(req, 'payment', 'invoices', data.id, data.invoice_number, {
+          field: 'amountPaid', newValue: req.body.amountPaid,
+        })
+      } else if (req.body.status !== undefined && oldData?.status !== req.body.status) {
+        await logActivity(req, 'status_change', 'invoices', data.id, data.invoice_number, {
+          field: 'status', oldValue: oldData?.status, newValue: req.body.status,
+        })
+      } else {
+        await logActivity(req, 'edit', 'invoices', data.id, data.invoice_number)
+      }
+
       res.json(data)
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -76,15 +83,16 @@ router.put('/:id',
   }
 )
 
-// DELETE /api/invoices/:id — admin only
+// DELETE /api/invoices/:id
 router.delete('/:id',
   authorize('admin'),
   param('id').isUUID().withMessage('Invalid invoice ID'),
   checkValidation,
   async (req, res) => {
     try {
+      const existing = await getInvoiceById(req.tenantId, req.params.id).catch(() => null)
       await deleteInvoice(req.tenantId, req.params.id)
-      await log(req, 'INVOICE_DELETED', req.params.id, req.params.id, 'Invoice deleted.')
+      await logActivity(req, 'delete', 'invoices', req.params.id, existing?.invoice_number || req.params.id)
       res.json({ message: 'Invoice deleted' })
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -92,7 +100,7 @@ router.delete('/:id',
   }
 )
 
-// POST /api/invoices/:id/send — admin only
+// POST /api/invoices/:id/send
 router.post('/:id/send',
   authorize('admin'),
   param('id').isUUID(),
@@ -105,7 +113,9 @@ router.post('/:id/send',
 
       await sendInvoiceEmail(inv, inv.clients)
       await updateInvoice(req.tenantId, req.params.id, { status: 'sent' })
-      await log(req, 'INVOICE_SENT', inv.id, inv.invoice_number, `Sent to ${inv.clients.email}`)
+      await logActivity(req, 'send', 'invoices', inv.id, inv.invoice_number, {
+        field: 'recipient', newValue: inv.clients.email,
+      })
       res.json({ message: 'Invoice sent', invoiceId: inv.id })
     } catch (e) {
       res.status(400).json({ error: e.message })
@@ -113,7 +123,7 @@ router.post('/:id/send',
   }
 )
 
-// GET /api/invoices/:id/pdf — admin only
+// GET /api/invoices/:id/pdf
 router.get('/:id/pdf',
   authorize('admin'),
   param('id').isUUID(),
