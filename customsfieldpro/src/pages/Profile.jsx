@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import { api } from '../services/api'
 
 export default function Profile() {
   const { user, isAdmin, updateProfile, changePassword } = useAuth()
@@ -17,6 +18,9 @@ export default function Profile() {
     e.preventDefault()
     if (!name.trim()) { setProfileMsg({ type: 'error', text: 'Name is required.' }); return }
     updateProfile({ name: name.trim(), phone: phone.trim() })
+    if (user?.id) {
+      api.updateUser(user.id, { full_name: name.trim(), phone: phone.trim() || undefined }).catch(() => {})
+    }
     setProfileMsg({ type: 'success', text: 'Profile updated successfully.' })
     setTimeout(() => setProfileMsg(null), 3000)
   }

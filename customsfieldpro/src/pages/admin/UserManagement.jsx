@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useAuth } from '../../auth/AuthContext'
+import { api } from '../../services/api'
 import { logActivity, ACTIONS } from '../../utils/activityLog'
 import { notifyAdmins, NOTIF_TYPES } from '../../utils/notifications'
 import StaffNotes from '../../components/StaffNotes'
@@ -190,6 +191,14 @@ function EditModal({ user: target, currentUserId, onSave, onClose }) {
       status:     form.status,
       ...(form.newPassword ? { password: form.newPassword } : {}),
     }
+
+    api.updateUser(target.id, {
+      full_name: form.name.trim(),
+      email:     isSelf ? target.email : form.email.trim().toLowerCase(),
+      role:      form.role,
+      phone:     form.phone.trim() || undefined,
+      ...(form.newPassword ? { password: form.newPassword } : {}),
+    }).catch(() => {})
 
     const users = readUsers()
     writeUsers(users.map(u => u.id === target.id ? updated : u))
@@ -404,7 +413,7 @@ function CreateForm({ onCreated }) {
     return e
   }
 
-  function submit(ev) {
+  async function submit(ev) {
     ev.preventDefault()
     const e = validate()
     if (Object.keys(e).length) { setErrs(e); return }
@@ -434,6 +443,14 @@ function CreateForm({ onCreated }) {
       technicianId: form.role === 'technician' ? techId : undefined,
       status:       form.status,
     }
+
+    api.createUser({
+      full_name: form.name.trim(),
+      email:     form.email.trim().toLowerCase(),
+      password:  form.password,
+      role:      form.role,
+      phone:     form.phone.trim() || undefined,
+    }).catch(() => {})
 
     writeUsers([...users, newUser])
     if (needsColor) buildTechColorCache()
