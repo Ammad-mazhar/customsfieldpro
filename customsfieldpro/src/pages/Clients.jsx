@@ -119,6 +119,9 @@ export default function Clients() {
   const [workSubmitting, setWorkSubmitting]  = useState(false)
   const [workMsg,        setWorkMsg]         = useState({ type: '', text: '' })
 
+  // Must be computed BEFORE useEffects that reference sel in their dependency arrays
+  const sel = clients.find(c => c.id === selId)
+
   useEffect(() => { loadClients() }, [])
 
   useEffect(() => {
@@ -157,8 +160,6 @@ export default function Clients() {
       setLoading(false)
     }
   }
-
-  const sel = clients.find(c => c.id === selId)
 
   const tabs = [
     {id:'all',   label:'All Clients'},
