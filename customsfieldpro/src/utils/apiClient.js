@@ -3,7 +3,7 @@
 // - On 401: clears token and throws AuthenticationError immediately.
 // - On 403: throws AuthorizationError (show Access Denied, do NOT redirect).
 
-const API_URL = import.meta.env.VITE_API_URL ?? ''
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://api.customfieldpros.com'
 
 export class AuthorizationError extends Error {
   constructor(msg = 'Access denied') {
