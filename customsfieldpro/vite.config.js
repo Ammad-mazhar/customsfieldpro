@@ -2,10 +2,25 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const BACKEND = 'http://localhost:3001'
+
 export default defineConfig({
   base: './',
   build: {
     sourcemap: true,
+  },
+  // Proxy /api/* to the backend in both dev and preview modes.
+  // This eliminates CORS entirely for local development — the browser
+  // never makes a cross-origin request; the Vite server forwards it.
+  server: {
+    proxy: {
+      '/api': { target: BACKEND, changeOrigin: true },
+    },
+  },
+  preview: {
+    proxy: {
+      '/api': { target: BACKEND, changeOrigin: true },
+    },
   },
   plugins: [
     react(),

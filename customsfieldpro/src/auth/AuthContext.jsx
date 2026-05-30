@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { readPermissions } from '../data/permissions'
 import { setAccessToken, clearAccessToken } from '../utils/apiClient'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 const AuthContext = createContext(null)
 
