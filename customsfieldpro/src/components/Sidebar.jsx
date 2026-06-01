@@ -181,8 +181,9 @@ export default function Sidebar({ isOpen, onClose }) {
             <>
               <div style={{ position: 'fixed', inset: 0, zIndex: 999 }} onClick={() => setCreateOpen(false)} />
               <div style={styles.createMenu}>
-                {CREATE_OPTIONS.map(({ flag, path, label, icon }) => (
-                  <button key={flag} onClick={() => createAndNavigate(flag, path)} style={styles.createOption}>
+                {CREATE_OPTIONS.map(({ flag, path, label, icon }, i) => (
+                  <button key={flag} onClick={() => createAndNavigate(flag, path)}
+                    style={{ ...styles.createOption, borderRight: i < CREATE_OPTIONS.length - 1 ? '1px solid var(--color-border-primary)' : 'none' }}>
                     {icon}
                     {label}
                   </button>
@@ -234,8 +235,8 @@ export default function Sidebar({ isOpen, onClose }) {
 const styles = {
   sidebar:    { width: 228, minWidth: 228, background: 'var(--sidebar-bg)', borderRight: '1px solid var(--color-border-primary)', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' },
   createBtn:  { width: '100%', display: 'flex', alignItems: 'center', gap: 7, padding: '9px 12px', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13.5, fontWeight: 600, cursor: 'pointer', transition: 'filter 0.15s, transform 0.1s', letterSpacing: '-0.1px' },
-  createMenu: { position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: 'var(--color-background-primary, #fff)', border: '1px solid var(--color-border-primary)', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.12)', zIndex: 1000, overflow: 'hidden' },
-  createOption: { display: 'flex', alignItems: 'center', gap: 9, width: '100%', padding: '9px 13px', background: 'none', border: 'none', borderBottom: '1px solid var(--color-border-primary)', textAlign: 'left', cursor: 'pointer', fontSize: 13.5, fontWeight: 500, color: 'var(--color-text-primary)', transition: 'background 0.1s' },
+  createMenu: { position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: 'var(--color-background-primary, #fff)', border: '1px solid var(--color-border-primary)', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.12)', zIndex: 1000, overflow: 'hidden', display: 'flex', flexDirection: 'row' },
+  createOption: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, flex: 1, padding: '8px 2px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 10.5, fontWeight: 500, color: 'var(--color-text-primary)', transition: 'background 0.1s' },
   brand:      { display: 'flex', alignItems: 'center', gap: 10, padding: '20px 20px 16px', borderBottom: '1px solid var(--color-border-primary)' },
   brandIcon:  { width: 34, height: 34, borderRadius: 8, background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   brandName:  { fontSize: 17, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.3px' },
