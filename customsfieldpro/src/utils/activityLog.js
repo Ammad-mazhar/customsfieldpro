@@ -1,10 +1,11 @@
 // ── Activity Log Utility ──────────────────────────────────────────────────────
-// All activity is stored in localStorage under 'ff_activity_log'
-// Log entries are pruned after 90 days.
+// Activity is stored in localStorage AND posted to the backend (Supabase).
+// Log entries are pruned from localStorage after 90 days.
 
-const LOG_KEY    = 'ff_activity_log'
+const LOG_KEY     = 'ff_activity_log'
 const SESSION_KEY = 'customsfieldpro_user'
 const MAX_AGE_MS  = 90 * 24 * 60 * 60 * 1000   // 90 days
+const API_URL     = import.meta.env.VITE_API_URL ?? 'https://api.customfieldpros.com'
 
 // ── Action type constants (export for use across the app) ─────────────────────
 export const ACTIONS = {
@@ -59,6 +60,22 @@ function getCurrentUser() {
   } catch { return null }
 }
 
+function postToBackend(action, module, recordId, recordLabel, details) {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  fetch(`${API_URL}/api/activity-logs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({
+      action_type:  action,
+      module:       module.toLowerCase(),
+      record_id:    recordId    || undefined,
+      record_name:  recordLabel || undefined,
+      details:      details     || undefined,
+    }),
+  }).catch(() => {})
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 /**
@@ -89,6 +106,7 @@ export function logActivity(action, module, recordId, recordLabel, details, user
     }
     const existing = readLog()
     writeLog([entry, ...existing])
+    postToBackend(action, module, recordId, recordLabel, details)
   } catch {
     // Never throw — logging should never break app flow
   }
