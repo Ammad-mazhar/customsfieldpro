@@ -61,14 +61,20 @@ app.use(helmet({
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://customfieldpros.com',
-    'https://www.customfieldpros.com',
-    'https://customsfieldpro-sandy.vercel.app',
-    'https://fieldflow-crm-sandy.vercel.app',
-  ],
+  origin: (origin, callback) => {
+    const allowed = [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://customfieldpros.com',
+      'https://www.customfieldpros.com',
+    ]
+    // Allow any Vercel preview/production deployment for this project
+    if (!origin || allowed.includes(origin) || /^https:\/\/fieldflow-crm[^.]*\.vercel\.app$/.test(origin) || /^https:\/\/customsfieldpro[^.]*\.vercel\.app$/.test(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
