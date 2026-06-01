@@ -37,21 +37,29 @@ router.get('/:id', async (req, res) => {
   res.json(data)
 })
 
-// POST /api/users — invite new team member
+// POST /api/users — create new team member
 router.post('/', adminOnly, async (req, res) => {
-  const { email, full_name, role = 'staff', specialty, color, phone, permissions = {} } = req.body
+  const { email, full_name, role = 'staff', specialty, color, phone, permissions = {}, password } = req.body
   if (!email || !full_name) return res.status(400).json({ error: 'email and full_name are required' })
+  if (!password) return res.status(400).json({ error: 'password is required' })
 
-  // Create Supabase auth user (sends invite email)
-  const { data: authData, error: authErr } = await supabase.auth.admin.inviteUserByEmail(email, {
-    data: { tenant_id: req.tenantId },
-    redirectTo: `${process.env.FRONTEND_URL}/accept-invite`,
-  })
-  if (authErr) return res.status(400).json({ error: authErr.message })
+  // Hash the password using the same pgcrypto function as authenticate_user
+  const { data: passwordHash, error: hashErr } = await supabase.rpc('hash_password', { raw: password })
+  if (hashErr) return res.status(500).json({ error: 'Failed to hash password' })
 
   const { data, error } = await supabase
     .from('users')
-    .insert({ tenant_id: req.tenantId, auth_id: authData.user.id, email, full_name, role, specialty, color, phone, permissions })
+    .insert({
+      tenant_id:     req.tenantId,
+      email:         email.toLowerCase().trim(),
+      full_name,
+      role,
+      specialty,
+      color,
+      phone,
+      permissions,
+      password_hash: passwordHash,
+    })
     .select('id, email, full_name, role, specialty, color').single()
   if (error) return res.status(400).json({ error: error.message })
   res.status(201).json(data)
@@ -68,6 +76,13 @@ router.put('/:id', async (req, res) => {
     : ['full_name', 'phone', 'specialty', 'color']
 
   const patch = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)))
+
+  // Hash and update password_hash if a new password is provided
+  if (req.body.password) {
+    const { data: passwordHash, error: hashErr } = await supabase.rpc('hash_password', { raw: req.body.password })
+    if (hashErr) return res.status(500).json({ error: 'Failed to hash password' })
+    patch.password_hash = passwordHash
+  }
 
   const { data, error } = await supabase
     .from('users')
