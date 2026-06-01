@@ -118,7 +118,11 @@ export default function Clients() {
   // Must be computed BEFORE useEffects that reference sel in their dependency arrays
   const sel = clients.find(c => c.id === selId)
 
-  useEffect(() => { loadClients() }, [])
+  useEffect(() => {
+    loadClients()
+    const flag = sessionStorage.getItem('customsfieldpro_open_new')
+    if (flag === 'client') { sessionStorage.removeItem('customsfieldpro_open_new'); setTab('add') }
+  }, [])
 
   useEffect(() => {
     if (!sel) return

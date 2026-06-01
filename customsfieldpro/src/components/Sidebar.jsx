@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { clearAllData, getLowStockCount, getUnreadCount } from '../data/store'
@@ -33,6 +34,29 @@ const ICONS = {
   billing:    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="1" y="4" width="22" height="16" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/><line x1="1" y1="10" x2="23" y2="10" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   aireceptionist: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="12" rx="3"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><circle cx="9.5" cy="13.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="14.5" cy="13.5" r="1.2" fill="currentColor" stroke="none"/><path d="M9 17c.5.5 1.5.8 3 .8s2.5-.3 3-.8"/></svg>,
 }
+
+const CREATE_OPTIONS = [
+  {
+    flag: 'client', path: '/clients', label: 'Client',
+    icon: <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" strokeLinecap="round"/></svg>,
+  },
+  {
+    flag: 'request', path: '/requests', label: 'Request',
+    icon: <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l.91-.86a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  },
+  {
+    flag: 'job', path: '/jobs', label: 'Job',
+    icon: <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  },
+  {
+    flag: 'quote', path: '/quotes', label: 'Quote',
+    icon: <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" strokeLinecap="round" strokeLinejoin="round"/><rect x="9" y="3" width="6" height="4" rx="1" strokeLinecap="round"/><line x1="9" y1="12" x2="15" y2="12" strokeLinecap="round"/><line x1="9" y1="16" x2="13" y2="16" strokeLinecap="round"/></svg>,
+  },
+  {
+    flag: 'invoice', path: '/invoices', label: 'Invoice',
+    icon: <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" strokeLinecap="round" strokeLinejoin="round"/><polyline points="14 2 14 8 20 8" strokeLinecap="round" strokeLinejoin="round"/><line x1="8" y1="13" x2="16" y2="13" strokeLinecap="round"/><line x1="8" y1="17" x2="12" y2="17" strokeLinecap="round"/></svg>,
+  },
+]
 
 const ADMIN_NAV = [
   { to: '/dashboard',       label: 'Dashboard',       icon: ICONS.dashboard  },
@@ -92,6 +116,14 @@ function getUnreadNotesCount(userId) {
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate()
   const { user, isAdmin, logout, hasPermission } = useAuth()
+  const [createOpen, setCreateOpen] = useState(false)
+
+  function createAndNavigate(flag, path) {
+    sessionStorage.setItem('customsfieldpro_open_new', flag)
+    navigate(path)
+    setCreateOpen(false)
+    onClose?.()
+  }
   const lowStockCount   = isAdmin ? (() => { try { return getLowStockCount() } catch { return 0 } })() : 0
   const inboxUnread     = isAdmin ? (() => { try { return getUnreadCount() } catch { return 0 } })() : 0
   const notesUnread     = (() => { try { return getUnreadNotesCount(user?.id || '') } catch { return 0 } })()
@@ -134,6 +166,32 @@ export default function Sidebar({ isOpen, onClose }) {
           <kbd style={{ background: '#e8e9ec', border: 'none', borderRadius: 4, padding: '1px 5px', fontSize: 10, fontFamily: 'monospace', color: '#6b7280' }}>⌘K</kbd>
         </button>
 
+        {/* CREATE DROPDOWN */}
+        <div style={{ position: 'relative', margin: '4px 12px 2px' }}>
+          <button
+            onClick={() => setCreateOpen(o => !o)}
+            style={styles.createBtn}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Create
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', opacity: 0.7, transform: createOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          {createOpen && (
+            <>
+              <div style={{ position: 'fixed', inset: 0, zIndex: 999 }} onClick={() => setCreateOpen(false)} />
+              <div style={styles.createMenu}>
+                {CREATE_OPTIONS.map(({ flag, path, label, icon }) => (
+                  <button key={flag} onClick={() => createAndNavigate(flag, path)} style={styles.createOption}>
+                    {icon}
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
         <nav style={styles.nav}>
           <p style={styles.navLabel}>MAIN MENU</p>
           {nav.map(({ to, label, icon }) => (
@@ -175,6 +233,9 @@ export default function Sidebar({ isOpen, onClose }) {
 
 const styles = {
   sidebar:    { width: 228, minWidth: 228, background: 'var(--sidebar-bg)', borderRight: '1px solid var(--color-border-primary)', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' },
+  createBtn:  { width: '100%', display: 'flex', alignItems: 'center', gap: 7, padding: '9px 12px', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13.5, fontWeight: 600, cursor: 'pointer', transition: 'filter 0.15s, transform 0.1s', letterSpacing: '-0.1px' },
+  createMenu: { position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: 'var(--color-background-primary, #fff)', border: '1px solid var(--color-border-primary)', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.12)', zIndex: 1000, overflow: 'hidden' },
+  createOption: { display: 'flex', alignItems: 'center', gap: 9, width: '100%', padding: '9px 13px', background: 'none', border: 'none', borderBottom: '1px solid var(--color-border-primary)', textAlign: 'left', cursor: 'pointer', fontSize: 13.5, fontWeight: 500, color: 'var(--color-text-primary)', transition: 'background 0.1s' },
   brand:      { display: 'flex', alignItems: 'center', gap: 10, padding: '20px 20px 16px', borderBottom: '1px solid var(--color-border-primary)' },
   brandIcon:  { width: 34, height: 34, borderRadius: 8, background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   brandName:  { fontSize: 17, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.3px' },

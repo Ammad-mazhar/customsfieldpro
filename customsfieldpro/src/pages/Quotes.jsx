@@ -86,6 +86,8 @@ export default function Quotes() {
         status: r.status || '',
       })))
     }).catch(() => {})
+    const flag = sessionStorage.getItem('customsfieldpro_open_new')
+    if (flag === 'quote') { sessionStorage.removeItem('customsfieldpro_open_new'); setForm(BLANK_FORM); setLines([BLANK_LINE()]); setErrs({}); setTab('create') }
   }, [])
 
   if (!isAdmin && !hasPermission('view_quotes')) return <AccessDenied />

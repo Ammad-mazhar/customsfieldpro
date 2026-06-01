@@ -108,6 +108,8 @@ export default function Requests() {
         setClients(clientResult.data || [])
       })
       .catch(() => {})
+    const flag = sessionStorage.getItem('customsfieldpro_open_new')
+    if (flag === 'request') { sessionStorage.removeItem('customsfieldpro_open_new'); setForm(BLANK); setErrs({}); setTab('new') }
   }, [])
 
   const sel = requests.find(r=>r.id===selId)
